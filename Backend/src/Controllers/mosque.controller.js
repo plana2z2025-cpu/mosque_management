@@ -56,11 +56,27 @@ module.exports.createNewMosqueController = async (req, res, next) => {
 module.exports.getMosquesListController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-getMosquesListController-Start");
+    const { limit = 15, page = 1 } = req.query;
+    const skip_docs = (page - 1) * limit;
 
-    const mosqueServiceClass = new CommonService(mosqueModel);
-    mosqueServiceClass.setFields("-address");
-    mosqueServiceClass.setPopulate({ path: "administrators", select: "name" });
-    const data = await mosqueServiceClass.find(null, { limit: 0 });
+    const totalDocs = await mosqueModel.countDocuments();
+
+    const docs = await mosqueModel
+      .find()
+      .skip(skip_docs)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const hasNext = totalDocs > skip_docs + limit;
+    const hasPrev = page > 1;
+
+    const data = {
+      totalDocs,
+      docs,
+      currentPage: page,
+      hasNext,
+      hasPrev,
+    };
 
     logger.info("Controller-mosque.controller-getMosquesListController-End");
     res.status(200).json({
@@ -71,6 +87,35 @@ module.exports.getMosquesListController = async (req, res, next) => {
   } catch (error) {
     logger.error(
       "Controller-mosque.controller-getMosquesListController-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
+module.exports.getSingleMosqueDetailController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller-mosque.controller-getSingleMosqueDetailController-Start"
+    );
+    const { mosqueId } = req.params;
+    const data = await mosqueModel.findById(mosqueId);
+
+    if (!data) {
+      return next(httpErrors.NotFound(MOSQUE_CONSTANTS.MOSQUE_NOT_FOUND));
+    }
+
+    logger.info(
+      "Controller-mosque.controller-getSingleMosqueDetailController-End"
+    );
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      data,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-getSingleMosqueDetailController-Error",
       error
     );
     next(httpErrors.InternalServerError(error.message));
