@@ -1,0 +1,16 @@
+.welcomeContainer {
+  background-repeat: no-repeat;
+  animation: welcomeAnimation 15s linear infinite;
+}
+
+@keyframes welcomeAnimation {
+  0% {
+    background-position: top;
+  }
+  50% {
+    background-position: bottom;
+  }
+  100% {
+    background-position: top;
+  }
+}
