@@ -16,8 +16,8 @@ const MosqueRoutes = express.Router();
 MosqueRoutes.route("/create-new").post(createNewMosqueController);
 
 MosqueRoutes.route("/mosques").get(
-  Authentication,
-  Authorization(SUPPER_ADMIN),
+  // Authentication,
+  // Authorization(SUPPER_ADMIN),
   getMosquesListController
 );
 MosqueRoutes.route("/mosques/:mosqueId").get(

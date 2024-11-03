@@ -60,6 +60,7 @@ module.exports.getMosquesListController = async (req, res, next) => {
     const skip_docs = (page - 1) * limit;
 
     const totalDocs = await mosqueModel.countDocuments();
+    const totalPages = Math.ceil(totalDocs / limit);
 
     const docs = await mosqueModel
       .find()
@@ -72,6 +73,7 @@ module.exports.getMosquesListController = async (req, res, next) => {
 
     const data = {
       totalDocs,
+      totalPages,
       docs,
       currentPage: page,
       hasNext,
