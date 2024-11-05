@@ -57,13 +57,32 @@ module.exports.getMosquesListController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-getMosquesListController-Start");
     const { limit = 15, page = 1 } = req.query;
+    const {
+      name = null,
+      city = null,
+      state = null,
+      country = null,
+      postalCode = null,
+      facilities = null,
+      active = null,
+    } = req.query;
+
     const skip_docs = (page - 1) * limit;
 
     const totalDocs = await mosqueModel.countDocuments();
     const totalPages = Math.ceil(totalDocs / limit);
 
+    const query = {};
+    if (name) query.name = name;
+    if (city) query["address.city"] = city;
+    if (state) query["address.state"] = state;
+    if (country) query["address.country"] = country;
+    if (postalCode) query["address.postalCode"] = postalCode;
+    if (facilities) query.facilities = facilities;
+    if (active) query.active = active;
+
     const docs = await mosqueModel
-      .find()
+      .find(query)
       .skip(skip_docs)
       .limit(limit)
       .sort({ createdAt: -1 });
@@ -78,6 +97,7 @@ module.exports.getMosquesListController = async (req, res, next) => {
       currentPage: page,
       hasNext,
       hasPrev,
+      limit: Number(limit),
     };
 
     logger.info("Controller-mosque.controller-getMosquesListController-End");
