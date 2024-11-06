@@ -37,6 +37,7 @@ const LoginComp = ({ toggleForm, loginSubmitHandlerFunction, changeHandlerFuncti
               name="password"
               placeholder={t('login.passwordPlaceholder')}
               onChange={changeHandlerFunction}
+              onKeyDown={(e) => e.key === 'Enter' && loginSubmitHandlerFunction()}
               required
             />
           </div>

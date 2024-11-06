@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import {
   Table,
@@ -8,23 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CustomPagination from '@/views/components2/pagination/CustomPagination';
+import { mosqueActions } from '@/redux/combineActions';
+import { useDispatch, useSelector } from 'react-redux';
 
-const breadCumbs = [
-  { label: 'Mosques', href: null },
-  // { label: 'Data Fetching', href: null },
-];
+const breadCumbs = [{ label: 'Mosques', href: null }];
 
 const data = {
   totalDocs: 1,
@@ -54,6 +44,24 @@ const data = {
 };
 
 const AllMosques = () => {
+  const { getSuperAdminMosqueAction } = mosqueActions;
+  const dispatch = useDispatch();
+  const { loading, supperAdminMosques } = useSelector((state) => state.mosqueState);
+  const [info, setinfo] = useState({
+    limit: 10,
+    page: 1,
+  });
+
+  useEffect(() => {
+    if (!supperAdminMosques || supperAdminMosques?.currentPage !== info?.page) {
+      dispatch(getSuperAdminMosqueAction(`limit=${info.limit}&page=${info.page}`));
+    }
+  }, [info?.page]);
+
+  const changePagination = (page) => {
+    console.log(page);
+    setinfo((prev) => ({ ...prev, page }));
+  };
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
       <h1>All Mosques</h1>
@@ -66,43 +74,40 @@ const AllMosques = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
                 <TableHead>Address</TableHead>
-                <TableHead>Contact</TableHead>
                 <TableHead>Facilities</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {data.docs.map((mosque) => (
+            <TableBody className="overflow-scroll">
+              {supperAdminMosques?.docs?.map((mosque) => (
                 <TableRow key={mosque._id}>
-                  <TableCell className="font-medium">{mosque.name}</TableCell>
+                  <TableCell className="font-medium">{mosque?.name}</TableCell>
+                  <TableCell>
+                    <div className="text-sm">{mosque?.contactInfo?.email}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm">{mosque?.contactInfo?.phone}</div>
+                  </TableCell>
+
                   <TableCell>
                     <div className="text-sm">
-                      <p>{mosque.address.street}</p>
+                      <p>{mosque?.address?.street}</p>
                       <p>
-                        {mosque.address.city}, {mosque.address.country.toUpperCase()}
+                        {mosque?.address?.city}, {mosque?.address?.country?.toUpperCase()}
                       </p>
-                      <p>{mosque.address.postalCode}</p>
+                      <p>{mosque?.address?.postalCode}</p>
                     </div>
                   </TableCell>
+
                   <TableCell>
-                    <div className="text-sm">
-                      <p>{mosque.contactInfo.phone}</p>
-                      <p>{mosque.contactInfo.email}</p>
-                    </div>
+                    <div className="flex flex-wrap gap-1">{mosque?.facilities?.join(', ')}</div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {mosque.facilities.map((facility) => (
-                        <Badge key={facility} variant="secondary">
-                          {facility.replace('_', ' ')}
-                        </Badge>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={mosque.active ? 'success' : 'destructive'}>
-                      {mosque.active ? 'Active' : 'Inactive'}
+                    <Badge variant={mosque?.active ? 'success' : 'destructive'}>
+                      {mosque?.active ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
                 </TableRow>
@@ -111,28 +116,12 @@ const AllMosques = () => {
           </Table>
 
           <div className="mt-4">
-            {/* <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination> */}
-
             <CustomPagination
-              currentPage={2}
-              totalPages={10}
-              onPageChange={(page) => {}}
-              siblingsCount={1} // How many numbers to show around current page
-              boundaryCount={1} // How many numbers to show at start/end
+              currentPage={supperAdminMosques?.currentPage || 1}
+              totalPages={supperAdminMosques?.totalPages || 1}
+              onPageChange={(page) => changePagination(page)}
+              siblingsCount={1}
+              boundaryCount={1}
             />
           </div>
         </CardContent>

@@ -6,38 +6,33 @@ const initialState = {
   statusCode: null,
   isLoginSuccess: null,
 };
+
 export const LoginReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case USER_LOGIN.request:
-      return {
-        ...state,
-        loading: true,
-      };
-    case USER_LOGIN.success:
-      return {
-        ...state,
-        isLoginSuccess: true,
-      };
-    case USER_LOGIN.fail:
-      return {
-        ...state,
-        loading: false,
-        error: action?.payload?.message,
-        statusCode: action?.payload?.statusCode || 500,
-      };
+  const actionHandlers = {
+    [USER_LOGIN.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [USER_LOGIN.success]: () => ({
+      ...state,
+      isLoginSuccess: true,
+    }),
 
-    // CLEAR && RESET
-    case CLEAR_LOGIN_ERRORS:
-      return {
-        ...state,
-        statusCode: null,
-        error: null,
-      };
+    // errors,reset,default
+    [USER_LOGIN.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [CLEAR_LOGIN_ERRORS]: () => ({
+      ...state,
+      statusCode: null,
+      error: null,
+    }),
+    [RESET_LOGIN_STATE]: () => initialState,
+  };
 
-    case RESET_LOGIN_STATE:
-      return initialState;
-
-    default:
-      return state;
-  }
+  const handler = actionHandlers[action.type];
+  return handler ? handler() : state;
 };

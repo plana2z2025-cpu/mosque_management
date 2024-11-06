@@ -94,7 +94,7 @@ module.exports.getMosquesListController = async (req, res, next) => {
       totalDocs,
       totalPages,
       docs,
-      currentPage: page,
+      currentPage: Number(page),
       hasNext,
       hasPrev,
       limit: Number(limit),
