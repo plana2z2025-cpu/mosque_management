@@ -17,6 +17,11 @@ const menuItems = [
     href: '/login',
   },
   {
+    id: 'mosque-registration-form',
+    label: 'Registration',
+    href: '/register-mosque',
+  },
+  {
     id: 'programs',
     label: 'Programs',
     children: [

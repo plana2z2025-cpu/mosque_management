@@ -8,7 +8,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Table, TableHead, TableBody, TableRow, TableCell } from '@/components/ui/table';
+import { Table, TableHeader, TableBody, TableRow, TableCell } from '@/components/ui/table';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useDispatch, useSelector } from 'react-redux';
 import { mosqueActions } from '@/redux/combineActions';
@@ -42,12 +42,11 @@ const MosqueDetails = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="text-lg font-medium">Address</h3>
-              <p>{supperAdminSingleMosque?.address?.street}</p>
-              <p>
-                {supperAdminSingleMosque?.address?.city}, {supperAdminSingleMosque?.address?.state}{' '}
-                {supperAdminSingleMosque?.address?.postalCode}
-              </p>
-              <p>{supperAdminSingleMosque?.address?.country}</p>
+              <p>Street : {supperAdminSingleMosque?.address?.street}</p>
+              <p>City : {supperAdminSingleMosque?.address?.city},</p>
+              <p>PostalCode :{supperAdminSingleMosque?.address?.postalCode}</p>
+              <p>State : {supperAdminSingleMosque?.address?.state} </p>
+              <p>Country : {supperAdminSingleMosque?.address?.country}</p>
             </div>
 
             <div>
@@ -81,13 +80,13 @@ const MosqueDetails = () => {
           <div>
             <h3 className="text-lg font-medium">Prayer Times</h3>
             <Table>
-              <TableHead>
+              <TableHeader className="w-full">
                 <TableRow>
                   <TableCell>Prayer</TableCell>
                   <TableCell>Azaan</TableCell>
                   <TableCell>Jamaat</TableCell>
                 </TableRow>
-              </TableHead>
+              </TableHeader>
               <TableBody>
                 <TableRow>
                   <TableCell>Fajr</TableCell>

@@ -4,6 +4,7 @@ import Home from './views/features/home/Home';
 import Login from './views/features/login/login';
 import AllMosques from './views/features/supperAdmin/mosqueMgnt/AllMosques';
 import MosqueDetails from './views/features/supperAdmin/mosqueMgnt/SingleMosqueDetail';
+import MosqueRegistrationForm from './views/features/mosque/MosqueRegistration';
 
 const allRoutesMapper = [
   {
@@ -37,6 +38,10 @@ const allRoutesMapper = [
         <MosqueDetails />
       </AuthWrapper>
     ),
+  },
+  {
+    path: '/register-mosque',
+    component: <MosqueRegistrationForm />,
   },
 ];
 
