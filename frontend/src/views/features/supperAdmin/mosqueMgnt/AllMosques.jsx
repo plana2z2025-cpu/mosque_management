@@ -13,40 +13,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CustomPagination from '@/views/components2/pagination/CustomPagination';
 import { mosqueActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { FilePenLine, View, Trash } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const breadCumbs = [{ label: 'Mosques', href: null }];
-
-const data = {
-  totalDocs: 1,
-  totalPages: 1,
-  docs: [
-    {
-      address: {
-        street: '123 Main St',
-        city: 'new york',
-        country: 'usa',
-        postalCode: '10001',
-      },
-      contactInfo: {
-        phone: '+1234567890',
-        email: 'info@centralmosque.com',
-      },
-      _id: '6724f592be352370e568c3b6',
-      name: 'Central Mosque',
-      facilities: ['parking', 'wudu_area', 'women_section'],
-      active: false,
-      createdOn: 1730475409,
-    },
-  ],
-  currentPage: 1,
-  hasNext: false,
-  hasPrev: false,
-};
 
 const AllMosques = () => {
   const { getSuperAdminMosqueAction } = mosqueActions;
   const dispatch = useDispatch();
   const { loading, supperAdminMosques } = useSelector((state) => state.mosqueState);
+  const navigate = useNavigate();
   const [info, setinfo] = useState({
     limit: 10,
     page: 1,
@@ -61,6 +37,11 @@ const AllMosques = () => {
   const changePagination = (page) => {
     console.log(page);
     setinfo((prev) => ({ ...prev, page }));
+  };
+
+  const navigateFun = (slug, view = true) => {
+    alert(slug);
+    view ? navigate(slug) : navigate(`${slug}/edit`);
   };
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -79,6 +60,7 @@ const AllMosques = () => {
                 <TableHead>Address</TableHead>
                 <TableHead>Facilities</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Active</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="overflow-scroll">
@@ -109,6 +91,18 @@ const AllMosques = () => {
                     <Badge variant={mosque?.active ? 'success' : 'destructive'}>
                       {mosque?.active ? 'Active' : 'Inactive'}
                     </Badge>
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="flex gap-5">
+                      <View
+                        color="purple"
+                        className="cursor-pointer size-5"
+                        onClick={() => navigateFun(mosque?.slug)}
+                      />
+                      <FilePenLine color="green" className="cursor-pointer size-5" />
+                      <Trash color="red" className="cursor-pointer size-5" />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

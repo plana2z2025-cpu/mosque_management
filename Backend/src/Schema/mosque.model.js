@@ -1,3 +1,4 @@
+const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const ModelSchema = new mongoose.Schema(
@@ -5,6 +6,11 @@ const ModelSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
     },
     address: {
       street: {

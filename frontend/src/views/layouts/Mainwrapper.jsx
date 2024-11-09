@@ -47,7 +47,7 @@ const Mainwrapper = ({ breadCumbs = [], children }) => {
                     </BreadcrumbItem>
                   ) : (
                     <BreadcrumbItem>
-                      <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                      <BreadcrumbPage> {singleBreadcrumb?.label}</BreadcrumbPage>
                     </BreadcrumbItem>
                   )}
 

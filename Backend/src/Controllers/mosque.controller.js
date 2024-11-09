@@ -9,6 +9,7 @@ const { USER_ALREADY_EXISTS } = require("../Constants/user.constants");
 const moment = require("moment");
 const CommonService = require("../Services/common.service");
 const mosqueModel = require("../Schema/mosque.model");
+const sortConstants = require("../Constants/sort.constants");
 
 module.exports.createNewMosqueController = async (req, res, next) => {
   try {
@@ -56,7 +57,7 @@ module.exports.createNewMosqueController = async (req, res, next) => {
 module.exports.getMosquesListController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-getMosquesListController-Start");
-    const { limit = 15, page = 1 } = req.query;
+    const { limit = 15, page = 1, sort = "-createdAt" } = req.query;
     const {
       name = null,
       city = null,
@@ -85,7 +86,7 @@ module.exports.getMosquesListController = async (req, res, next) => {
       .find(query)
       .skip(skip_docs)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort(sortConstants[sort] || sortConstants["-createdAt"]);
 
     const hasNext = totalDocs > skip_docs + limit;
     const hasPrev = page > 1;
@@ -120,8 +121,8 @@ module.exports.getSingleMosqueDetailController = async (req, res, next) => {
     logger.info(
       "Controller-mosque.controller-getSingleMosqueDetailController-Start"
     );
-    const { mosqueId } = req.params;
-    const data = await mosqueModel.findById(mosqueId);
+    const { slug } = req.params;
+    const data = await mosqueModel.findOne({ slug });
 
     if (!data) {
       return next(httpErrors.NotFound(MOSQUE_CONSTANTS.MOSQUE_NOT_FOUND));

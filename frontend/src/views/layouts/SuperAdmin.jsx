@@ -2,6 +2,7 @@ import React from 'react';
 import {
   UserCheck,
   School,
+  ChartPie,
   Calendar,
   BookOpen,
   DollarSign,
@@ -44,18 +45,35 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import getInitials from '@/helpers/get-initials';
+import { Link } from 'react-router-dom';
 
 const data = {
   navMain: [
     {
       title: 'Dashboard',
       url: '#',
-      icon: School,
+      icon: ChartPie,
       isActive: true,
       items: [
         {
           title: 'Overview',
           url: '#/dashboard/overview',
+        },
+        {
+          title: 'Analytics',
+          url: '#/dashboard/analytics',
+        },
+      ],
+    },
+    {
+      title: 'Mosques',
+      url: '/superadmin/mosques',
+      icon: School,
+      isActive: false,
+      items: [
+        {
+          title: 'All Mosque',
+          url: '/superadmin/mosques',
         },
         {
           title: 'Analytics',
@@ -209,9 +227,9 @@ const SuperAdminSidebar = ({ user, children }) => {
                         {item.items?.map((subItem) => (
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton asChild>
-                              <a href={subItem.url}>
+                              <Link to={subItem.url}>
                                 <span>{subItem.title}</span>
-                              </a>
+                              </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}

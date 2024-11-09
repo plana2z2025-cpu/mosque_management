@@ -64,12 +64,11 @@ const CustomPagination = ({
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href="#"
             onClick={(e) => {
               e.preventDefault();
               if (currentPage > 1) onPageChange(currentPage - 1);
             }}
-            className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
+            className={currentPage <= 1 ? 'pointer-events-none cursor-not-allowed opacity-50' : ''}
           />
         </PaginationItem>
 
