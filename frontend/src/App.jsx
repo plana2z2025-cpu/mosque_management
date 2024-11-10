@@ -2,6 +2,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import allRoutesMapper from './routes';
 import { Toaster } from 'react-hot-toast';
+import Welcome from './views/components2/home/Welcome';
 
 const OtherComponets = () => {
   return (
@@ -14,6 +15,7 @@ const OtherComponets = () => {
 function App() {
   return (
     <div className="app">
+      <Welcome />
       <BrowserRouter>
         <Routes>
           {allRoutesMapper?.map((singleroute, index) => (

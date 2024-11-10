@@ -141,7 +141,7 @@
     @apply m-0 p-0 box-border;
   }
   .app {
-    @apply min-h-screen h-screen w-screen font-poppins max-w-[1200] mx-auto;
+    @apply min-h-screen w-full font-poppins;
   }
   .fullScreen {
     @apply min-h-screen w-screen;

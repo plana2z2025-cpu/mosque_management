@@ -1,0 +1,38 @@
+-----------------------------------------------------------------------------------
+                            # MOSQUE MANAGEMENT SYSTEM TODO :-
+-----------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------
+## Indicators 
+-----------------------------------------------------------------------------------
+[ ] => Incomplete Task
+[ x ] => completed Task
+
+
+
+-----------------------------------------------------------------------------------
+## Current Task
+-----------------------------------------------------------------------------------
+- [ x ] Build the **Mosque Registration Form**
+  - [ x ] Design the form layout
+  - [ x ] Implement form validation (e.g., required fields, email validation)
+  - [ ] Set up backend endpoint to handle form submissions
+  - [ ] Test form submission and data storage
+
+-----------------------------------------------------------------------------------
+## Upcoming Tasks
+-----------------------------------------------------------------------------------
+- [ x ] Implement user authentication and authorization
+  - [ ] User roles: Admin, Mosque Staff, General User
+  - [ ] Protect admin routes and staff-only functionalities
+- [ ] Add Namaz Timings Feature
+  - [ ] Integrate with a timing API or allow manual entry
+  - [ ] Display timings based on location and daily schedule
+- [ ] Event Management
+  - [ ] Allow admins to create, edit, and delete events
+  - [ ] Display events to users with date, time, and description
+
+-----------------------------------------------------------------------------------
+## Future Enhancements
+-----------------------------------------------------------------------------------
+

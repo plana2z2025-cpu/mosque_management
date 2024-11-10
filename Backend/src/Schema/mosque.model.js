@@ -23,12 +23,22 @@ const ModelSchema = new mongoose.Schema(
       },
       state: {
         type: String,
+        required: true,
+        lowercase: true,
+      },
+      stateCode: {
+        type: String,
+        required: true,
         lowercase: true,
       },
       country: {
         type: String,
         required: true,
         lowercase: true,
+      },
+      countryCode: {
+        type: String,
+        required: true,
       },
       postalCode: {
         type: String,
