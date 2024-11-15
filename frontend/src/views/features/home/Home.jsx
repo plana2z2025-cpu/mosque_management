@@ -6,7 +6,7 @@ import Navbar from '@/views/components2/Navbar/Navbar';
 const Home = () => {
   return (
     <div>
-      <Welcome />
+      {/* <Welcome /> */}
       <Navbar />
       <HeroSection />
     </div>
