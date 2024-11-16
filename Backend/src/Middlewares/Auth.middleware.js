@@ -1,7 +1,7 @@
 const httpErrors = require("http-errors");
 const { VerifyAccessToken } = require("../Utils/jwt.token");
 const UserServiceClass = require("../Services/user.service");
-const logger = require("../Config/applogger.config");
+const logger = require("../Config/logger.config");
 const { USER_NOT_FOUND } = require("../Constants/user.constants");
 const {
   AUTHENTICATION_TOKEN_REQUIRED,

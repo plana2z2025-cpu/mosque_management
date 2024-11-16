@@ -2,7 +2,7 @@ const httpErrors = require("http-errors");
 const UserServiceClass = require("../Services/user.service");
 const MosqueServiceClass = require("../Services/mosque.service");
 const MOSQUE_CONSTANTS = require("../Constants/mosque.constants");
-const logger = require("../Config/applogger.config");
+const logger = require("../Config/logger.config");
 const { createNewMosqueValidation } = require("../validators/mosque.joi");
 const { RegisterUserValidation } = require("../validators/user.joi");
 const { USER_ALREADY_EXISTS } = require("../Constants/user.constants");
@@ -11,7 +11,7 @@ const CommonService = require("../Services/common.service");
 const mosqueModel = require("../Schema/mosque.model");
 const sortConstants = require("../Constants/sort.constants");
 
-module.exports.createNewMosqueController = async (req, res, next) => {
+const createNewMosqueController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-createNewMosqueController-Start");
     const { error } = createNewMosqueValidation(req.body.mosqueDetails);
@@ -54,7 +54,7 @@ module.exports.createNewMosqueController = async (req, res, next) => {
   }
 };
 
-module.exports.getMosquesListController = async (req, res, next) => {
+const getMosquesListController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-getMosquesListController-Start");
     const { limit = 15, page = 1, sort = "-createdAt" } = req.query;
@@ -116,7 +116,7 @@ module.exports.getMosquesListController = async (req, res, next) => {
   }
 };
 
-module.exports.getSingleMosqueDetailController = async (req, res, next) => {
+const getSingleMosqueDetailController = async (req, res, next) => {
   try {
     logger.info(
       "Controller-mosque.controller-getSingleMosqueDetailController-Start"
@@ -143,4 +143,10 @@ module.exports.getSingleMosqueDetailController = async (req, res, next) => {
     );
     next(httpErrors.InternalServerError(error.message));
   }
+};
+
+module.exports = {
+  createNewMosqueController,
+  getMosquesListController,
+  getSingleMosqueDetailController,
 };
