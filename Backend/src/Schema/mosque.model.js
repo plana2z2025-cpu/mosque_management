@@ -1,3 +1,4 @@
+const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const ModelSchema = new mongoose.Schema(
@@ -51,13 +52,22 @@ const ModelSchema = new mongoose.Schema(
       },
     },
     contactInfo: {
-      phone: String,
-      email: String,
+      phone: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        required: true,
+      },
       website: String,
     },
-    capacity: {
-      regular: Number,
-      friday: Number,
+    aboutInfo: {
+      established: Date,
+      capacity: {
+        regular: Number,
+        friday: Number,
+      },
     },
     facilities: [
       {
@@ -82,8 +92,15 @@ const ModelSchema = new mongoose.Schema(
     ],
     administrators: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
+          required: true,
+        },
+        isOwner: {
+          type: Boolean,
+          default: false,
+        },
       },
     ],
     prayerTimes: {
@@ -113,7 +130,6 @@ const ModelSchema = new mongoose.Schema(
         qutba: String,
       },
     },
-    established: Date,
     images: [
       {
         public_id: String,

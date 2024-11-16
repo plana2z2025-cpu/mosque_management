@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const { SUPPER_ADMIN, USER } = require("../Constants/roles.contants");
+const { SUPPER_ADMIN, USER, MEMBER } = require("../Constants/roles.constants");
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -30,7 +30,7 @@ const ModelSchema = new mongoose.Schema(
     role: {
       type: String,
       default: USER,
-      enum: [SUPPER_ADMIN, USER],
+      enum: [SUPPER_ADMIN, MEMBER, USER],
     },
     isVerified: {
       type: Boolean,

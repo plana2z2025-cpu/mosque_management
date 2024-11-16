@@ -3,17 +3,31 @@ const {
   Authentication,
   Authorization,
 } = require("../Middlewares/Auth.middleware");
-const { SUPPER_ADMIN, USER } = require("../Constants/roles.contants");
+const { SUPPER_ADMIN, USER } = require("../Constants/roles.constants");
 const {
   createNewMosqueController,
   getMosquesListController,
   getSingleMosqueDetailController,
+  createMosqueEmailValidateController,
+  createMosqueSlugValidateController,
 } = require("../Controllers/mosque.controller");
 const ValidateObjectId = require("../Middlewares/validateObjectid.middleware");
+const mosqueValidations = require("../validators/mosque.joi");
 
 const MosqueRoutes = express.Router();
 
-MosqueRoutes.route("/create-new").post(createNewMosqueController);
+MosqueRoutes.route("/create-new").post(
+  mosqueValidations.createNewMosqueValidation,
+  createNewMosqueController
+);
+MosqueRoutes.route("/create-new/email-verify/available").post(
+  mosqueValidations.createMosqueEmailValidation,
+  createMosqueEmailValidateController
+);
+MosqueRoutes.route("/create-new/slug-verify/available").post(
+  mosqueValidations.createMosqueSlugValidation,
+  createMosqueSlugValidateController
+);
 
 MosqueRoutes.route("/mosques").get(
   Authentication,

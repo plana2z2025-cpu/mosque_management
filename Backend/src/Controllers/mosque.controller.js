@@ -3,38 +3,50 @@ const UserServiceClass = require("../Services/user.service");
 const MosqueServiceClass = require("../Services/mosque.service");
 const MOSQUE_CONSTANTS = require("../Constants/mosque.constants");
 const logger = require("../Config/logger.config");
-const { createNewMosqueValidation } = require("../validators/mosque.joi");
-const { RegisterUserValidation } = require("../validators/user.joi");
 const { USER_ALREADY_EXISTS } = require("../Constants/user.constants");
 const moment = require("moment");
 const CommonService = require("../Services/common.service");
 const mosqueModel = require("../Schema/mosque.model");
 const sortConstants = require("../Constants/sort.constants");
+const { MEMBER } = require("../Constants/roles.constants");
 
 const createNewMosqueController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-createNewMosqueController-Start");
-    const { error } = createNewMosqueValidation(req.body.mosqueDetails);
-    if (error) return next(httpErrors.BadRequest(error.details[0].message));
-    const { error: userError } = RegisterUserValidation(req.body.userDetails);
-    if (userError)
-      return next(httpErrors.BadRequest(userError.details[0].message));
+    const {
+      name,
+      slug,
+      address,
+      contactInfo,
+      aboutInfo,
+      facilities,
+      timings,
+      user,
+    } = req.body;
 
-    // user creation Logic
     const userServiceClass = new UserServiceClass();
     let userExist = await userServiceClass.getUserFindOne({
-      email: req.body.email,
+      email: user.email,
     });
     if (userExist) {
       return next(httpErrors.BadRequest(USER_ALREADY_EXISTS));
     }
-    userExist = await userServiceClass.createUserDocument(req.body.userDetails);
+    userExist = await userServiceClass.createUserDocument({
+      ...user,
+      role: MEMBER,
+    });
 
     // mosque creation logic
     const mosqueServiceClass = new MosqueServiceClass();
     const newMosque = await mosqueServiceClass.createMosqueDocument({
-      ...req.body.mosqueDetails,
-      administrators: [userExist._id],
+      name,
+      slug,
+      address,
+      contactInfo,
+      aboutInfo,
+      facilities,
+      timings,
+      administrators: [{ user: userExist._id, isOwner: true }],
       createdOn: moment().unix(),
     });
 
@@ -48,6 +60,43 @@ const createNewMosqueController = async (req, res, next) => {
   } catch (error) {
     logger.error(
       "Controller-mosque.controller-createNewMosqueController-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
+const createMosqueEmailValidateController = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const userServiceClass = new UserServiceClass();
+    let userExist = await userServiceClass.getUserFindOne({ email });
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      isAvailable: userExist ? true : false,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-createMosqueEmailController-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
+const createMosqueSlugValidateController = async (req, res, next) => {
+  try {
+    const { slug } = req.body;
+    let isExist = await mosqueModel.findOne({ slug });
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      isAvailable: isExist ? true : false,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-createMosqueSlugController-Error",
       error
     );
     next(httpErrors.InternalServerError(error.message));
@@ -149,4 +198,6 @@ module.exports = {
   createNewMosqueController,
   getMosquesListController,
   getSingleMosqueDetailController,
+  createMosqueEmailValidateController,
+  createMosqueSlugValidateController,
 };
