@@ -18,6 +18,7 @@ import {
 import validator from 'validator';
 import slugify from 'slugify';
 import { useTranslation } from 'react-i18next';
+import { mosqueActions } from '../../../redux/combineActions';
 
 const facilities = [
   { id: 'parking', label: 'Parking' },
@@ -33,6 +34,9 @@ const facilities = [
 const MosqueRegistrationForm = () => {
   const { t } = useTranslation();
   const translation = t('registration');
+
+  const { checkEmailAvailabilityAction, checkSlugAvailabilityAction } = mosqueActions;
+
   const [info, setInfo] = useState({
     address: {
       street: '',
@@ -56,6 +60,7 @@ const MosqueRegistrationForm = () => {
       email: '',
       website: '',
       slug: '',
+      slugName: '',
     },
     timings: {
       fajr: {
@@ -85,8 +90,17 @@ const MosqueRegistrationForm = () => {
       },
     },
   });
-
   const [error, setError] = useState({});
+  const [debounceState, setDebounceState] = useState({
+    isSlugAvailable: null,
+    isEmailAvailable: null,
+  });
+
+  // useEffect(() => {
+  //   if (info?.mosqueInfo?.slug) {
+  //     handleDebounceSearch(info?.mosqueInfo?.slug, 'slug');
+  //   }
+  // }, [info?.mosqueInfo?.slug]);
 
   const validateField = (section, key, value) => {
     const validateRules = {
@@ -144,17 +158,20 @@ const MosqueRegistrationForm = () => {
 
   const mosqueInfoHandleChangeFunc = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
     if (name === 'name') {
       const newSlug = slugify(value, { lower: true, strict: true });
       setInfo((prev) => ({
         ...prev,
-        mosqueInfo: { ...prev.mosqueInfo, slug: newSlug, name: value },
+        mosqueInfo: { ...prev.mosqueInfo, slug: newSlug, name: value, slugName: newSlug },
       }));
+      handleDebounceSearch(newSlug, 'slug');
     } else if (name === 'slug') {
       const newSlug = slugify(value, { lower: true, strict: true });
-      console.log(newSlug);
-      setInfo((prev) => ({ ...prev, mosqueInfo: { ...prev.mosqueInfo, slug: newSlug } }));
+      setInfo((prev) => ({
+        ...prev,
+        mosqueInfo: { ...prev.mosqueInfo, slug: newSlug, slugName: value.trim().toLowerCase() },
+      }));
+      handleDebounceSearch(newSlug, 'slug');
     } else {
       setInfo((prev) => ({ ...prev, mosqueInfo: { ...prev.mosqueInfo, [name]: value } }));
     }
@@ -187,16 +204,82 @@ const MosqueRegistrationForm = () => {
 
   const administratorsChangeHandler = (e) => {
     const { name, value } = e.target;
+
     setInfo((prev) => ({ ...prev, administrator: { ...prev.administrator, [name]: value } }));
     let newError = validateField('administrator', name, value);
+    if (name === 'email' && !newError) {
+      handleDebounceSearch(value);
+    }
     setError((prev) => ({
       ...prev,
       administrator: { ...prev?.ad, [name]: newError },
     }));
   };
 
+  const timingsChangeHandler = (e) => {
+    const { name, value } = e.target;
+    const [salaah, type] = name.split('-');
+    setInfo((prev) => ({
+      ...prev,
+      timings: { ...prev.timings, [salaah]: { ...prev.timings[salaah], [type]: value } },
+    }));
+  };
+
+  const fetchEmailValidationHandler = async (email) => {
+    const json = { email };
+    const response = await checkEmailAvailabilityAction(json);
+    let message = null;
+    if (response[0] === true) {
+      message = response[1]?.isAvailable ? null : 'Email is Already Registered';
+    } else {
+      message = response[1]?.message;
+    }
+    const administratorData =
+      Object.keys(info?.administrator || {}) === 0
+        ? { email: message }
+        : { ...error?.administrator, email: message };
+    setError((prev) => ({ ...prev, administrator: { ...administratorData } }));
+    setDebounceState((prev) => ({ ...prev, isEmailAvailable: null }));
+  };
+
+  const fetchSlugValidationHandler = async (slug) => {
+    const json = { slug };
+    const response = await checkSlugAvailabilityAction(json);
+    let message = null;
+    if (response[0] === true) {
+      message = response[1]?.isAvailable ? null : 'Slug is not available';
+    } else {
+      message = response[1]?.message;
+    }
+    const mosqueData =
+      Object.keys(info?.mosqueInfo || {}) === 0
+        ? { email: message }
+        : { ...error?.mosqueInfo, slug: message };
+    setError((prev) => ({ ...prev, mosqueInfo: { ...mosqueData } }));
+    setDebounceState((prev) => ({ ...prev, isSlugAvailable: null }));
+  };
+
+  const handleDebounceSearch = (value, type = 'email') => {
+    clearInterval(
+      type === 'email' ? debounceState?.isEmailAvailable : debounceState?.isSlugAvailable
+    );
+    const timeOut = setTimeout(() => {
+      type === 'email' ? fetchEmailValidationHandler(value) : fetchSlugValidationHandler(value);
+    }, 800);
+    const data = type === 'email' ? { isEmailAvailable: timeOut } : { isSlugAvailable: timeOut };
+    setDebounceState((prev) => ({ ...prev, ...data }));
+  };
+
   const submitFormHandler = (e) => {
     e.preventDefault();
+    let allValues = Object.values(error).flatMap((value) => Object.values(value));
+    console.log(allValues);
+
+    if (allValues.length !== 0 && allValues.every((item) => item !== null)) {
+      return;
+    }
+
+    console.log('called avlakjf');
     const havingErrors = validateAllErrors();
     if (!havingErrors) return;
   };
@@ -237,9 +320,14 @@ const MosqueRegistrationForm = () => {
                   id="mosqueSlug"
                   placeholder={translation['enter-mosque-slug']}
                   name="slug"
-                  value={info?.mosqueInfo?.slug}
+                  value={info?.mosqueInfo?.slugName}
                   onChange={mosqueInfoHandleChangeFunc}
                 />
+                <span className="text-gray-600 text-[10px]">
+                  {' '}
+                  <b>Your Slug:-</b> {info?.mosqueInfo?.slug}
+                </span>
+                <br />
                 {error?.mosqueInfo?.slug && (
                   <span className="text-red-600 text-[10px]">{error?.mosqueInfo?.slug}</span>
                 )}
@@ -350,8 +438,8 @@ const MosqueRegistrationForm = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {error?.address?.country && (
-                  <span className="text-red-600 text-[10px]">{error?.address?.country}</span>
+                {error?.address?.countryCode && (
+                  <span className="text-red-600 text-[10px]">{error?.address?.countryCode}</span>
                 )}
               </div>
 
@@ -382,8 +470,8 @@ const MosqueRegistrationForm = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {error?.address?.state && (
-                  <span className="text-red-600 text-[10px]">{error?.address?.state}</span>
+                {error?.address?.stateCode && (
+                  <span className="text-red-600 text-[10px]">{error?.address?.stateCode}</span>
                 )}
               </div>
 
@@ -574,9 +662,10 @@ const MosqueRegistrationForm = () => {
                         {translation['azaan-time']}
                       </Label>
                       <Input
-                        id={`${prayer.toLowerCase()}-azaan`}
+                        name={`${prayer.toLowerCase()}-azaan`}
                         type="time"
                         value={info?.timings?.[prayer]?.azaan}
+                        onChange={timingsChangeHandler}
                       />
                     </div>
                     <div className="space-y-2">
@@ -584,9 +673,10 @@ const MosqueRegistrationForm = () => {
                         {translation['jamaat-time']}
                       </Label>
                       <Input
-                        id={`${prayer.toLowerCase()}-jamaat`}
+                        name={`${prayer.toLowerCase()}-jamaat`}
                         type="time"
                         value={info?.timings?.[prayer]?.jamaat}
+                        onChange={timingsChangeHandler}
                       />
                     </div>
                     {prayer === 'jumma' && (

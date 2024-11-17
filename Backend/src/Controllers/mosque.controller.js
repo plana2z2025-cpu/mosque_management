@@ -74,7 +74,7 @@ const createMosqueEmailValidateController = async (req, res, next) => {
     res.status(200).json({
       success: true,
       statusCode: 200,
-      isAvailable: userExist ? true : false,
+      isAvailable: userExist ? false : true,
     });
   } catch (error) {
     logger.error(
@@ -92,7 +92,7 @@ const createMosqueSlugValidateController = async (req, res, next) => {
     res.status(200).json({
       success: true,
       statusCode: 200,
-      isAvailable: isExist ? true : false,
+      isAvailable: isExist ? false : true,
     });
   } catch (error) {
     logger.error(
