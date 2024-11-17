@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import validator from 'validator';
 import slugify from 'slugify';
+import { useTranslation } from 'react-i18next';
 
 const facilities = [
   { id: 'parking', label: 'Parking' },
@@ -30,6 +31,8 @@ const facilities = [
 ];
 
 const MosqueRegistrationForm = () => {
+  const { t } = useTranslation();
+  const translation = t('registration');
   const [info, setInfo] = useState({
     address: {
       street: '',
@@ -54,6 +57,33 @@ const MosqueRegistrationForm = () => {
       website: '',
       slug: '',
     },
+    timings: {
+      fajr: {
+        azaan: '05:15',
+        jamaat: '05:30',
+      },
+      dhuhr: {
+        azaan: '12:30',
+        jamaat: '12:45',
+      },
+      asr: {
+        azaan: '15:45',
+        jamaat: '16:00',
+      },
+      maghrib: {
+        azaan: '18:30',
+        jamaat: '18:45',
+      },
+      isha: {
+        azaan: '20:00',
+        jamaat: '20:15',
+      },
+      jumma: {
+        azaan: '13:15',
+        jamaat: '13:30',
+        qutba: '13:10',
+      },
+    },
   });
 
   const [error, setError] = useState({});
@@ -73,7 +103,6 @@ const MosqueRegistrationForm = () => {
         password: () => (value.length < 6 ? 'Password must be at least 8 characters' : null),
         phone: () => (!validator.isMobilePhone(value, 'any') ? 'Invalid phone number' : null),
       },
-
       mosqueInfo: {
         name: () => (value.trim() === '' ? 'Mosque name is required' : null),
         slug: () => (value.trim() === '' ? 'Slug is required' : null),
@@ -174,22 +203,24 @@ const MosqueRegistrationForm = () => {
 
   return (
     <div className="  w-[90%] m-auto py-6 px-4 ">
-      <h1 className=" text-center text-3xl font-bold my-4">Mosque Registration Form</h1>
+      <h1 className=" text-center text-3xl font-bold my-4">
+        {translation['mosque-registration-form']}
+      </h1>
       <form className="space-y-8" onSubmit={submitFormHandler}>
         {/* Basic Mosque Information */}
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Mosque Information</CardTitle>
+            <CardTitle>{translation['mosque-information']}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="mosqueName">
-                  Mosque Name <span className=" text-red-600">*</span>
+                  {translation['mosque-name']} <span className=" text-red-600">*</span>
                 </Label>
                 <Input
                   id="mosqueName"
-                  placeholder="Enter mosque name"
+                  placeholder={translation['enter-mosque-name']}
                   name="name"
                   value={info?.mosqueInfo?.name}
                   onChange={mosqueInfoHandleChangeFunc}
@@ -200,11 +231,11 @@ const MosqueRegistrationForm = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="mosqueName">
-                  Mosque Slug <span className=" text-red-600">*</span>
+                  {translation['mosque-slug']} <span className=" text-red-600">*</span>
                 </Label>
                 <Input
                   id="mosqueSlug"
-                  placeholder="Enter mosque slug"
+                  placeholder={translation['enter-mosque-slug']}
                   name="slug"
                   value={info?.mosqueInfo?.slug}
                   onChange={mosqueInfoHandleChangeFunc}
@@ -214,11 +245,11 @@ const MosqueRegistrationForm = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="established">Establishment Date</Label>
+                <Label htmlFor="established">{translation['establishment-date']}</Label>
                 <Input
                   id="established"
                   type="date"
-                  name="established"
+                  name={translation['established']}
                   value={info?.mosqueInfo?.established}
                   onChange={mosqueInfoHandleChangeFunc}
                 />
@@ -228,11 +259,11 @@ const MosqueRegistrationForm = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">
-                  Phone Number <span className=" text-red-600">*</span>{' '}
+                  {translation['phone-number']} <span className=" text-red-600">*</span>{' '}
                 </Label>
                 <Input
                   id="phone"
-                  placeholder="Enter phone number"
+                  placeholder={translation['enter-phone-number']}
                   name="phone"
                   value={info?.mosqueInfo?.phone}
                   onChange={mosqueInfoHandleChangeFunc}
@@ -243,12 +274,12 @@ const MosqueRegistrationForm = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">
-                  Email <span className=" text-red-600">*</span>
+                  {translation['email']} <span className=" text-red-600">*</span>
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter email"
+                  placeholder={translation['enter-email']}
                   name="email"
                   value={info?.mosqueInfo?.email}
                   onChange={mosqueInfoHandleChangeFunc}
@@ -258,10 +289,10 @@ const MosqueRegistrationForm = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website">{translation['website']}</Label>
                 <Input
                   id="website"
-                  placeholder="Enter website URL"
+                  placeholder={translation['enter-website-url']}
                   name="website"
                   value={info?.mosqueInfo?.website}
                   onChange={mosqueInfoHandleChangeFunc}
@@ -277,17 +308,17 @@ const MosqueRegistrationForm = () => {
         {/* Address Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Address Information</CardTitle>
+            <CardTitle>{translation['address-information']}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="street">
-                  Street Address <span className=" text-red-600">*</span>
+                  {translation['street-address']} <span className="text-red-600">*</span>
                 </Label>
                 <Input
                   id="street"
-                  placeholder="Enter street address"
+                  placeholder={translation['enter-street-address']}
                   value={info?.address?.street}
                   onChange={(e) => addressHandleChangeFunc(e, 'street')}
                 />
@@ -297,12 +328,12 @@ const MosqueRegistrationForm = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="country">
-                  Country <span className=" text-red-600">*</span>
+                  {translation['country']} <span className="text-red-600">*</span>
                 </Label>
                 <Select onValueChange={(e) => addressHandleChangeFunc(e, 'country')}>
-                  <SelectTrigger className=" bg-transparent">
+                  <SelectTrigger className="bg-transparent">
                     <SelectValue
-                      placeholder="Select country"
+                      placeholder={translation['select-country']}
                       value={info?.address?.countryCode + '+' + info?.address?.country}
                     />
                   </SelectTrigger>
@@ -326,15 +357,15 @@ const MosqueRegistrationForm = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="state">
-                  State/Province <span className=" text-red-600">*</span>
+                  {translation['state/province']} <span className="text-red-600">*</span>
                 </Label>
                 <Select
                   onValueChange={(e) => addressHandleChangeFunc(e, 'state')}
                   disabled={info?.address?.country ? false : true}
                 >
-                  <SelectTrigger className=" bg-transparent">
+                  <SelectTrigger className="bg-transparent">
                     <SelectValue
-                      placeholder="Select state"
+                      placeholder={translation['select-state']}
                       value={info?.address?.stateCode + info?.address?.state}
                     />
                   </SelectTrigger>
@@ -357,15 +388,18 @@ const MosqueRegistrationForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="state">
-                  City <span className=" text-red-600">*</span>
+                <Label htmlFor="city">
+                  {translation['city']} <span className="text-red-600">*</span>
                 </Label>
                 <Select
                   onValueChange={(e) => addressHandleChangeFunc(e, 'city')}
                   disabled={info?.address?.state ? false : true}
                 >
                   <SelectTrigger className="bg-transparent">
-                    <SelectValue placeholder="Select City" value={info?.address?.city} />
+                    <SelectValue
+                      placeholder={translation['select-city']}
+                      value={info?.address?.city}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
@@ -380,18 +414,18 @@ const MosqueRegistrationForm = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {error?.address?.street && (
+                {error?.address?.city && (
                   <span className="text-red-600 text-[10px]">{error?.address?.city}</span>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="postalCode">
-                  Postal Code <span className=" text-red-600">*</span>
+                  {translation['postal-code']} <span className="text-red-600">*</span>
                 </Label>
                 <Input
                   id="postalCode"
-                  placeholder="Enter postal code"
+                  placeholder={translation['enter-postal-code']}
                   name="postalCode"
                   value={info?.address?.postalCode}
                   onChange={(e) => addressHandleChangeFunc(e, 'postalCode')}
@@ -407,17 +441,25 @@ const MosqueRegistrationForm = () => {
         {/* Capacity Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Capacity Information</CardTitle>
+            <CardTitle>{translation['capacity-information']}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="regularCapacity">Regular Capacity</Label>
-                <Input id="regularCapacity" type="number" placeholder="Enter regular capacity" />
+                <Label htmlFor="regularCapacity">{translation['regular-capacity']}</Label>
+                <Input
+                  id="regularCapacity"
+                  type="number"
+                  placeholder={translation['enter-regular-capacity']}
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="fridayCapacity">Friday Capacity</Label>
-                <Input id="fridayCapacity" type="number" placeholder="Enter Friday capacity" />
+                <Label htmlFor="fridayCapacity">{translation['friday-capacity']}</Label>
+                <Input
+                  id="fridayCapacity"
+                  type="number"
+                  placeholder={translation['enter-friday-capacity']}
+                />
               </div>
             </div>
           </CardContent>
@@ -426,17 +468,17 @@ const MosqueRegistrationForm = () => {
         {/* Admin Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Administrator Information</CardTitle>
+            <CardTitle>{translation['administrator-information']}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="adminName">
-                  Name <span className=" text-red-600">*</span>
+                  {translation['name']} <span className="text-red-600">*</span>
                 </Label>
                 <Input
                   id="adminName"
-                  placeholder="Enter your name"
+                  placeholder={translation['enter-your-name']}
                   name="name"
                   value={info?.administrator?.name || ''}
                   onChange={administratorsChangeHandler}
@@ -447,12 +489,12 @@ const MosqueRegistrationForm = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="adminEmail">
-                  Email <span className=" text-red-600">*</span>
+                  {translation['email']} <span className="text-red-600">*</span>
                 </Label>
                 <Input
                   id="adminEmail"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={translation['enter-email']}
                   name="email"
                   value={info?.administrator?.email || ''}
                   onChange={administratorsChangeHandler}
@@ -463,12 +505,12 @@ const MosqueRegistrationForm = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="adminPassword">
-                  Password <span className=" text-red-600">*</span>
+                  {translation['password']} <span className="text-red-600">*</span>
                 </Label>
                 <Input
                   id="adminPassword"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={translation['enter-your-password']}
                   name="password"
                   value={info?.administrator?.password || ''}
                   onChange={administratorsChangeHandler}
@@ -478,13 +520,13 @@ const MosqueRegistrationForm = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="adminPassword">
-                  Phone <span className=" text-red-600">*</span>
+                <Label htmlFor="adminPhone">
+                  {translation['phone']} <span className="text-red-600">*</span>
                 </Label>
                 <Input
                   id="adminPhone"
                   type="phone"
-                  placeholder="Enter your Phone"
+                  placeholder={translation['enter-your-phone']}
                   name="phone"
                   value={info?.administrator?.phone || ''}
                   onChange={administratorsChangeHandler}
@@ -500,14 +542,14 @@ const MosqueRegistrationForm = () => {
         {/* Facilities */}
         <Card>
           <CardHeader>
-            <CardTitle>Facilities</CardTitle>
+            <CardTitle>{translation['facilities']}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {facilities.map((facility) => (
                 <div key={facility.id} className="flex items-center space-x-2">
                   <Checkbox id={facility.id} />
-                  <Label htmlFor={facility.id}>{facility.label}</Label>
+                  <Label htmlFor={facility.id}>{translation[facility.label]}</Label>
                 </div>
               ))}
             </div>
@@ -517,28 +559,40 @@ const MosqueRegistrationForm = () => {
         {/* Prayer Times */}
         <Card>
           <CardHeader>
-            <CardTitle>Prayer Times</CardTitle>
+            <CardTitle>{translation['timings']}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              {['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Jumma'].map((prayer) => (
+              {Object.keys(info.timings).map((prayer) => (
                 <div key={prayer}>
-                  <h3 className="text-lg font-semibold mb-4">
+                  <h3 className="text-lg font-semibold mb-4 capitalize">
                     {prayer} <span className=" text-red-600">*</span>
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor={`${prayer.toLowerCase()}-azaan`}>Azaan Time</Label>
-                      <Input id={`${prayer.toLowerCase()}-azaan`} type="time" />
+                      <Label htmlFor={`${prayer.toLowerCase()}-azaan`}>
+                        {translation['azaan-time']}
+                      </Label>
+                      <Input
+                        id={`${prayer.toLowerCase()}-azaan`}
+                        type="time"
+                        value={info?.timings?.[prayer]?.azaan}
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor={`${prayer.toLowerCase()}-jamaat`}>Jamaat Time</Label>
-                      <Input id={`${prayer.toLowerCase()}-jamaat`} type="time" />
+                      <Label htmlFor={`${prayer.toLowerCase()}-jamaat`}>
+                        {translation['jamaat-time']}
+                      </Label>
+                      <Input
+                        id={`${prayer.toLowerCase()}-jamaat`}
+                        type="time"
+                        value={info?.timings?.[prayer]?.jamaat}
+                      />
                     </div>
-                    {prayer === 'Jumma' && (
+                    {prayer === 'jumma' && (
                       <div className="space-y-2">
-                        <Label htmlFor="qutba">Qutba Time</Label>
-                        <Input id="qutba" type="time" />
+                        <Label htmlFor="qutba">{translation['qutba-time']}</Label>
+                        <Input id="qutba" type="time" value={info?.timings?.[prayer]?.qutba} />
                       </div>
                     )}
                   </div>
@@ -551,7 +605,7 @@ const MosqueRegistrationForm = () => {
         {/* Submit Button */}
         <div className="flex justify-end">
           <Button type="submit" className="w-full md:w-auto">
-            Register Mosque
+            {translation['register-mosque']}
           </Button>
         </div>
       </form>

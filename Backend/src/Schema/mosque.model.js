@@ -103,7 +103,7 @@ const ModelSchema = new mongoose.Schema(
         },
       },
     ],
-    prayerTimes: {
+    timings: {
       fajr: {
         azaan: String,
         jamaat: String,
