@@ -40,11 +40,11 @@ const Welcome = () => {
       </h1>
 
       <div className="flex gap-3">
-        <h1 className=" text-md text-center  ">
+        {/* <h1 className=" text-md text-center  ">
           {t('home.welcome')}
           <br />
           {t('home.masjidname')}
-        </h1>
+        </h1> */}
 
         <Select onValueChange={changeTranslation}>
           <SelectTrigger className="w-22 bg-transparent">
@@ -53,7 +53,9 @@ const Welcome = () => {
           <SelectContent>
             <SelectGroup>
               {languagesItems?.map(({ value, label }) => (
-                <SelectItem value={value}>{label}</SelectItem>
+                <SelectItem value={value} key={label}>
+                  {label}
+                </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>

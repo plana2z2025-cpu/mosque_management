@@ -62,6 +62,14 @@ const checkSlugAvailabilityAction = async (json) => {
   return response;
 };
 
+const registerMosqueAction = async (json) => {
+  const response = await Service.fetchPost(
+    `${API.MOSQUE_TYPES.MOSQUE}${API.MOSQUE_TYPES.CREATE_MOSQUE}`,
+    json
+  );
+  return response;
+};
+
 const clearMosqueErrorsAction = () => (dispatch) => {
   dispatch({
     type: CLEAR_MOSQUE_ERRORS,
@@ -76,6 +84,7 @@ export default {
   getSuperAdminSingleMosqueAction,
   checkEmailAvailabilityAction,
   checkSlugAvailabilityAction,
+  registerMosqueAction,
   resetMosqueAction,
   clearMosqueErrorsAction,
 };

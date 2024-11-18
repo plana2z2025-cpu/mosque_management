@@ -19,12 +19,16 @@ const createNewMosqueValidation = celebrate({
         latitude: Joi.number().required(),
         longitude: Joi.number().required(),
       }),
-    }),
+    })
+      .required()
+      .label("address details is required"),
     contactInfo: Joi.object({
       phone: Joi.string().required(),
       email: Joi.string().email().required(),
       website: Joi.string().uri().optional(),
-    }),
+    })
+      .required()
+      .label("contactInfo details is required"),
     aboutInfo: Joi.object({
       established: Joi.date().optional(),
       capacity: Joi.object({
@@ -70,12 +74,17 @@ const createNewMosqueValidation = celebrate({
         jamaat: Joi.string().required(),
         qutba: Joi.string().required(),
       }).required(),
-    }),
+    })
+      .required()
+      .label("timing details is required"),
     user: Joi.object({
       name: Joi.string().required().label("name"),
       email: Joi.string().email().required().label("email"),
+      phone: Joi.string().required(),
       password: passwordComplexity().required().label("password"),
-    }),
+    })
+      .required()
+      .label("user  details is required"),
   }),
 });
 

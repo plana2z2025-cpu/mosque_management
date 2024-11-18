@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-// import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-// import { ScrollArea } from '@/components/ui/scroll-area';
 import { Country, State, City } from 'country-state-city';
 import {
   Select,
@@ -19,6 +17,7 @@ import validator from 'validator';
 import slugify from 'slugify';
 import { useTranslation } from 'react-i18next';
 import { mosqueActions } from '../../../redux/combineActions';
+import toast from 'react-hot-toast';
 
 const facilities = [
   { id: 'parking', label: 'Parking' },
@@ -35,7 +34,8 @@ const MosqueRegistrationForm = () => {
   const { t } = useTranslation();
   const translation = t('registration');
 
-  const { checkEmailAvailabilityAction, checkSlugAvailabilityAction } = mosqueActions;
+  const { checkEmailAvailabilityAction, checkSlugAvailabilityAction, registerMosqueAction } =
+    mosqueActions;
 
   const [info, setInfo] = useState({
     address: {
@@ -46,6 +46,10 @@ const MosqueRegistrationForm = () => {
       country: '',
       countryCode: '',
       postalCode: '',
+      coordinates: {
+        latitude: null,
+        longitude: null,
+      },
     },
     administrator: {
       name: '',
@@ -55,12 +59,18 @@ const MosqueRegistrationForm = () => {
     },
     mosqueInfo: {
       name: '',
-      established: '',
       phone: '',
       email: '',
       website: '',
       slug: '',
       slugName: '',
+    },
+    aboutInfo: {
+      established: '',
+      capacity: {
+        regular: 0,
+        friday: 0,
+      },
     },
     timings: {
       fajr: {
@@ -96,19 +106,13 @@ const MosqueRegistrationForm = () => {
     isEmailAvailable: null,
   });
 
-  // useEffect(() => {
-  //   if (info?.mosqueInfo?.slug) {
-  //     handleDebounceSearch(info?.mosqueInfo?.slug, 'slug');
-  //   }
-  // }, [info?.mosqueInfo?.slug]);
-
   const validateField = (section, key, value) => {
     const validateRules = {
       address: {
-        street: () => (value.trim() === '' ? 'Street is required' : null),
-        city: () => (value.trim() === '' ? 'City is required' : null),
-        stateCode: () => (value.trim() === '' ? 'State is required' : null),
-        countryCode: () => (value.trim() === '' ? 'Country is required' : null),
+        street: () => (value?.trim() === '' ? 'Street is required' : null),
+        city: () => (value?.trim() === '' ? 'City is required' : null),
+        stateCode: () => (value?.trim() === '' ? 'State is required' : null),
+        countryCode: () => (value?.trim() === '' ? 'Country is required' : null),
         postalCode: () => (!validator.isPostalCode(value, 'any') ? 'Invalid postal code' : null),
       },
       administrator: {
@@ -120,15 +124,17 @@ const MosqueRegistrationForm = () => {
       mosqueInfo: {
         name: () => (value.trim() === '' ? 'Mosque name is required' : null),
         slug: () => (value.trim() === '' ? 'Slug is required' : null),
+        phone: () => (!validator.isMobilePhone(value, 'any') ? 'Invalid phone number' : null),
+        email: () => (!validator.isEmail(value) ? 'Invalid email address' : null),
+        website: () => (value !== '' && !validator.isURL(value) ? 'Invalid website URL' : null),
+      },
+      aboutInfo: {
         established: () =>
           value.trim() === ''
             ? null
             : !validator.isDate(value, 'YYYY-MM-DD')
               ? 'Invalid date'
               : null,
-        phone: () => (!validator.isMobilePhone(value, 'any') ? 'Invalid phone number' : null),
-        email: () => (!validator.isEmail(value) ? 'Invalid email address' : null),
-        website: () => (value !== '' && !validator.isURL(value) ? 'Invalid website URL' : null),
       },
     };
 
@@ -142,7 +148,6 @@ const MosqueRegistrationForm = () => {
     Object.keys(info).forEach((section) => {
       Object.keys(info[section]).forEach((property) => {
         const error = validateField(section, property, info?.[section]?.[property]);
-        console.log(error);
         if (error) {
           newErrors[section]
             ? (newErrors[section][property] = error)
@@ -151,7 +156,6 @@ const MosqueRegistrationForm = () => {
       });
     });
 
-    console.log(newErrors);
     setError(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -182,13 +186,32 @@ const MosqueRegistrationForm = () => {
     }));
   };
 
+  const aboutInfoHandlerChangeFunc = (e) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+    const updateData = {
+      capacity: { ...info?.aboutInfo?.capacity },
+    };
+    if (name === 'regular') {
+      updateData.capacity.regular = value || 0;
+    } else if (name === 'friday') {
+      updateData.capacity.friday = value || 0;
+    } else {
+      updateData[name] = value;
+    }
+    setInfo((prev) => ({ ...prev, aboutInfo: { ...prev.aboutInfo, ...updateData } }));
+  };
+
   const addressHandleChangeFunc = (e, name) => {
     const updateData = {};
-    console.log(e);
     if (name === 'city') {
-      updateData[name] = e;
-    }
-    if (name == 'country' || name === 'state') {
+      const [cityName, latitude, longitude] = e.split('+');
+      updateData.city = cityName;
+      updateData.coordinates = {
+        latitude,
+        longitude,
+      };
+    } else if (name == 'country' || name === 'state') {
       updateData[name] = e.split('+')[1];
       updateData[name + 'Code'] = e.split('+')[0];
     } else {
@@ -270,18 +293,52 @@ const MosqueRegistrationForm = () => {
     setDebounceState((prev) => ({ ...prev, ...data }));
   };
 
-  const submitFormHandler = (e) => {
+  const submitFormHandler = async (e) => {
     e.preventDefault();
     let allValues = Object.values(error).flatMap((value) => Object.values(value));
-    console.log(allValues);
 
     if (allValues.length !== 0 && allValues.every((item) => item !== null)) {
       return;
     }
 
-    console.log('called avlakjf');
     const havingErrors = validateAllErrors();
-    if (!havingErrors) return;
+    if (!havingErrors) {
+      const element = document.getElementById('registration-form');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      return;
+    }
+
+    const json = {
+      name: info?.mosqueInfo?.name,
+      slug: info?.mosqueInfo?.slug,
+      address: info?.address,
+      contactInfo: {
+        phone: info?.mosqueInfo?.phone,
+        email: info?.mosqueInfo?.email,
+      },
+      user: info?.administrator,
+      aboutInfo: {
+        capacity: info?.aboutInfo?.capacity,
+      },
+      timings: info?.timings,
+    };
+
+    if (info?.mosqueInfo?.website) {
+      json.contactInfo.website = info?.mosqueInfo?.website;
+    }
+    if (info?.aboutInfo?.established) {
+      json.aboutInfo.established = info?.aboutInfo?.established;
+    }
+
+    const response = await registerMosqueAction(json);
+    if (response[0] === 201) {
+      toast.success('Successfully Mosque is Registered');
+    } else {
+      toast.error(response[1]?.message);
+    }
   };
 
   return (
@@ -289,7 +346,7 @@ const MosqueRegistrationForm = () => {
       <h1 className=" text-center text-3xl font-bold my-4">
         {translation['mosque-registration-form']}
       </h1>
-      <form className="space-y-8" onSubmit={submitFormHandler}>
+      <form className="space-y-8" onSubmit={submitFormHandler} id="registration-form">
         {/* Basic Mosque Information */}
         <Card className="w-full">
           <CardHeader>
@@ -337,9 +394,10 @@ const MosqueRegistrationForm = () => {
                 <Input
                   id="established"
                   type="date"
-                  name={translation['established']}
+                  placeholder={translation['established']}
+                  name="established"
                   value={info?.mosqueInfo?.established}
-                  onChange={mosqueInfoHandleChangeFunc}
+                  onChange={aboutInfoHandlerChangeFunc}
                 />
                 {error?.mosqueInfo?.established && (
                   <span className="text-red-600 text-[10px]">{error?.mosqueInfo?.established}</span>
@@ -495,7 +553,16 @@ const MosqueRegistrationForm = () => {
                         info?.address?.countryCode,
                         info?.address?.stateCode
                       )?.map((singleCity) => (
-                        <SelectItem value={singleCity?.name} key={singleCity?.name}>
+                        <SelectItem
+                          value={
+                            singleCity?.name +
+                            '+' +
+                            singleCity?.latitude +
+                            '+' +
+                            singleCity?.longitude
+                          }
+                          key={singleCity?.name}
+                        >
                           {singleCity?.name}
                         </SelectItem>
                       ))}
@@ -538,7 +605,10 @@ const MosqueRegistrationForm = () => {
                 <Input
                   id="regularCapacity"
                   type="number"
+                  name="regular"
+                  value={info?.aboutInfo?.capacity?.regular}
                   placeholder={translation['enter-regular-capacity']}
+                  onChange={aboutInfoHandlerChangeFunc}
                 />
               </div>
               <div className="space-y-2">
@@ -546,7 +616,10 @@ const MosqueRegistrationForm = () => {
                 <Input
                   id="fridayCapacity"
                   type="number"
+                  name="friday"
+                  value={info?.aboutInfo?.capacity?.friday}
                   placeholder={translation['enter-friday-capacity']}
+                  onChange={aboutInfoHandlerChangeFunc}
                 />
               </div>
             </div>
@@ -703,4 +776,4 @@ const MosqueRegistrationForm = () => {
   );
 };
 
-export default MosqueRegistrationForm;
+export default memo(MosqueRegistrationForm);
