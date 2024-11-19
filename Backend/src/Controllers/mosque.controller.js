@@ -9,6 +9,9 @@ const CommonService = require("../Services/common.service");
 const mosqueModel = require("../Schema/mosque.model");
 const sortConstants = require("../Constants/sort.constants");
 const { MEMBER } = require("../Constants/roles.constants");
+const {
+  newRegistrationMosqueWebhook,
+} = require("../hooks/registration.webhook");
 
 const createNewMosqueController = async (req, res, next) => {
   try {
@@ -49,7 +52,7 @@ const createNewMosqueController = async (req, res, next) => {
       administrators: [{ user: userExist._id, isOwner: true }],
       createdOn: moment().unix(),
     });
-
+    await newRegistrationMosqueWebhook(newMosque);
     logger.info("Controller-mosque.controller-createNewMosqueController-End");
     res.status(201).json({
       success: true,

@@ -308,6 +308,8 @@ const MosqueRegistrationForm = () => {
         element.scrollIntoView({ behavior: 'smooth' });
       }
 
+      toast.error('please enter the required fields');
+
       return;
     }
 
@@ -342,7 +344,7 @@ const MosqueRegistrationForm = () => {
   };
 
   return (
-    <div className="  w-[90%] m-auto py-6 px-4 ">
+    <div className="w-[90%] m-auto py-6 px-4 ">
       <h1 className=" text-center text-3xl font-bold my-4">
         {translation['mosque-registration-form']}
       </h1>

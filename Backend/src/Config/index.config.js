@@ -10,4 +10,7 @@ module.exports = {
   ACCESS_TOKEN_KEY: process.env.ACCESS_TOKEN_KEY,
   ACCESS_TOKEN_KEY_TIME: process.env.ACCESS_TOKEN_KEY_TIME,
   CORS_ALLOW_ORIGINS: process.env.ALLOW_ORIGINS_ACCESS,
+
+  // webhooks
+  BARKAT_BOT_WEBHOOK: process.env.BARKAT_BOT_WEBHOOK,
 };
