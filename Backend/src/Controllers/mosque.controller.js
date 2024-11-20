@@ -8,7 +8,7 @@ const moment = require("moment");
 const CommonService = require("../Services/common.service");
 const mosqueModel = require("../Schema/mosque.model");
 const sortConstants = require("../Constants/sort.constants");
-const { MEMBER } = require("../Constants/roles.constants");
+const { MEMBER, ADMIN } = require("../Constants/roles.constants");
 const {
   newRegistrationMosqueWebhook,
 } = require("../hooks/registration.webhook");
@@ -34,10 +34,6 @@ const createNewMosqueController = async (req, res, next) => {
     if (userExist) {
       return next(httpErrors.BadRequest(USER_ALREADY_EXISTS));
     }
-    userExist = await userServiceClass.createUserDocument({
-      ...user,
-      role: MEMBER,
-    });
 
     // mosque creation logic
     const mosqueServiceClass = new MosqueServiceClass();
@@ -49,8 +45,13 @@ const createNewMosqueController = async (req, res, next) => {
       aboutInfo,
       facilities,
       timings,
-      administrators: [{ user: userExist._id, isOwner: true }],
       createdOn: moment().unix(),
+    });
+
+    userExist = await userServiceClass.createUserDocument({
+      ...user,
+      role: ADMIN,
+      mosque_admin: newMosque._id,
     });
     await newRegistrationMosqueWebhook(newMosque);
     logger.info("Controller-mosque.controller-createNewMosqueController-End");
@@ -197,10 +198,32 @@ const getSingleMosqueDetailController = async (req, res, next) => {
   }
 };
 
+// -----------------------------------------------------------------------------
+// __TYPE__ : ROOT => ADMIN,MOSQUE-USERS
+// -----------------------------------------------------------------------------
+const getCommunityMosqueDetailsController = async (req, res, next) => {
+  try {
+    logger.info("Controller-mosque.controller-getCommunityMosqueDetails-Start");
+    const data = await mosqueModel.findById(req.mosqueId);
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      data,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-getCommunityMosqueDetails-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
 module.exports = {
   createNewMosqueController,
   getMosquesListController,
   getSingleMosqueDetailController,
   createMosqueEmailValidateController,
   createMosqueSlugValidateController,
+  getCommunityMosqueDetailsController,
 };

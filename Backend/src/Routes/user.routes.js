@@ -13,7 +13,7 @@ const {
 const UserRoutes = express.Router();
 
 UserRoutes.route("/login").post(LoginUserValidation, LoginUserController);
-UserRoutes.route("/register").post(RegisterUserValidation, RegisterController);
+// UserRoutes.route("/register").post(RegisterUserValidation, RegisterController);
 UserRoutes.route("/profile").get(Authentication, MyProfileController);
 
 module.exports = UserRoutes;

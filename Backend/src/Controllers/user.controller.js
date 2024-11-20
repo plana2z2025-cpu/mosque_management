@@ -27,7 +27,7 @@ const LoginUserController = async (req, res, next) => {
       return next(httpErrors.BadRequest(USER_CONSTANTS.INVALID_EMAIL_PASSWORD));
 
     delete userExist.password;
-    const token = await CreateAccessToken(userExist._id);
+    const token = await CreateAccessToken(userExist._id, "ROOT");
 
     res.status(200).send({
       success: true,

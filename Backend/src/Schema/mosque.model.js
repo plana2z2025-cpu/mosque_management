@@ -1,5 +1,5 @@
-const { required } = require("joi");
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -92,15 +92,8 @@ const ModelSchema = new mongoose.Schema(
     ],
     administrators: [
       {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "user",
-          required: true,
-        },
-        isOwner: {
-          type: Boolean,
-          default: false,
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
       },
     ],
     timings: {
@@ -144,9 +137,25 @@ const ModelSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    uniqueId: {
+      type: String,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
+
+ModelSchema.pre("save", function (next) {
+  if (!this.uniqueId) {
+    const randomStr = crypto
+      .randomBytes(2)
+      .toString("hex")
+      .toUpperCase()
+      .slice(0, 4);
+    this.uniqueId = `${this.address.countryCode.toUpperCase()}${this.address.stateCode.toUpperCase()}_${randomStr}`;
+  }
+  next();
+});
 
 const mosqueModel = mongoose.model("mosque", ModelSchema);
 

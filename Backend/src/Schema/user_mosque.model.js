@@ -1,11 +1,5 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const {
-  SUPPER_ADMIN,
-  USER,
-  MEMBER,
-  ADMIN,
-} = require("../Constants/roles.constants");
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -13,28 +7,27 @@ const ModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     password: {
       type: String,
-      required: true,
       select: false,
     },
-    role: {
-      type: String,
-      default: USER,
-      enum: [SUPPER_ADMIN, ADMIN, MEMBER, USER],
+    rootUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
     },
-    mosque_admin: {
+    mosqueId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "mosque",
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
+    mosqueUniqueId: {
+      type: String,
+      required: true,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
     },
   },
   { timestamps: true }
@@ -47,6 +40,6 @@ ModelSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-const userModel = mongoose.model("user", ModelSchema);
+const userMosqueModel = mongoose.model("user_mosque", ModelSchema);
 
-module.exports = userModel;
+module.exports = userMosqueModel;
