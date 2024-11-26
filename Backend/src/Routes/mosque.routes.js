@@ -16,6 +16,7 @@ const {
   createMosqueEmailValidateController,
   createMosqueSlugValidateController,
   getCommunityMosqueDetailsController,
+  updateCommunityMosqueDetailsController,
 } = require("../Controllers/mosque.controller");
 const ValidateObjectId = require("../Middlewares/validateObjectid.middleware");
 const mosqueValidations = require("../validators/mosque.joi");
@@ -50,11 +51,19 @@ MosqueRoutes.route("/mosques/:slug").get(
 // -----------------------------------------------------------------------------
 // __TYPE__ : ROOT => ADMIN,MOSQUE-USERS
 // -----------------------------------------------------------------------------
-MosqueRoutes.route("/community/mosque-detail").get(
-  Authentication,
-  Authorization(ADMIN),
-  CheckMosqueAccess,
-  getCommunityMosqueDetailsController
-);
+MosqueRoutes.route("/community/mosque-detail")
+  .get(
+    Authentication,
+    Authorization(ADMIN),
+    CheckMosqueAccess,
+    getCommunityMosqueDetailsController
+  )
+  .put(
+    Authentication,
+    Authorization(ADMIN),
+    CheckMosqueAccess,
+    mosqueValidations.updateMosqueDetailsValidation,
+    updateCommunityMosqueDetailsController
+  );
 
 module.exports = MosqueRoutes;

@@ -35,6 +35,11 @@ const createNewMosqueController = async (req, res, next) => {
       return next(httpErrors.BadRequest(USER_ALREADY_EXISTS));
     }
 
+    const isSlugPresent = await mosqueModel.findOne({ slug });
+    if (isSlugPresent) {
+      return next(httpErrors.BadRequest(MOSQUE_CONSTANTS.SLUG_NOT_PRESENT));
+    }
+
     // mosque creation logic
     const mosqueServiceClass = new MosqueServiceClass();
     const newMosque = await mosqueServiceClass.createMosqueDocument({
@@ -219,6 +224,39 @@ const getCommunityMosqueDetailsController = async (req, res, next) => {
   }
 };
 
+const updateCommunityMosqueDetailsController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller-mosque.controller-updateCommunityMosqueDetailsController-Start"
+    );
+
+    const details = req.body;
+    const isSlugPresent = await mosqueModel.findOne({ slug });
+    if (isSlugPresent) {
+      return next(httpErrors.BadRequest(MOSQUE_CONSTANTS.SLUG_NOT_PRESENT));
+    }
+
+    const updatedDetails = await mosqueModel
+      .findByIdAndUpdate(req.mosqueId, details, { new: true })
+      .lean();
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      details: updatedDetails,
+    });
+
+    logger.info(
+      "Controller-mosque.controller-updateCommunityMosqueDetailsController-Error"
+    );
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-updateCommunityMosqueDetailsController-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
 module.exports = {
   createNewMosqueController,
   getMosquesListController,
@@ -226,4 +264,5 @@ module.exports = {
   createMosqueEmailValidateController,
   createMosqueSlugValidateController,
   getCommunityMosqueDetailsController,
+  updateCommunityMosqueDetailsController,
 };

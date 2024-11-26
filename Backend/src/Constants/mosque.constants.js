@@ -5,4 +5,5 @@ module.exports = {
 
   // error constants
   MOSQUE_NOT_FOUND: "Mosque not found",
+  SLUG_NOT_PRESENT: "Slug is not available",
 };

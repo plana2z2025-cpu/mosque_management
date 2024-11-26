@@ -3,6 +3,10 @@ const crypto = require("crypto");
 
 const ModelSchema = new mongoose.Schema(
   {
+    uniqueId: {
+      type: String,
+      unique: true,
+    },
     name: {
       type: String,
       required: true,
@@ -93,7 +97,7 @@ const ModelSchema = new mongoose.Schema(
     administrators: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: "user_mosque",
       },
     ],
     timings: {
@@ -136,10 +140,6 @@ const ModelSchema = new mongoose.Schema(
     createdOn: {
       type: Number,
       required: true,
-    },
-    uniqueId: {
-      type: String,
-      unique: true,
     },
   },
   { timestamps: true }

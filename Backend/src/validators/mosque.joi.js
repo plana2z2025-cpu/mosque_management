@@ -102,8 +102,59 @@ const createMosqueSlugValidation = celebrate({
   }),
 });
 
+const updateMosqueDetailsValidation = celebrate({
+  body: Joi.object({
+    name: Joi.string().optional(),
+    // slug :Joi.string().
+    address: Joi.object({
+      street: Joi.string().optional(),
+      city: Joi.string().optional(),
+      state: Joi.string().optional(),
+      stateCode: Joi.string().optional(),
+      country: Joi.string().optional(),
+      countryCode: Joi.string().optional(),
+      postalCode: Joi.string().optional(),
+      coordinates: Joi.object({
+        latitude: Joi.number().optional(),
+        longitude: Joi.number().optional(),
+      }),
+    })
+      .optional()
+      .label("address details is required"),
+    contactInfo: Joi.object({
+      phone: Joi.string().optional(),
+      email: Joi.string().email().optional(),
+      website: Joi.string().uri().optional(),
+    })
+      .optional()
+      .label("contactInfo details is required"),
+    aboutInfo: Joi.object({
+      established: Joi.date().optional(),
+      capacity: Joi.object({
+        regular: Joi.number().optional(),
+        friday: Joi.number().optional(),
+      }),
+    }),
+    facilities: Joi.array().items(
+      Joi.string()
+        .valid(
+          "parking",
+          "wudu_area",
+          "women_section",
+          "wheelchair_access",
+          "funeral_service",
+          "marriage_hall",
+          "library",
+          "islamic_school"
+        )
+        .optional()
+    ),
+  }),
+});
+
 module.exports = {
   createNewMosqueValidation,
   createMosqueEmailValidation,
   createMosqueSlugValidation,
+  updateMosqueDetailsValidation,
 };
