@@ -89,9 +89,9 @@ const Login = () => {
   return (
     <>
       <div className="fullScreen">
-        <div className="w-full">
+        {/* <div className="w-full">
           <Welcome />
-        </div>
+        </div> */}
 
         <div
           className="flex items-center justify-center gap-4 "
