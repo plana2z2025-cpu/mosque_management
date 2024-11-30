@@ -17,7 +17,7 @@ const {
   getEventCategoryByIdController,
   getAllEventCategoriesController,
   updateEventCategoryController,
-} = require("../../Controllers/events/eventCategoryController");
+} = require("../../Controllers/events/eventCategory.controller");
 
 EventCategoryRoutes.route("/create-new-category").post(
   Authentication,

@@ -2,6 +2,7 @@ const logger = require("../../Config/logger.config");
 const eventCategoryModel = require("../../Schema/events/eventCategory.model");
 const httpErrors = require("http-errors");
 const CategoryConstant = require("../../Constants/event.constants");
+
 // Create new event category
 const createEventCategoryController = async (req, res, next) => {
   try {

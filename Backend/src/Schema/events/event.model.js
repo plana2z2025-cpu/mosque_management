@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ModelSchema = new mongoose.Schema(
   {
-    mosque: {
+    mosqueId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "mosque",
       required: true,
@@ -10,41 +10,25 @@ const ModelSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-      trim: true,
     },
     description: {
       type: String,
       required: true,
     },
     type: {
-      type: String,
-      enum: [
-        "lecture",
-        "seminar",
-        "workshop",
-        "conference",
-        "iftar",
-        "community_gathering",
-        "charity_event",
-        "youth_program",
-        "children_class",
-        "ramadan_program",
-        "eid_celebration",
-      ],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "eventcategory",
       required: true,
     },
-    startDateTime: {
+    startDate: {
       type: Date,
       required: true,
     },
-    endDateTime: {
+    endDate: {
       type: Date,
       required: true,
     },
-    location: {
-      type: String,
-      required: true,
-    },
+    location: String,
     speakers: [
       {
         name: {
@@ -57,6 +41,7 @@ const ModelSchema = new mongoose.Schema(
     ],
     targetAudience: {
       type: [String],
+      default: "men",
       enum: [
         "men",
         "women",
@@ -68,48 +53,30 @@ const ModelSchema = new mongoose.Schema(
         "all",
       ],
     },
-    languagesSupported: [
-      {
-        type: String,
-        enum: ["arabic", "english", "urdu", "spanish", "french", "other"],
-      },
-    ],
     contactInfo: {
       name: String,
-      email: {
-        type: String,
-        lowercase: true,
-        validate: {
-          validator: function (v) {
-            return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v);
-          },
-          message: "Please enter a valid email",
-        },
-      },
+      email: String,
       phone: String,
     },
-    isPublic: {
-      type: Boolean,
-      default: true,
-    },
-    coverImage: {
-      type: String,
-      validate: {
-        validator: function (v) {
-          return /^https?:\/\//.test(v);
-        },
-        message: "Cover image must be a valid URL",
-      },
-    },
+    coverImage: String,
     tags: [String],
     status: {
       type: String,
-      enum: ["draft", "published", "cancelled", "completed"],
+      enum: ["draft", "published", "cancelled"],
       default: "draft",
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      required: true,
+      refPath: "dynamicRef",
+    },
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "dynamicRef",
+    },
+    dynamicRef: {
+      type: String,
+      enum: ["user", "user_mosque"],
       required: true,
     },
   },
@@ -118,6 +85,6 @@ const ModelSchema = new mongoose.Schema(
   }
 );
 
-const eventModel = mongoose.model(ModelSchema);
+const eventModel = mongoose.model("event", ModelSchema);
 
-module.exports = mongoose.model("event", eventSchema);
+module.exports = eventModel;

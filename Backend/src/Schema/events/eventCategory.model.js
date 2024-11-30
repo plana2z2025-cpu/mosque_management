@@ -11,6 +11,17 @@ const mongoose = require("mongoose");
 //     'Charitable Initiatives',
 //     'Cultural Engagement',
 //     'Interfaith Dialogue'
+// "lecture",
+// "seminar",
+// "workshop",
+// "conference",
+// "iftar",
+// "community_gathering",
+// "charity_event",
+// "youth_program",
+// "children_class",
+// "ramadan_program",
+// "eid_celebration",
 //   ]
 const ModelSchema = new mongoose.Schema(
   {
