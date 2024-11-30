@@ -115,7 +115,7 @@ const createMosqueSlugValidateController = async (req, res, next) => {
 const getMosquesListController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-getMosquesListController-Start");
-    const { limit = 15, page = 1, sort = "-createdAt" } = req.query;
+    let { limit = 15, page = 1, sort = "-createdAt" } = req.query;
     const {
       name = null,
       city = null,
@@ -125,6 +125,9 @@ const getMosquesListController = async (req, res, next) => {
       facilities = null,
       active = null,
     } = req.query;
+
+    limit = Number(limit);
+    page = Number(page);
 
     const skip_docs = (page - 1) * limit;
 
@@ -153,10 +156,10 @@ const getMosquesListController = async (req, res, next) => {
       totalDocs,
       totalPages,
       docs,
-      currentPage: Number(page),
+      currentPage: page,
       hasNext,
       hasPrev,
-      limit: Number(limit),
+      limit,
     };
 
     logger.info("Controller-mosque.controller-getMosquesListController-End");

@@ -1,22 +1,22 @@
 const mongoose = require("mongoose");
 
+//   enum: [
+//     'Religious Education',
+//     'Community Services',
+//     'Youth Development',
+//     'Spiritual Growth',
+//     'Family Programs',
+//     'Social Welfare',
+//     'Islamic Studies',
+//     'Charitable Initiatives',
+//     'Cultural Engagement',
+//     'Interfaith Dialogue'
+//   ]
 const ModelSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
-      //   enum: [
-      //     'Religious Education',
-      //     'Community Services',
-      //     'Youth Development',
-      //     'Spiritual Growth',
-      //     'Family Programs',
-      //     'Social Welfare',
-      //     'Islamic Studies',
-      //     'Charitable Initiatives',
-      //     'Cultural Engagement',
-      //     'Interfaith Dialogue'
-      //   ]
     },
     description: {
       type: String,
@@ -27,6 +27,21 @@ const ModelSchema = new mongoose.Schema(
     mosqueId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "mosque",
+      required: true,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      refPath: "dynamicRef",
+    },
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "dynamicRef",
+    },
+    dynamicRef: {
+      type: String,
+      enum: ["user", "user_mosque"],
+      required: true,
     },
   },
 

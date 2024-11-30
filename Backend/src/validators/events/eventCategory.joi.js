@@ -15,9 +15,9 @@ const { celebrate, Segments } = require("celebrate");
 //    )
 const createEventCategory = celebrate({
   [Segments.BODY]: Joi.object({
-    name: Joi.string().required().label("Event Category Name"),
-    description: Joi.string().min(20).optional().label("Description"),
-    icon: Joi.string().uri().optional().label("Icon URL"),
+    name: Joi.string().required(),
+    description: Joi.string().min(20).optional(),
+    icon: Joi.string().uri().optional(),
   }),
 });
 

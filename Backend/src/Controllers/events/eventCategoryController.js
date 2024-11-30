@@ -21,6 +21,9 @@ const createEventCategoryController = async (req, res, next) => {
       name,
       description,
       icon,
+      mosqueId: req.mosqueId,
+      createdBy: req.user._id,
+      dynamicRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
     });
 
     const savedCategory = await newCategory.save();
@@ -43,66 +46,87 @@ const createEventCategoryController = async (req, res, next) => {
   }
 };
 
-// Get all event categories
-const getAllEventCategoriesController = async (req, res, next) => {
-  try {
-    logger.info(
-      "Controller - events - eventCategory - getAllEventCategoriesController - Start"
-    );
-    const { page = 1, limit = 10, search = "" } = req.query;
-
-    const query = search ? { name: { $regex: search, $options: "i" } } : {};
-
-    const categories = await eventCategoryModel
-      .find(query)
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .exec();
-
-    const total = await eventCategoryModel.countDocuments(query);
-    logger.info(
-      "Controller - events - eventCategory - getAllEventCategoriesController - Error"
-    );
-    res.status(200).json({
-      success: true,
-      total,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page,
-      data: categories,
-    });
-  } catch (error) {
-    logger.error(
-      "Controller - events - eventCategory - getAllEventCategoriesController - error",
-      error
-    );
-    next(httpErrors.InternalServerError(error));
-  }
-};
-
 // Get single event category by ID
 const getEventCategoryByIdController = async (req, res, next) => {
   try {
     logger.info(
       "Controller - events - eventCategory - getEventCategoryByIdController - Start"
     );
-    const category = await eventCategoryModel.findById(req.params.id);
+    const { categoryId } = req.params;
+    const category = await eventCategoryModel
+      .findById(categoryId)
+      .populate("createdBy", "name")
+      .populate("updatedBy", "name");
 
     if (!category) {
-      return res.status(404).json({
-        success: false,
-        message: "Event category not found",
-      });
+      return next(
+        httpErrors.NotFound(CategoryConstant.EVENT_CATEGORY_NOT_FOUND)
+      );
     }
     logger.info(
       "Controller - events - eventCategory - getEventCategoryByIdController - End"
     );
     res.status(200).json({
       success: true,
+      statusCode: 200,
       data: category,
     });
   } catch (error) {
     logger.error(
       "Controller - events - eventCategory - getEventCategoryByIdController - error",
+      error
+    );
+    next(httpErrors.InternalServerError(error));
+  }
+};
+
+// Get all event categories
+const getAllEventCategoriesController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller - events - eventCategory - getAllEventCategoriesController - Start"
+    );
+    let { page = 1, limit = 10, search = "" } = req.query;
+    page = Number(page);
+    limit = Number(limit);
+
+    const skip_docs = (page - 1) * limit;
+    const totalDocs = await eventCategoryModel.countDocuments();
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    const query = search ? { name: { $regex: search, $options: "i" } } : {};
+
+    const docs = await eventCategoryModel
+      .find(query)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .populate("createdBy", "name")
+      .populate("updatedBy", "name");
+
+    const hasNext = totalDocs > skip_docs + limit;
+    const hasPrev = page > 1;
+
+    const data = {
+      totalDocs,
+      totalPages,
+      docs,
+      currentPage: page,
+      hasNext,
+      hasPrev,
+      limit,
+    };
+
+    logger.info(
+      "Controller - events - eventCategory - getAllEventCategoriesController - Error"
+    );
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      data,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller - events - eventCategory - getAllEventCategoriesController - error",
       error
     );
     next(httpErrors.InternalServerError(error));
@@ -115,19 +139,20 @@ const updateEventCategoryController = async (req, res, next) => {
     logger.info(
       "Controller - events - eventCategory - updateEventCategoryController - Start"
     );
-    const { name, description, icon } = req.body;
+    const { categoryId } = req.params;
+    const details = { ...req.body };
+    details.updatedBy = req.user._id;
+    details.dynamicRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
 
-    const updatedCategory = await eventCategoryModel.findByIdAndUpdate(
-      req.params.id,
-      { name, description, icon },
-      { new: true, runValidators: true }
-    );
+    const updatedCategory = await eventCategoryModel
+      .findByIdAndUpdate(categoryId, details, { new: true })
+      .populate("createdBy", "name")
+      .populate("updatedBy", "name");
 
     if (!updatedCategory) {
-      return res.status(404).json({
-        success: false,
-        message: "Event category not found",
-      });
+      return next(
+        httpErrors.BadRequest(CategoryConstant.EVENT_CATEGORY_ALREADY_EXISTS)
+      );
     }
 
     logger.info(
@@ -135,6 +160,7 @@ const updateEventCategoryController = async (req, res, next) => {
     );
     res.status(200).json({
       success: true,
+      statusCode: 200,
       data: updatedCategory,
     });
   } catch (error) {
@@ -152,25 +178,16 @@ const deleteEventCategoryController = async (req, res, next) => {
     logger.info(
       "Controller - events - eventCategory - deleteEventCategoryController - Start"
     );
-    // Check if category is used in any events before deleting
-    const eventCount = await Event.countDocuments({ category: req.params.id });
-
-    if (eventCount > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Cannot delete category with associated events",
-      });
-    }
+    const { categoryId } = req.params;
 
     const deletedCategory = await eventCategoryModel.findByIdAndDelete(
-      req.params.id
+      categoryId
     );
 
     if (!deletedCategory) {
-      return res.status(404).json({
-        success: false,
-        message: "Event category not found",
-      });
+      return next(
+        httpErrors.NotFound(CategoryConstant.EVENT_CATEGORY_NOT_FOUND)
+      );
     }
 
     logger.info(
@@ -179,6 +196,7 @@ const deleteEventCategoryController = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      statusCode: true,
       message: "Event category deleted successfully",
     });
   } catch (error) {
