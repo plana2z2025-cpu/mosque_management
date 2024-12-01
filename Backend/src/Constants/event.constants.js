@@ -1,5 +1,8 @@
 module.exports = {
   // success
+  EVENT_CREATED: "Event created successfully",
+  EVENT_DELETED: "Event deleted successfully",
+  EVENT_UPDATED: "Event updated successfully",
   EVENT_CATEGORY_CREATED: "Event category created successfully",
   EVENT_CATEGORY_UPDATED: "Event category updated successfully",
   EVENT_CATEGORY_DELETED: "Event category deleted successfully",
@@ -8,6 +11,7 @@ module.exports = {
     "Event category details retrieved successfully",
 
   // Error Messages
+  EVENT_NOT_FOUND: "Event not found",
   EVENT_CATEGORY_ALREADY_EXISTS: "Event category already exists",
   EVENT_CATEGORY_NOT_FOUND: "Event category not found",
   EVENT_CATEGORY_INVALID_ID: "Invalid event category ID",

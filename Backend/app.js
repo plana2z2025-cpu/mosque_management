@@ -50,7 +50,7 @@ app.use("/api/v1", IndexRoutes);
 app.use("*", (req, res) => {
   res.status(500).json({
     success: false,
-    statusCode: 500,
+    statusCode: 404,
     url: req.baseUrl,
     type: req.method,
     message: "API not found",

@@ -43,16 +43,20 @@ const ModelSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      refPath: "dynamicRef",
+      refPath: "createdRef",
     },
-    updatedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      refPath: "dynamicRef",
-    },
-    dynamicRef: {
+    createdRef: {
       type: String,
       enum: ["user", "user_mosque"],
       required: true,
+    },
+    updatedRef: {
+      type: String,
+      enum: ["user", "user_mosque"],
+    },
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "updatedRef",
     },
   },
 

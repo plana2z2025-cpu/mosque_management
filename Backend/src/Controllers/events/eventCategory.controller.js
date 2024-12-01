@@ -14,7 +14,7 @@ const createEventCategoryController = async (req, res, next) => {
     const existingCategory = await eventCategoryModel.findOne({ name });
     if (existingCategory) {
       return next(
-        httpErrors.BadRequest(CategoryConstant.EVENT_CATEGORY_ALREADY_EXISTS)
+        httpErrors.BadRequest(CategoryConstant.EVENT_CATEGORY_NOT_FOUND)
       );
     }
 
@@ -24,7 +24,7 @@ const createEventCategoryController = async (req, res, next) => {
       icon,
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
-      dynamicRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
+      createdRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
     });
 
     const savedCategory = await newCategory.save();
@@ -143,7 +143,7 @@ const updateEventCategoryController = async (req, res, next) => {
     const { categoryId } = req.params;
     const details = { ...req.body };
     details.updatedBy = req.user._id;
-    details.dynamicRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
+    details.updatedRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
 
     const updatedCategory = await eventCategoryModel
       .findByIdAndUpdate(categoryId, details, { new: true })
