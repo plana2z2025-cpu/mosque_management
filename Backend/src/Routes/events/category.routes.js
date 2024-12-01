@@ -5,11 +5,7 @@ const {
   Authorization,
   CheckMosqueAccess,
 } = require("../../Middlewares/Auth.middleware");
-const {
-  SUPPER_ADMIN,
-  ADMIN,
-  SUB_USER,
-} = require("../../Constants/roles.constants");
+const { ADMIN, SUB_USER } = require("../../Constants/roles.constants");
 const categoryValidations = require("../../validators/events/eventCategory.joi");
 const {
   createEventCategoryController,

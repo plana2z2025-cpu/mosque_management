@@ -3,12 +3,12 @@ const {
   RegisterController,
   LoginUserController,
   MyProfileController,
-} = require("../Controllers/user.controller");
-const { Authentication } = require("../Middlewares/Auth.middleware");
+} = require("../../Controllers/users/user.controller");
+const { Authentication } = require("../../Middlewares/Auth.middleware");
 const {
   RegisterUserValidation,
   LoginUserValidation,
-} = require("../validators/user.joi");
+} = require("../../validators/user.joi");
 
 const UserRoutes = express.Router();
 

@@ -1,8 +1,9 @@
 const express = require("express");
-const UserRoutes = require("./user.routes");
+const UserRoutes = require("./users/user.routes");
 const MosqueRoutes = require("./mosque.routes");
 const EventRoutes = require("./events/event.routes");
 const EventCategoryRoutes = require("./events/category.routes");
+const SubUserRoutes = require("./users/subUser.routes");
 
 // Route config
 const IndexRoutes = express.Router();
@@ -10,6 +11,7 @@ const IndexRoutes = express.Router();
 //  user  routes
 // ----------------------------------------
 IndexRoutes.use("/user", UserRoutes);
+IndexRoutes.use("/user/sub-user", SubUserRoutes);
 
 // ----------------------------------------
 // Mosque routes
