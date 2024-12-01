@@ -17,6 +17,7 @@ const {
   getEventCategoryByIdController,
   getAllEventCategoriesController,
   updateEventCategoryController,
+  getAllEventsCategoryNamesController,
 } = require("../../Controllers/events/eventCategory.controller");
 
 EventCategoryRoutes.route("/create-new-category").post(
@@ -54,5 +55,12 @@ EventCategoryRoutes.route("/:categoryId")
     CheckMosqueAccess,
     deleteEventCategoryController
   );
+
+EventCategoryRoutes.route("/categories/all/names").get(
+  Authentication,
+  Authorization(ADMIN),
+  CheckMosqueAccess,
+  getAllEventsCategoryNamesController
+);
 
 module.exports = EventCategoryRoutes;

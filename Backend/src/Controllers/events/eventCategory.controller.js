@@ -210,10 +210,38 @@ const deleteEventCategoryController = async (req, res, next) => {
   }
 };
 
+// all category names
+const getAllEventsCategoryNamesController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller - events - getAllEventsCategoryNamesController - Start"
+    );
+    const categories = await eventCategoryModel
+      .find({ mosqueId: req.mosqueId })
+      .select("name")
+      .lean();
+    logger.info(
+      "Controller - events - getAllEventsCategoryNamesController - End"
+    );
+    res.status(200).json({
+      success: true,
+      statusCode: true,
+      data: categories,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller - events - getAllEventsCategoryNamesController - error",
+      error
+    );
+    next(httpErrors.InternalServerError(error));
+  }
+};
+
 module.exports = {
   createEventCategoryController,
   getAllEventCategoriesController,
   getEventCategoryByIdController,
   updateEventCategoryController,
   deleteEventCategoryController,
+  getAllEventsCategoryNamesController,
 };

@@ -48,7 +48,7 @@ app.use("/api/v1", IndexRoutes);
 //----------------------------------------
 // if no routes findout
 app.use("*", (req, res) => {
-  res.status(500).json({
+  res.status(404).json({
     success: false,
     statusCode: 404,
     url: req.baseUrl,
