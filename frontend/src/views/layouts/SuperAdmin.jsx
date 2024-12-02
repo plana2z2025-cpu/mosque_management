@@ -46,6 +46,7 @@ import {
 } from '@/components/ui/sidebar';
 import getInitials from '@/helpers/get-initials';
 import { Link } from 'react-router-dom';
+import useLogout from '@/hooks/useLogout';
 
 const data = {
   navMain: [
@@ -82,25 +83,6 @@ const data = {
       ],
     },
     {
-      title: 'Congregants',
-      url: '#',
-      icon: Users,
-      items: [
-        {
-          title: 'Member Management',
-          url: '#/congregants/management',
-        },
-        {
-          title: 'Family Records',
-          url: '#/congregants/families',
-        },
-        {
-          title: 'Attendance',
-          url: '#/congregants/attendance',
-        },
-      ],
-    },
-    {
       title: 'Programs & Events',
       url: '#',
       icon: Calendar,
@@ -120,68 +102,88 @@ const data = {
       ],
     },
     {
-      title: 'Financial Management',
+      title: 'Congregants',
       url: '#',
-      icon: DollarSign,
+      icon: Users,
       items: [
         {
-          title: 'Donations',
-          url: '#/finance/donations',
+          title: 'Member Management',
+          url: '#/congregants/management',
         },
         {
-          title: 'Zakat',
-          url: '#/finance/zakat',
+          title: 'Family Records',
+          url: '#/congregants/families',
         },
         {
-          title: 'Expense Tracking',
-          url: '#/finance/expenses',
-        },
-        {
-          title: 'Annual Budget',
-          url: '#/finance/budget',
+          title: 'Attendance',
+          url: '#/congregants/attendance',
         },
       ],
     },
-    {
-      title: 'Religious Resources',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Quran Classes',
-          url: '#/resources/quran',
-        },
-        {
-          title: 'Islamic Library',
-          url: '#/resources/library',
-        },
-        {
-          title: 'Fatwa & Guidance',
-          url: '#/resources/fatwa',
-        },
-      ],
-    },
+    // {
+    //   title: 'Financial Management',
+    //   url: '#',
+    //   icon: DollarSign,
+    //   items: [
+    //     {
+    //       title: 'Donations',
+    //       url: '#/finance/donations',
+    //     },
+    //     {
+    //       title: 'Zakat',
+    //       url: '#/finance/zakat',
+    //     },
+    //     {
+    //       title: 'Expense Tracking',
+    //       url: '#/finance/expenses',
+    //     },
+    //     {
+    //       title: 'Annual Budget',
+    //       url: '#/finance/budget',
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'Religious Resources',
+    //   url: '#',
+    //   icon: BookOpen,
+    //   items: [
+    //     {
+    //       title: 'Quran Classes',
+    //       url: '#/resources/quran',
+    //     },
+    //     {
+    //       title: 'Islamic Library',
+    //       url: '#/resources/library',
+    //     },
+    //     {
+    //       title: 'Fatwa & Guidance',
+    //       url: '#/resources/fatwa',
+    //     },
+    //   ],
+    // },
   ],
   quickAccess: [
-    {
-      name: 'Imam Management',
-      url: '#/staff/imams',
-      icon: UserCheck,
-    },
-    {
-      name: 'Facility Booking',
-      url: '#/facilities/booking',
-      icon: School,
-    },
-    {
-      name: 'Communication',
-      url: '#/communications',
-      icon: Bell,
-    },
+    // {
+    //   name: 'Imam Management',
+    //   url: '#/staff/imams',
+    //   icon: UserCheck,
+    // },
+    // {
+    //   name: 'Facility Booking',
+    //   url: '#/facilities/booking',
+    //   icon: School,
+    // },
+    // {
+    //   name: 'Communication',
+    //   url: '#/communications',
+    //   icon: Bell,
+    // },
   ],
 };
 
 const SuperAdminSidebar = ({ user, children }) => {
+  const logoutFunction = useLogout();
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
@@ -319,7 +321,7 @@ const SuperAdminSidebar = ({ user, children }) => {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => logoutFunction()}>
                     <LogOut />
                     Log out
                   </DropdownMenuItem>

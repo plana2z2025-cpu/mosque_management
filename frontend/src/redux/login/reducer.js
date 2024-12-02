@@ -5,6 +5,7 @@ const initialState = {
   error: null,
   statusCode: null,
   isLoginSuccess: null,
+  role: null,
 };
 
 export const LoginReducer = (state = initialState, action) => {
@@ -16,6 +17,7 @@ export const LoginReducer = (state = initialState, action) => {
     [USER_LOGIN.success]: () => ({
       ...state,
       isLoginSuccess: true,
+      role: action.payload,
     }),
 
     // errors,reset,default

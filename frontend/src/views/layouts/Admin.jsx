@@ -43,6 +43,7 @@ import {
   SidebarProvider,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import useLogout from '@/hooks/useLogout';
 
 const data = {
   user: {
@@ -103,6 +104,7 @@ const data = {
 };
 
 const AdminSidebar = ({ children }) => {
+  const logoutFunction = useLogout();
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
@@ -236,7 +238,7 @@ const AdminSidebar = ({ children }) => {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={logoutFunction}>
                     <LogOut />
                     Log out
                   </DropdownMenuItem>
