@@ -1,9 +1,9 @@
 const httpErrors = require("http-errors");
-const UserServiceClass = require("../Services/user.service");
-const USER_CONSTANTS = require("../Constants/user.constants");
-const logger = require("../Config/logger.config");
-const { VerifyPasswordMethod } = require("../Utils/verify.password");
-const { CreateAccessToken } = require("../Utils/jwt.token");
+const UserServiceClass = require("../../Services/user.service");
+const USER_CONSTANTS = require("../../Constants/user.constants");
+const logger = require("../../Config/logger.config");
+const { VerifyPasswordMethod } = require("../../Utils/verify.password");
+const { CreateAccessToken } = require("../../Utils/jwt.token");
 
 const LoginUserController = async (req, res, next) => {
   try {

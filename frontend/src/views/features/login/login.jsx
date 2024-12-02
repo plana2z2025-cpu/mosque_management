@@ -12,9 +12,10 @@ import toast from 'react-hot-toast';
 import validator from 'validator';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '@/hooks/useAuth';
+import { ADMIN, SUPPER_ADMIN } from '@/constants/roles.constants';
 
 const Login = () => {
-  const { loading, error, isLoginSuccess } = useSelector((state) => state.loginState);
+  const { loading, error, isLoginSuccess, role } = useSelector((state) => state.loginState);
   const { profileDetails } = useSelector((state) => state.userProfileState);
 
   const dispatch = useDispatch();
@@ -47,7 +48,8 @@ const Login = () => {
 
     if (isLoginSuccess) {
       dispatch(resetLoginAction());
-      navigate('/test');
+      if (role === SUPPER_ADMIN) navigate('/superadmin/mosques');
+      else if (role === ADMIN) navigate('/admin');
     }
   }, [error, isLoginSuccess]);
 

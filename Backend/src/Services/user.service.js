@@ -1,4 +1,4 @@
-const userModel = require("../Schema/user.model");
+const userModel = require("../Schema/users/user.model");
 
 class UserServiceClass {
   constructor() {

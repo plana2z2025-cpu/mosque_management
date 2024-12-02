@@ -115,7 +115,7 @@ const createMosqueSlugValidateController = async (req, res, next) => {
 const getMosquesListController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-getMosquesListController-Start");
-    const { limit = 15, page = 1, sort = "-createdAt" } = req.query;
+    let { limit = 15, page = 1, sort = "-createdAt" } = req.query;
     const {
       name = null,
       city = null,
@@ -125,6 +125,9 @@ const getMosquesListController = async (req, res, next) => {
       facilities = null,
       active = null,
     } = req.query;
+
+    limit = Number(limit);
+    page = Number(page);
 
     const skip_docs = (page - 1) * limit;
 
@@ -153,10 +156,10 @@ const getMosquesListController = async (req, res, next) => {
       totalDocs,
       totalPages,
       docs,
-      currentPage: Number(page),
+      currentPage: page,
       hasNext,
       hasPrev,
-      limit: Number(limit),
+      limit,
     };
 
     logger.info("Controller-mosque.controller-getMosquesListController-End");
@@ -257,6 +260,42 @@ const updateCommunityMosqueDetailsController = async (req, res, next) => {
   }
 };
 
+const updateCommunityMosqueTimingsController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller-mosque.controller-updateCommunityMosqueTimingsController-Start"
+    );
+
+    let isMosqueExist = await mosqueModel.findById(req.mosqueId);
+    if (!isMosqueExist) {
+      return next(httpErrors.NotFound(MOSQUE_CONSTANTS.MOSQUE_NOT_FOUND));
+    }
+
+    const updatedTimings = { ...req.body };
+
+    Object.keys(updatedTimings).forEach((item) => {
+      isMosqueExist.timings[item] = updatedTimings[item];
+    });
+
+    await isMosqueExist.save();
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      details: isMosqueExist,
+    });
+
+    logger.info(
+      "Controller-mosque.controller-updateCommunityMosqueTimingsController-End"
+    );
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-updateCommunityMosqueTimingsController-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
 module.exports = {
   createNewMosqueController,
   getMosquesListController,
@@ -265,4 +304,5 @@ module.exports = {
   createMosqueSlugValidateController,
   getCommunityMosqueDetailsController,
   updateCommunityMosqueDetailsController,
+  updateCommunityMosqueTimingsController,
 };

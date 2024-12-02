@@ -35,12 +35,10 @@ const AllMosques = () => {
   }, [info?.page]);
 
   const changePagination = (page) => {
-    console.log(page);
     setinfo((prev) => ({ ...prev, page }));
   };
 
   const navigateFun = (slug, view = true) => {
-    alert(slug);
     view ? navigate(slug) : navigate(`${slug}/edit`);
   };
   return (

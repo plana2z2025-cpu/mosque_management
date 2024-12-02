@@ -5,7 +5,7 @@ const {
   USER,
   MEMBER,
   ADMIN,
-} = require("../Constants/roles.constants");
+} = require("../../Constants/roles.constants");
 
 const ModelSchema = new mongoose.Schema(
   {

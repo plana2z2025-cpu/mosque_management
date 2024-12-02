@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { LoginReducer } from './login/reducer';
 import { UserProfileReducer } from './userProfile/reducer';
 import { MosqueReducer } from './mosques/reducer';
+import { AdministratorReducer } from './subUsers/reducer';
 
 const initialState = {};
 
@@ -9,6 +10,7 @@ const reducer = {
   loginState: LoginReducer,
   userProfileState: UserProfileReducer,
   mosqueState: MosqueReducer,
+  administratorState: AdministratorReducer,
 };
 const store = configureStore({
   reducer,

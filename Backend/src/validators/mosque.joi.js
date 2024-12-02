@@ -152,9 +152,40 @@ const updateMosqueDetailsValidation = celebrate({
   }),
 });
 
+const updateMosqueTimingsValidation = celebrate({
+  body: Joi.object({
+    fajr: Joi.object({
+      azaan: Joi.string().required(),
+      jamaat: Joi.string().required(),
+    }).optional(),
+    dhuhr: Joi.object({
+      azaan: Joi.string().required(),
+      jamaat: Joi.string().required(),
+    }).optional(),
+    asr: Joi.object({
+      azaan: Joi.string().required(),
+      jamaat: Joi.string().required(),
+    }).optional(),
+    maghrib: Joi.object({
+      azaan: Joi.string().required(),
+      jamaat: Joi.string().required(),
+    }).optional(),
+    isha: Joi.object({
+      azaan: Joi.string().required(),
+      jamaat: Joi.string().required(),
+    }).optional(),
+    jumma: Joi.object({
+      azaan: Joi.string().required(),
+      jamaat: Joi.string().required(),
+      qutba: Joi.string().required(),
+    }).optional(),
+  }),
+});
+
 module.exports = {
   createNewMosqueValidation,
   createMosqueEmailValidation,
   createMosqueSlugValidation,
   updateMosqueDetailsValidation,
+  updateMosqueTimingsValidation,
 };
