@@ -13,7 +13,7 @@ const getAdministratorsAction =
     dispatch({ type: ADMINISTRATORS.request });
     const token = getAccessToken();
     const response = await Service.fetchGet(
-      `${API.BASE_TYPE}${API.SUB_USERS_TYPE.USERS}${query ? '?' + query : null}`,
+      `${API.BASE_TYPE}${API.SUB_USERS_TYPE.USERS}${query ? '?' + query : ''}`,
       token
     );
 
@@ -26,6 +26,17 @@ const getAdministratorsAction =
       });
     }
   };
+
+const addNewSubUserAction = async (json) => {
+  const token = getAccessToken();
+  const response = await Service.fetchPost(
+    `${API.BASE_TYPE}${API.SUB_USERS_TYPE.CREATE_SUB_USER}`,
+    json,
+    token
+  );
+
+  return response;
+};
 
 const clearAdministratorsAction = () => (dispatch) => {
   dispatch({
@@ -41,4 +52,5 @@ export default {
   clearAdministratorsAction,
   resetAdministratorsAction,
   getAdministratorsAction,
+  addNewSubUserAction,
 };

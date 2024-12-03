@@ -29,6 +29,14 @@ const allRoutesMapper = [
     ),
   },
   {
+    path: '/admin/sub-users',
+    component: (
+      <AuthWrapper>
+        <Administrators />
+      </AuthWrapper>
+    ),
+  },
+  {
     path: '/superadmin/mosques',
     component: (
       <AuthWrapper>

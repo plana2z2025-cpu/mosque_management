@@ -44,6 +44,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import useLogout from '@/hooks/useLogout';
+import { Link } from 'react-router-dom';
 
 const data = {
   user: {
@@ -85,6 +86,18 @@ const data = {
         {
           title: 'Ramadan Programs',
           url: '#/events/ramadan',
+        },
+      ],
+    },
+
+    {
+      title: 'Administrators',
+      url: '#',
+      icon: Users,
+      items: [
+        {
+          title: 'Users',
+          url: '/admin/sub-users',
         },
       ],
     },
@@ -150,9 +163,9 @@ const AdminSidebar = ({ children }) => {
                         {item.items?.map((subItem) => (
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton asChild>
-                              <a href={subItem.url}>
+                              <Link to={subItem.url}>
                                 <span>{subItem.title}</span>
-                              </a>
+                              </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}
@@ -170,10 +183,10 @@ const AdminSidebar = ({ children }) => {
               {data.quickAccess.map((item) => (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.name}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
