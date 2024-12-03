@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { administratorActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { Trash } from 'lucide-react';
+// import { Trash } from 'lucide-react';
 import moment from 'moment';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
 import { Button } from '@/components/ui/button';
