@@ -5,6 +5,7 @@ const USER_CONSTANTS = require("../../Constants/user.constants");
 const logger = require("../../Config/logger.config");
 const { VerifyPasswordMethod } = require("../../Utils/verify.password");
 const { CreateAccessToken } = require("../../Utils/jwt.token");
+const sortConstants = require("../../Constants/sort.constants");
 
 const createSubUserController = async (req, res, next) => {
   try {
@@ -57,7 +58,9 @@ const getAllSubUsersController = async (req, res, next) => {
       "Controller - users - UserMosqueController - getAllSubUsersController - Start"
     );
 
-    const docs = await userMosqueModel.find({ mosqueId: req.mosqueId });
+    const docs = await userMosqueModel
+      .find({ mosqueId: req.mosqueId })
+      .sort(sortConstants["-createdAt"]);
     logger.info(
       "Controller - users - UserMosqueController - getAllSubUsersController - End"
     );
