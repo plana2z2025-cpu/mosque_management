@@ -2,6 +2,7 @@ const logger = require("../../Config/logger.config");
 const eventCategoryModel = require("../../Schema/events/eventCategory.model");
 const httpErrors = require("http-errors");
 const CategoryConstant = require("../../Constants/event.constants");
+const sortConstants = require("../../Constants/sort.constants");
 
 // Create new event category
 const createEventCategoryController = async (req, res, next) => {
@@ -36,6 +37,7 @@ const createEventCategoryController = async (req, res, next) => {
     res.status(201).json({
       success: true,
       statusCode: 201,
+      message: "successfully created a new event category",
       data: savedCategory,
     });
   } catch (error) {
@@ -43,7 +45,7 @@ const createEventCategoryController = async (req, res, next) => {
       "Controller - events - eventCategory - createEventCategoryController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    next(httpErrors.InternalServerError(error.message));
   }
 };
 
@@ -102,7 +104,8 @@ const getAllEventCategoriesController = async (req, res, next) => {
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .populate("createdBy", "name")
-      .populate("updatedBy", "name");
+      .populate("updatedBy", "name")
+      .sort(sortConstants["-createdAt"]);
 
     const hasNext = totalDocs > skip_docs + limit;
     const hasPrev = page > 1;

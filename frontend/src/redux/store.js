@@ -3,7 +3,7 @@ import { LoginReducer } from './login/reducer';
 import { UserProfileReducer } from './userProfile/reducer';
 import { MosqueReducer } from './mosques/reducer';
 import { AdministratorReducer } from './subUsers/reducer';
-import { EventCategoriesReducer } from './categoires/reducer';
+import { EventCategoriesReducer } from './categories/reducer';
 
 const initialState = {};
 

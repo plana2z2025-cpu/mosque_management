@@ -27,6 +27,17 @@ const getEventCategoriesAction =
     }
   };
 
+const addNewEventCategoryAction = async (json) => {
+  const token = getAccessToken();
+  const response = await Service.fetchPost(
+    `${API.BASE_TYPE}${API.EVENT_CATEGORIES_TYPE.CREATE_NEW_CATEGORY}`,
+    json,
+    token
+  );
+
+  return response;
+};
+
 const clearEventCategoriesAction = () => (dispatch) => {
   dispatch({
     type: CLEAR_EVENT_CATEGORIES_ERRORS,
@@ -41,4 +52,5 @@ export default {
   clearEventCategoriesAction,
   resetEventCategoriesAction,
   getEventCategoriesAction,
+  addNewEventCategoryAction,
 };

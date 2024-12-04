@@ -14,6 +14,7 @@ import {
   Wallet,
   Bell,
   CreditCard,
+  Tag,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -75,6 +76,10 @@ const data = {
       url: '#',
       icon: Calendar,
       items: [
+        {
+          title: 'Categories',
+          url: '/admin/events/categories',
+        },
         {
           title: 'Upcoming Events',
           url: '#/events/upcoming',
