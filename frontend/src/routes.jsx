@@ -7,6 +7,7 @@ import MosqueDetails from './views/features/supperAdmin/mosqueMgnt/SingleMosqueD
 import MosqueRegistrationForm from './views/features/mosque/MosqueRegistration';
 import Administrators from './views/features/admin/subUsers/Administrators';
 import Categories from './views/features/admin/categories/Categories';
+import ProfileDetails from './views/features/profileSettings/ProfileDetails';
 
 const allRoutesMapper = [
   {
@@ -25,7 +26,15 @@ const allRoutesMapper = [
     path: '/admin',
     component: (
       <AuthWrapper>
-        <Categories />
+        <ProfileDetails />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/profile',
+    component: (
+      <AuthWrapper>
+        <ProfileDetails />
       </AuthWrapper>
     ),
   },
