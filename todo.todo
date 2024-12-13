@@ -14,8 +14,8 @@
 ## Current Task
 -----------------------------------------------------------------------------------
 - [ x ] Build the **Mosque Registration Form**
-  - [ x ] Design the form layout
-  - [ x ] Implement form validation (e.g., required fields, email validation)
+  - [ ] Design the form layout
+  - [ ] Implement form validation (e.g., required fields, email validation)
   - [ ] Set up backend endpoint to handle form submissions
   - [ ] Test form submission and data storage
 
@@ -35,4 +35,6 @@
 -----------------------------------------------------------------------------------
 ## Future Enhancements
 -----------------------------------------------------------------------------------
+- need to have a mosque galleries kind section.
+- students on boarding to mosque if any.
 
