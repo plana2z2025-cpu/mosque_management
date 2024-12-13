@@ -3,18 +3,13 @@ import {
   UserCheck,
   School,
   Calendar,
-  BookOpen,
-  DollarSign,
   Users,
   Settings2,
   ChevronRight,
   ChevronsUpDown,
-  Command,
   LogOut,
   Wallet,
-  Bell,
   CreditCard,
-  Tag,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -45,7 +40,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import useLogout from '@/hooks/useLogout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const data = {
   user: {
@@ -123,6 +118,7 @@ const data = {
 
 const AdminSidebar = ({ children }) => {
   const logoutFunction = useLogout();
+  const navigate = useNavigate();
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
@@ -239,7 +235,7 @@ const AdminSidebar = ({ children }) => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/profile')}>
                       <Settings2 />
                       Profile Settings
                     </DropdownMenuItem>
