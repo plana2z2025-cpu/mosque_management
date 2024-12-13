@@ -67,7 +67,7 @@ export function CreateEventForm() {
       type: () => (value.trim() === '' ? 'Event Type is required' : null),
       startDate: () => (value.trim() === '' ? 'Start date is required' : null),
       endDate: () => (value.trim() === '' ? 'End date is required' : null),
-      description: () => (value.trim() === '' ? 'Location is required' : null),
+      location: () => (value.trim() === '' ? 'Location is required' : null),
     };
 
     // Email validation (if provided)
