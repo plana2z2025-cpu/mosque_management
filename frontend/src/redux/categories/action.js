@@ -2,6 +2,7 @@ import {
   EVENT_CATEGORIES,
   CLEAR_EVENT_CATEGORIES_ERRORS,
   RESET_EVENT_CATEGORIES_STATE,
+  EVENT_CATEGORIES_NAMES,
 } from './constant';
 import Service from '@/services';
 import * as API from './actionTypes';
@@ -38,6 +39,24 @@ const addNewEventCategoryAction = async (json) => {
   return response;
 };
 
+const getEventAllCategoriesNamesAction = () => async (dispatch) => {
+  dispatch({ type: EVENT_CATEGORIES_NAMES.request });
+  const token = getAccessToken();
+  const response = await Service.fetchGet(
+    `${API.BASE_TYPE}${API.EVENT_CATEGORIES_TYPE.CATEGORIES}${API.EVENT_CATEGORIES_TYPE.ALL}${API.EVENT_CATEGORIES_TYPE.NAMES}`,
+    token
+  );
+
+  if (response[0] === true) {
+    dispatch({ type: EVENT_CATEGORIES_NAMES.success, payload: response[1].data });
+  } else {
+    dispatch({
+      type: EVENT_CATEGORIES_NAMES.fail,
+      payload: response[1],
+    });
+  }
+};
+
 const clearEventCategoriesAction = () => (dispatch) => {
   dispatch({
     type: CLEAR_EVENT_CATEGORIES_ERRORS,
@@ -53,4 +72,5 @@ export default {
   resetEventCategoriesAction,
   getEventCategoriesAction,
   addNewEventCategoryAction,
+  getEventAllCategoriesNamesAction,
 };

@@ -1,5 +1,6 @@
 import {
   CLEAR_MOSQUE_ERRORS,
+  COMMUNITY_MOSQUE_DETAILS,
   RESET_MOSQUE_STATE,
   SUPPER_ADMIN_MOSQUES,
   SUPPER_ADMIN_SINGLE_MOSQUE,
@@ -70,6 +71,24 @@ const registerMosqueAction = async (json) => {
   return response;
 };
 
+const getCommunityMosqueDetailsAction = () => async (dispatch) => {
+  dispatch({ type: COMMUNITY_MOSQUE_DETAILS.request });
+  const token = getAccessToken();
+  const response = await Service.fetchGet(
+    `${API.MOSQUE_TYPES.MOSQUE}${API.MOSQUE_TYPES.COMMUNITY}${API.MOSQUE_TYPES.MOSQUE_DETAIL}`,
+    token
+  );
+
+  if (response[0] === true) {
+    dispatch({ type: COMMUNITY_MOSQUE_DETAILS.success, payload: response[1]?.data });
+  } else {
+    dispatch({
+      type: COMMUNITY_MOSQUE_DETAILS.fail,
+      payload: response[1],
+    });
+  }
+};
+
 const clearMosqueErrorsAction = () => (dispatch) => {
   dispatch({
     type: CLEAR_MOSQUE_ERRORS,
@@ -87,4 +106,5 @@ export default {
   registerMosqueAction,
   resetMosqueAction,
   clearMosqueErrorsAction,
+  getCommunityMosqueDetailsAction,
 };

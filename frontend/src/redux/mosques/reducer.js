@@ -1,5 +1,6 @@
 import {
   CLEAR_MOSQUE_ERRORS,
+  COMMUNITY_MOSQUE_DETAILS,
   RESET_MOSQUE_STATE,
   SUPPER_ADMIN_MOSQUES,
   SUPPER_ADMIN_SINGLE_MOSQUE,
@@ -11,10 +12,13 @@ const initialState = {
   statusCode: null,
   supperAdminMosques: null,
   supperAdminSingleMosque: null,
+  communityMosqueDetail: null,
 };
 export const MosqueReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [SUPPER_ADMIN_MOSQUES.request || SUPPER_ADMIN_SINGLE_MOSQUE.request]: () => ({
+    [SUPPER_ADMIN_MOSQUES.request ||
+    SUPPER_ADMIN_SINGLE_MOSQUE.request ||
+    COMMUNITY_MOSQUE_DETAILS.request]: () => ({
       ...state,
       loading: true,
     }),
@@ -28,12 +32,19 @@ export const MosqueReducer = (state = initialState, action) => {
       loading: false,
       supperAdminSingleMosque: action.payload,
     }),
-    [SUPPER_ADMIN_MOSQUES.fail || SUPPER_ADMIN_SINGLE_MOSQUE.fail]: () => ({
+    [COMMUNITY_MOSQUE_DETAILS.success]: () => ({
       ...state,
       loading: false,
-      error: action?.payload?.message,
-      statusCode: action?.payload?.statusCode || 500,
+      communityMosqueDetail: action.payload,
     }),
+
+    [SUPPER_ADMIN_MOSQUES.fail || SUPPER_ADMIN_SINGLE_MOSQUE.fail || COMMUNITY_MOSQUE_DETAILS.fail]:
+      () => ({
+        ...state,
+        loading: false,
+        error: action?.payload?.message,
+        statusCode: action?.payload?.statusCode || 500,
+      }),
 
     // errors,reset,default
     [CLEAR_MOSQUE_ERRORS]: () => ({

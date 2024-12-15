@@ -1,15 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import validator from 'validator';
 import { Button } from '@/components/ui/button';
-// import {
-//   Form,
-//   FormControl,
-//   FormDescription,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormMessage,
-// } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -19,17 +10,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-// import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 // import { format } from 'date-fns';
 import { CalendarIcon, Trash2, Plus } from 'lucide-react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
+import { useSelector, useDispatch } from 'react-redux';
+import { categoryActions } from '@/redux/combineActions';
+import moment from 'moment';
 
 const breadCumbs = [{ label: 'Categories', href: null }];
 
 export function CreateEventForm() {
   // State to manage form data and errors
+  const dispatch = useDispatch();
+  const { eventCategoryNames } = useSelector((state) => state.eventCategoryState);
+  const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
+  const { getEventAllCategoriesNamesAction } = categoryActions;
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -52,8 +50,23 @@ export function CreateEventForm() {
   // State to manage form errors
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    if (!eventCategoryNames) {
+      fetchAllCategoriesNames();
+    }
+    if (communityMosqueDetail) {
+      let { street, city, state, country, postalCode } = communityMosqueDetail?.address;
+      let location = `${street}, ${city}, ${state}, ${country}, ${postalCode}`;
+      setFormData((prev) => ({ ...prev, location }));
+    }
+  }, [eventCategoryNames, communityMosqueDetail]);
+
+  const fetchAllCategoriesNames = () => {
+    dispatch(getEventAllCategoriesNamesAction());
+  };
+
   // Validate form fields
-  const validateForm = (value) => {
+  const validateFieldFunc = (key, value, contactInfo = false) => {
     const newErrors = {};
 
     const validateRules = {
@@ -68,12 +81,12 @@ export function CreateEventForm() {
       startDate: () => (value.trim() === '' ? 'Start date is required' : null),
       endDate: () => (value.trim() === '' ? 'End date is required' : null),
       location: () => (value.trim() === '' ? 'Location is required' : null),
+      contactInfo: {
+        name: () => (value.trim() === '' ? 'Name is required' : null),
+        email: () => (!validator.isEmail(value) ? 'Email is not correct' : null),
+        phone: () => (value.trim() === '' ? 'Phone is required' : null),
+      },
     };
-
-    // Email validation (if provided)
-    if (formData.contactInfo.email && !validator.isEmail(formData.contactInfo.email)) {
-      newErrors.email = 'Invalid email format';
-    }
 
     // Target audience validation
     if (formData.targetAudience.length > 0) {
@@ -95,31 +108,40 @@ export function CreateEventForm() {
       }
     }
 
-    // Status validation
-    if (formData.status && !['draft', 'published', 'cancelled'].includes(formData.status)) {
-      newErrors.status = 'Invalid status';
-    }
+    // // Status validation
+    // if (formData.status && !['draft', 'published', 'cancelled'].includes(formData.status)) {
+    //   newErrors.status = 'Invalid status';
+    // }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const validateNow = contactInfo
+      ? validateRules?.['contactInfo']?.[key]?.() || null
+      : validateRules?.[key]?.() || null;
+    return validateNow ? validateNow : null;
   };
 
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+
+    let newError = validateFieldFunc([name], value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: newError,
     }));
   };
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      // Submit form data
-      console.log('Form submitted:', formData);
-    }
+    // if (validateForm()) {
+    //   // Submit form data
+    //   console.log('Form submitted:', formData);
+    // }
   };
 
   // Add speaker
@@ -149,6 +171,27 @@ export function CreateEventForm() {
       speakers: newSpeakers,
     }));
   };
+
+  const changeDateHandler = (date, name) => {
+    let options = {};
+    name === 'startDate'
+      ? (options = {
+          startDate: date,
+          endDate: date,
+        })
+      : (options = {
+          endDate: date,
+        });
+
+    console.log(options);
+
+    setFormData((prev) => ({
+      ...prev,
+      ...options,
+    }));
+  };
+
+  // console.log(formData);
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -191,11 +234,10 @@ export function CreateEventForm() {
               <SelectValue placeholder="Select event type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="conference">Conference</SelectItem>
-              <SelectItem value="workshop">Workshop</SelectItem>
-              <SelectItem value="seminar">Seminar</SelectItem>
-              <SelectItem value="webinar">Webinar</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
+              {eventCategoryNames &&
+                eventCategoryNames?.map((singleCategory) => (
+                  <SelectItem value={singleCategory?._id}>{singleCategory?.name}</SelectItem>
+                ))}
             </SelectContent>
           </Select>
           {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
@@ -207,29 +249,30 @@ export function CreateEventForm() {
             <label className="block text-sm font-medium mb-2">Start Date</label>
             <Calendar
               mode="single"
+              name="startDate"
               selected={formData.startDate}
-              // onSelect={}
+              onSelect={(date) => changeDateHandler(date, 'startDate')}
               disabled={(date) => date < new Date()}
               // initialFocus
             />
             {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
           </div>
 
-          {/* Date info */}
           <div>
             <label className="block text-sm font-medium mb-2">End Date</label>
             <Calendar
               mode="single"
-              selected={formData.startDate}
-              // onSelect={}
-              disabled={(date) => date < new Date()}
+              name="endDate"
+              selected={formData.endDate}
+              onSelect={(date) => changeDateHandler(date, 'endDate')}
+              disabled={(date) => date < formData?.startDate}
               // initialFocus
             />
             {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
           </div>
         </div>
 
-        {/* Event Input */}
+        {/* Event Location */}
         <div>
           <label className="block text-sm font-medium mb-2">Event Location</label>
           <Input

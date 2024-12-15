@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   UserCheck,
   School,
@@ -41,6 +41,8 @@ import {
 } from '@/components/ui/sidebar';
 import useLogout from '@/hooks/useLogout';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { mosqueActions } from '@/redux/combineActions';
 
 const data = {
   user: {
@@ -119,6 +121,19 @@ const data = {
 const AdminSidebar = ({ children }) => {
   const logoutFunction = useLogout();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
+  const { getCommunityMosqueDetailsAction } = mosqueActions;
+
+  useEffect(() => {
+    if (!communityMosqueDetail) {
+      fetchCommunityMosqueDetail();
+    }
+  }, []);
+
+  const fetchCommunityMosqueDetail = () => {
+    dispatch(getCommunityMosqueDetailsAction());
+  };
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
@@ -131,7 +146,9 @@ const AdminSidebar = ({ children }) => {
                     <School className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Mosque Management</span>
+                    <span className="truncate font-semibold capitalize">
+                      {communityMosqueDetail?.name || 'Mosque Management'}
+                    </span>
                     <span className="truncate text-xs">Admin Portal</span>
                   </div>
                 </div>

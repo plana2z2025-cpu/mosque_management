@@ -2,6 +2,7 @@ import {
   EVENT_CATEGORIES,
   CLEAR_EVENT_CATEGORIES_ERRORS,
   RESET_EVENT_CATEGORIES_STATE,
+  EVENT_CATEGORIES_NAMES,
 } from './constant';
 
 const initialState = {
@@ -9,11 +10,12 @@ const initialState = {
   error: null,
   statusCode: null,
   eventCategories: null,
+  eventCategoryNames: null,
 };
 
 export const EventCategoriesReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [EVENT_CATEGORIES.request]: () => ({
+    [EVENT_CATEGORIES.request || EVENT_CATEGORIES_NAMES.request]: () => ({
       ...state,
       loading: true,
     }),
@@ -22,7 +24,12 @@ export const EventCategoriesReducer = (state = initialState, action) => {
       loading: false,
       eventCategories: action.payload,
     }),
-    [EVENT_CATEGORIES.fail]: () => ({
+    [EVENT_CATEGORIES_NAMES.success]: () => ({
+      ...state,
+      loading: false,
+      eventCategoryNames: action.payload,
+    }),
+    [EVENT_CATEGORIES.fail || EVENT_CATEGORIES_NAMES.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,
