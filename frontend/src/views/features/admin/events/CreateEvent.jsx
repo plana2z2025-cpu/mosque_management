@@ -18,8 +18,19 @@ import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useSelector, useDispatch } from 'react-redux';
 import { categoryActions } from '@/redux/combineActions';
 import moment from 'moment';
+import { Badge } from '@/components/ui/badge';
 
 const breadCumbs = [{ label: 'Categories', href: null }];
+const targetAudienceOptions = [
+  { label: 'men', value: 'men' },
+  { label: 'women', value: 'women' },
+  { label: 'children', value: 'children' },
+  { label: 'youth', value: 'youth' },
+  { label: 'seniors', value: 'seniors' },
+  { label: 'families', value: 'families' },
+  { label: 'converts', value: 'converts' },
+  { label: 'all', value: 'all' },
+];
 
 export function CreateEventForm() {
   // State to manage form data and errors
@@ -35,8 +46,8 @@ export function CreateEventForm() {
     startDate: new Date(),
     endDate: new Date(),
     location: '',
-    speakers: [],
-    targetAudience: [],
+    speakers: [{ name: '', bio: '' }],
+    targetAudience: ['men'],
     contactInfo: {
       name: '',
       email: '',
@@ -191,7 +202,18 @@ export function CreateEventForm() {
     }));
   };
 
-  // console.log(formData);
+  const changeTargetAudience = (value, add = true) => {
+    let targets = [...formData?.targetAudience];
+    if (add) {
+      targets.push(value);
+      targets = [...new Set(targets)];
+    } else {
+      if (targets.length === 1) return;
+      let index = value;
+      targets.splice(index, 1);
+    }
+    setFormData((prev) => ({ ...prev, targetAudience: targets }));
+  };
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -289,25 +311,28 @@ export function CreateEventForm() {
         <div>
           <label className="block text-sm font-medium mb-2">Speakers</label>
           {formData.speakers.map((speaker, index) => (
-            <div key={index} className="grid md:grid-cols-3 gap-4 mb-4">
+            <div key={index} className=" flex gap-4 mb-4">
               <Input
                 placeholder="Speaker Name"
                 value={speaker.name}
                 onChange={(e) => handleSpeakerChange(index, 'name', e.target.value)}
               />
               <Input
-                placeholder="Speaker Title"
-                value={speaker.title}
-                onChange={(e) => handleSpeakerChange(index, 'title', e.target.value)}
+                placeholder="Speaker Description"
+                value={speaker.bio}
+                onChange={(e) => handleSpeakerChange(index, 'bio', e.target.value)}
               />
-              <Button
-                type="button"
-                variant="destructive"
-                size="icon"
-                onClick={() => removeSpeaker(index)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              {formData?.speakers.length !== 1 && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="px-8"
+                  onClick={() => removeSpeaker(index)}
+                >
+                  <Trash2 className="h-4" />
+                </Button>
+              )}
             </div>
           ))}
           <Button type="button" variant="outline" onClick={addSpeaker}>
@@ -318,52 +343,75 @@ export function CreateEventForm() {
         {/* Target Audience */}
         <div>
           <label className="block text-sm font-medium mb-2">Target Audience</label>
-          <Input
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter event title"
-            className={errors.title ? 'border-red-500' : ''}
-          />
-          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+          <div className="mb-3 flex gap-4 flex-wrap">
+            {formData.targetAudience.map((singleTarget, index) => (
+              <Badge className={'p-2 capitalize'} key={singleTarget + index}>
+                {singleTarget}{' '}
+                {formData?.targetAudience?.length !== 1 && (
+                  <Trash2
+                    className="h-3 hover:text-red-400 cursor-pointer"
+                    onClick={() => changeTargetAudience(index, false)}
+                  />
+                )}
+              </Badge>
+            ))}
+          </div>
+          <Select
+            name="targetAudience"
+            // value={formData.}
+            onValueChange={changeTargetAudience}
+          >
+            <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
+              <SelectValue placeholder="Select event type" />
+            </SelectTrigger>
+            <SelectContent>
+              {targetAudienceOptions?.map((singleTarget) => (
+                <SelectItem value={singleTarget?.value}>{singleTarget?.value}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
         </div>
 
         {/* Contact Information */}
-        <div className="grid md:grid-cols-3 gap-4">
-          <Input
-            name="contactInfo.name"
-            value={formData.contactInfo.name}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                contactInfo: { ...prev.contactInfo, name: e.target.value },
-              }))
-            }
-            placeholder="Contact Name"
-          />
-          <Input
-            name="contactInfo.email"
-            value={formData.contactInfo.email}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                contactInfo: { ...prev.contactInfo, email: e.target.value },
-              }))
-            }
-            placeholder="Contact Email"
-          />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-          <Input
-            name="contactInfo.phone"
-            value={formData.contactInfo.phone}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                contactInfo: { ...prev.contactInfo, phone: e.target.value },
-              }))
-            }
-            placeholder="Contact Phone"
-          />
+        <div>
+          <label className="block text-sm font-medium mb-2">Contact Details</label>
+          <div className="grid md:grid-cols-3 gap-4">
+            <Input
+              name="contactInfo.name"
+              value={formData.contactInfo.name}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  contactInfo: { ...prev.contactInfo, name: e.target.value },
+                }))
+              }
+              placeholder="Contact Name"
+            />
+            <Input
+              name="contactInfo.email"
+              value={formData.contactInfo.email}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  contactInfo: { ...prev.contactInfo, email: e.target.value },
+                }))
+              }
+              placeholder="Contact Email"
+            />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            <Input
+              name="contactInfo.phone"
+              value={formData.contactInfo.phone}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  contactInfo: { ...prev.contactInfo, phone: e.target.value },
+                }))
+              }
+              placeholder="Contact Phone"
+            />
+          </div>
         </div>
 
         {/* Submit Button */}
