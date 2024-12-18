@@ -93,6 +93,7 @@ const getAllEventController = async (req, res, next) => {
       .find(query)
       .limit(limit * 1)
       .skip((page - 1) * limit)
+      .populate("type", "name")
       .populate("createdBy", "name")
       .populate("updatedBy", "name");
 

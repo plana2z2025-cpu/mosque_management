@@ -78,8 +78,12 @@ const data = {
           url: '/admin/events/categories',
         },
         {
-          title: 'Upcoming Events',
-          url: '#/events/upcoming',
+          title: 'Create Event',
+          url: '/admin/events/create',
+        },
+        {
+          title: 'Events',
+          url: '/admin/events',
         },
         {
           title: 'Class Schedules',

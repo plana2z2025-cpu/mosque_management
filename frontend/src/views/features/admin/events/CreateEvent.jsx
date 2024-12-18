@@ -13,12 +13,13 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 // import { format } from 'date-fns';
-import { CalendarIcon, Trash2, Plus } from 'lucide-react';
+import { CalendarIcon, Trash2, Plus, CookingPot } from 'lucide-react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useSelector, useDispatch } from 'react-redux';
-import { categoryActions } from '@/redux/combineActions';
+import { categoryActions, eventActions } from '@/redux/combineActions';
 import moment from 'moment';
 import { Badge } from '@/components/ui/badge';
+import toast from 'react-hot-toast';
 
 const breadCumbs = [{ label: 'Categories', href: null }];
 const targetAudienceOptions = [
@@ -38,6 +39,7 @@ export function CreateEventForm() {
   const { eventCategoryNames } = useSelector((state) => state.eventCategoryState);
   const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
   const { getEventAllCategoriesNamesAction } = categoryActions;
+  const { addNewEventAction } = eventActions;
 
   const [formData, setFormData] = useState({
     title: '',
@@ -45,6 +47,7 @@ export function CreateEventForm() {
     type: '',
     startDate: new Date(),
     endDate: new Date(),
+    time: moment().format(),
     location: '',
     speakers: [{ name: '', bio: '' }],
     targetAudience: ['men'],
@@ -53,9 +56,9 @@ export function CreateEventForm() {
       email: '',
       phone: '',
     },
-    coverImage: '',
+    coverImage: 'testing.jpg',
     tags: [],
-    status: '',
+    status: 'published',
   });
 
   // State to manage form errors
@@ -78,8 +81,6 @@ export function CreateEventForm() {
 
   // Validate form fields
   const validateFieldFunc = (key, value, contactInfo = false) => {
-    const newErrors = {};
-
     const validateRules = {
       title: () =>
         value.trim() === ''
@@ -89,44 +90,25 @@ export function CreateEventForm() {
             : null,
       description: () => (value.trim() === '' ? 'Description is required' : null),
       type: () => (value.trim() === '' ? 'Event Type is required' : null),
-      startDate: () => (value.trim() === '' ? 'Start date is required' : null),
-      endDate: () => (value.trim() === '' ? 'End date is required' : null),
       location: () => (value.trim() === '' ? 'Location is required' : null),
       contactInfo: {
         name: () => (value.trim() === '' ? 'Name is required' : null),
-        email: () => (!validator.isEmail(value) ? 'Email is not correct' : null),
+        email: () =>
+          value.trim() === ''
+            ? 'Email is required'
+            : !validator.isEmail(value)
+              ? 'Email is not correct'
+              : null,
         phone: () => (value.trim() === '' ? 'Phone is required' : null),
       },
+      tagTitle: () => (value.trim() === '' ? 'tag is required' : null),
     };
 
-    // Target audience validation
-    if (formData.targetAudience.length > 0) {
-      const validAudiences = [
-        'men',
-        'women',
-        'children',
-        'youth',
-        'seniors',
-        'families',
-        'converts',
-        'all',
-      ];
-      const invalidAudiences = formData.targetAudience.filter(
-        (audience) => !validAudiences.includes(audience)
-      );
-      if (invalidAudiences.length > 0) {
-        newErrors.targetAudience = 'Invalid audience selection';
-      }
-    }
-
-    // // Status validation
-    // if (formData.status && !['draft', 'published', 'cancelled'].includes(formData.status)) {
-    //   newErrors.status = 'Invalid status';
-    // }
-
     const validateNow = contactInfo
-      ? validateRules?.['contactInfo']?.[key]?.() || null
-      : validateRules?.[key]?.() || null;
+      ? validateRules?.['contactInfo']?.[key]() || null
+      : validateRules?.[key]
+        ? validateRules[key]()
+        : null;
     return validateNow ? validateNow : null;
   };
 
@@ -146,13 +128,13 @@ export function CreateEventForm() {
     }));
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // if (validateForm()) {
-    //   // Submit form data
-    //   console.log('Form submitted:', formData);
-    // }
+  const handleTypeEventChange = (value) => {
+    setFormData((prev) => ({ ...prev, type: value }));
+    let newError = validateFieldFunc('type', value);
+    setErrors((prev) => ({
+      ...prev,
+      type: newError,
+    }));
   };
 
   // Add speaker
@@ -183,6 +165,7 @@ export function CreateEventForm() {
     }));
   };
 
+  // Handle Date change
   const changeDateHandler = (date, name) => {
     let options = {};
     name === 'startDate'
@@ -193,15 +176,13 @@ export function CreateEventForm() {
       : (options = {
           endDate: date,
         });
-
-    console.log(options);
-
     setFormData((prev) => ({
       ...prev,
       ...options,
     }));
   };
 
+  // Handle change for target Audience
   const changeTargetAudience = (value, add = true) => {
     let targets = [...formData?.targetAudience];
     if (add) {
@@ -213,6 +194,101 @@ export function CreateEventForm() {
       targets.splice(index, 1);
     }
     setFormData((prev) => ({ ...prev, targetAudience: targets }));
+  };
+
+  // add new tag
+  const addRemoveTagFunction = (index = null) => {
+    let update = [...formData.tags];
+    if (index) {
+      update.splice(index - 1, 1);
+    } else {
+      update.push(' ');
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      tags: [...update],
+    }));
+  };
+
+  const changeTagHandler = (e, index) => {
+    let update = [...formData.tags];
+    update[index] = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      tags: [...update],
+    }));
+  };
+
+  const validateFormFunction = () => {
+    let newErrors = {};
+    let updateFormData = {};
+
+    Object.keys(formData).forEach((key) => {
+      let error = null;
+
+      if (key === 'contactInfo') {
+        console.log('called this');
+        Object.keys(formData['contactInfo']).forEach((property) => {
+          error = validateFieldFunc(property, formData['contactInfo'][property], true);
+          if (error) {
+            newErrors[key]
+              ? (newErrors['contactInfo'][property] = error)
+              : (newErrors['contactInfo'] = { [property]: error });
+            error = null;
+          }
+        });
+      } else if (key === 'speakers') {
+        Object.keys(formData['speakers']).forEach((property, index) => {
+          error = validateFieldFunc('name', formData['speakers'][index]['name'], true);
+          if (error) {
+            newErrors[key]
+              ? (newErrors['speakers'][index] = error)
+              : (newErrors['speakers'] = { [index]: error });
+            error = null;
+          }
+        });
+      } else if (key === 'tags') {
+        Object.keys(formData['tags']).forEach((property, index) => {
+          error = validateFieldFunc('tagTitle', formData['tags'][index]);
+          if (error) {
+            newErrors[key]
+              ? (newErrors['tags'][index] = error)
+              : (newErrors['tags'] = { [index]: error });
+            error = null;
+          }
+        });
+      } else {
+        error = validateFieldFunc(key, formData[key]);
+
+        if (error) newErrors[key] = error;
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validateFormFunction()) {
+      const json = {
+        ...formData,
+      };
+
+      console.log(json);
+      json.startDate = moment(json.startDate).utc().format();
+      json.endDate = moment(json.endDate).utc().format();
+      json.time = moment(json.time).utc().format();
+
+      const response = await addNewEventAction(json);
+      if (response[0] === 201) {
+        toast.success('event is created successfully');
+      } else {
+        toast.error(response[1]?.message);
+      }
+    }
   };
 
   return (
@@ -247,11 +323,7 @@ export function CreateEventForm() {
         {/* Event Type */}
         <div>
           <label className="block text-sm font-medium mb-2">Event Type</label>
-          <Select
-            name="type"
-            value={formData.type}
-            onValueChange={(value) => setFormData((prev) => ({ ...prev, type: value }))}
-          >
+          <Select name="type" value={formData.type} onValueChange={handleTypeEventChange}>
             <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
               <SelectValue placeholder="Select event type" />
             </SelectTrigger>
@@ -277,7 +349,6 @@ export function CreateEventForm() {
               disabled={(date) => date < new Date()}
               // initialFocus
             />
-            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
           </div>
 
           <div>
@@ -290,8 +361,19 @@ export function CreateEventForm() {
               disabled={(date) => date < formData?.startDate}
               // initialFocus
             />
-            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
           </div>
+        </div>
+
+        {/* Event Time */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Event Title</label>
+          <Input
+            name="time"
+            value={moment(formData.time).format('HH:mm')}
+            onChange={handleChange}
+            placeholder="Enter event title"
+            type="time"
+          />
         </div>
 
         {/* Event Location */}
@@ -312,11 +394,16 @@ export function CreateEventForm() {
           <label className="block text-sm font-medium mb-2">Speakers</label>
           {formData.speakers.map((speaker, index) => (
             <div key={index} className=" flex gap-4 mb-4">
-              <Input
-                placeholder="Speaker Name"
-                value={speaker.name}
-                onChange={(e) => handleSpeakerChange(index, 'name', e.target.value)}
-              />
+              <div>
+                <Input
+                  placeholder="Speaker Name"
+                  value={speaker.name}
+                  onChange={(e) => handleSpeakerChange(index, 'name', e.target.value)}
+                />
+                {errors?.speakers?.[index] && (
+                  <p className="text-red-500 text-xs mt-1">{errors?.speakers?.[index]}</p>
+                )}
+              </div>
               <Input
                 placeholder="Speaker Description"
                 value={speaker.bio}
@@ -373,44 +460,94 @@ export function CreateEventForm() {
           {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
         </div>
 
+        {/* Tags Section */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Tags</label>
+          <div className="flex justify-between flex-wrap">
+            {formData.tags.map((singleTag, index) => (
+              <div key={index} className="flex gap-4 mb-4">
+                <div>
+                  <Input
+                    placeholder="Speaker Name"
+                    value={singleTag}
+                    onChange={(e) => changeTagHandler(e, index)}
+                  />
+                  {errors?.tags?.[index] && (
+                    <p className="text-red-500 text-xs mt-1">{errors?.tags?.[index]}</p>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="px-8"
+                  onClick={() => addRemoveTagFunction(index + 1)}
+                >
+                  <Trash2 className="h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button type="button" variant="outline" onClick={() => addRemoveTagFunction(null)}>
+            <Plus className="mr-2 h-4 w-4" /> Add New Tag
+          </Button>
+        </div>
+
         {/* Contact Information */}
         <div>
           <label className="block text-sm font-medium mb-2">Contact Details</label>
           <div className="grid md:grid-cols-3 gap-4">
-            <Input
-              name="contactInfo.name"
-              value={formData.contactInfo.name}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  contactInfo: { ...prev.contactInfo, name: e.target.value },
-                }))
-              }
-              placeholder="Contact Name"
-            />
-            <Input
-              name="contactInfo.email"
-              value={formData.contactInfo.email}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  contactInfo: { ...prev.contactInfo, email: e.target.value },
-                }))
-              }
-              placeholder="Contact Email"
-            />
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-            <Input
-              name="contactInfo.phone"
-              value={formData.contactInfo.phone}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  contactInfo: { ...prev.contactInfo, phone: e.target.value },
-                }))
-              }
-              placeholder="Contact Phone"
-            />
+            <div>
+              <Input
+                name="contactInfo.name"
+                value={formData.contactInfo.name}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    contactInfo: { ...prev.contactInfo, name: e.target.value },
+                  }))
+                }
+                placeholder="Contact Name"
+              />
+              {errors?.contactInfo?.name && (
+                <p className="text-red-500 text-xs mt-1">{errors?.contactInfo?.name}</p>
+              )}
+            </div>
+
+            <div>
+              <Input
+                name="contactInfo.email"
+                value={formData.contactInfo.email}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    contactInfo: { ...prev.contactInfo, email: e.target.value },
+                  }))
+                }
+                placeholder="Contact Email"
+              />
+
+              {errors?.contactInfo?.email && (
+                <p className="text-red-500 text-xs mt-1">{errors?.contactInfo?.email}</p>
+              )}
+            </div>
+
+            <div>
+              <Input
+                name="contactInfo.phone"
+                value={formData.contactInfo.phone}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    contactInfo: { ...prev.contactInfo, phone: e.target.value },
+                  }))
+                }
+                placeholder="Contact Phone"
+              />
+              {errors?.contactInfo?.name && (
+                <p className="text-red-500 text-xs mt-1">{errors?.contactInfo?.name}</p>
+              )}
+            </div>
           </div>
         </div>
 

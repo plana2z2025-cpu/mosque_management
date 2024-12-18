@@ -8,16 +8,17 @@ const createEventValidation = celebrate({
     type: Joi.string().required(),
     startDate: Joi.date().required(),
     endDate: Joi.date().required(),
+    time: Joi.date().required(),
     location: Joi.string().required(),
     speakers: Joi.array()
       .items(
         Joi.object({
           name: Joi.string().trim().optional(),
-          bio: Joi.string().optional(),
+          bio: Joi.string().allow("").optional(),
           title: Joi.string().optional(),
         })
       )
-      .optional(),
+      .min(1),
     targetAudience: Joi.array()
       .items(
         Joi.string().valid(

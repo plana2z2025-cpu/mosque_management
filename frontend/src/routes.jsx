@@ -9,6 +9,7 @@ import Administrators from './views/features/admin/subUsers/Administrators';
 import Categories from './views/features/admin/categories/Categories';
 import ProfileDetails from './views/features/profileSettings/ProfileDetails';
 import CreateEventForm from './views/features/admin/events/CreateEvent';
+import AllEvents from './views/features/admin/events/AllEvents';
 
 const allRoutesMapper = [
   {
@@ -28,6 +29,22 @@ const allRoutesMapper = [
     component: (
       <AuthWrapper>
         <CreateEventForm />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/events/create',
+    component: (
+      <AuthWrapper>
+        <CreateEventForm />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/events',
+    component: (
+      <AuthWrapper>
+        <AllEvents />
       </AuthWrapper>
     ),
   },
