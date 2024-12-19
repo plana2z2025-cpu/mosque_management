@@ -114,7 +114,12 @@ export function CreateEventForm() {
 
   // Handle input changes
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+
+    if (name === 'time') {
+      const [hour, minute] = value;
+      value = moment(formData.time).set({ hour, minute }).format();
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -125,6 +130,21 @@ export function CreateEventForm() {
     setErrors((prev) => ({
       ...prev,
       [name]: newError,
+    }));
+  };
+
+  const handleContactChange = (e) => {
+    const { name, value } = e?.target;
+    setFormData((prev) => ({
+      ...prev,
+      contactInfo: { ...prev.contactInfo, [name]: value },
+    }));
+    let newError = validateFieldFunc(name, value, true);
+
+    const errorUpdate = { [name]: newError };
+    setErrors((prev) => ({
+      ...prev,
+      contactInfo: prev?.contactInfo ? { ...prev.contactInfo, ...errorUpdate } : { ...errorUpdate },
     }));
   };
 
@@ -163,15 +183,33 @@ export function CreateEventForm() {
       ...prev,
       speakers: newSpeakers,
     }));
+    const error =
+      field === 'name'
+        ? validateFieldFunc('name', formData['speakers'][index]['name'], true)
+        : null;
+
+    const errorUPdate = { speakers: { [index]: error } };
+    setErrors((prev) => ({
+      ...prev,
+      ...errorUPdate,
+    }));
   };
 
   // Handle Date change
   const changeDateHandler = (date, name) => {
     let options = {};
+    console.log(date.getFullYear(), name);
     name === 'startDate'
       ? (options = {
           startDate: date,
           endDate: date,
+          time: moment(formData.time)
+            .set({
+              year: date.getUTCFullYear(),
+              month: date.getUTCMonth(),
+              day: date.getUTCDate(),
+            })
+            .format(),
         })
       : (options = {
           endDate: date,
@@ -181,6 +219,8 @@ export function CreateEventForm() {
       ...options,
     }));
   };
+
+  console.log(formData);
 
   // Handle change for target Audience
   const changeTargetAudience = (value, add = true) => {
@@ -228,7 +268,6 @@ export function CreateEventForm() {
       let error = null;
 
       if (key === 'contactInfo') {
-        console.log('called this');
         Object.keys(formData['contactInfo']).forEach((property) => {
           error = validateFieldFunc(property, formData['contactInfo'][property], true);
           if (error) {
@@ -277,7 +316,6 @@ export function CreateEventForm() {
         ...formData,
       };
 
-      console.log(json);
       json.startDate = moment(json.startDate).utc().format();
       json.endDate = moment(json.endDate).utc().format();
       json.time = moment(json.time).utc().format();
@@ -380,7 +418,7 @@ export function CreateEventForm() {
         <div>
           <label className="block text-sm font-medium mb-2">Event Location</label>
           <Input
-            name="title"
+            name="location"
             value={formData.location}
             onChange={handleChange}
             placeholder="Enter event location"
@@ -471,6 +509,7 @@ export function CreateEventForm() {
                     placeholder="Speaker Name"
                     value={singleTag}
                     onChange={(e) => changeTagHandler(e, index)}
+                    className={errors?.tags?.[index] ? 'border-red-500' : ''}
                   />
                   {errors?.tags?.[index] && (
                     <p className="text-red-500 text-xs mt-1">{errors?.tags?.[index]}</p>
@@ -499,15 +538,11 @@ export function CreateEventForm() {
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               <Input
-                name="contactInfo.name"
+                name="name"
                 value={formData.contactInfo.name}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    contactInfo: { ...prev.contactInfo, name: e.target.value },
-                  }))
-                }
+                onChange={handleContactChange}
                 placeholder="Contact Name"
+                className={errors?.contactInfo?.name ? 'border-red-500' : ''}
               />
               {errors?.contactInfo?.name && (
                 <p className="text-red-500 text-xs mt-1">{errors?.contactInfo?.name}</p>
@@ -516,15 +551,11 @@ export function CreateEventForm() {
 
             <div>
               <Input
-                name="contactInfo.email"
+                name="email"
                 value={formData.contactInfo.email}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    contactInfo: { ...prev.contactInfo, email: e.target.value },
-                  }))
-                }
+                onChange={handleContactChange}
                 placeholder="Contact Email"
+                className={errors?.contactInfo?.email ? 'border-red-500' : ''}
               />
 
               {errors?.contactInfo?.email && (
@@ -534,18 +565,14 @@ export function CreateEventForm() {
 
             <div>
               <Input
-                name="contactInfo.phone"
+                name="phone"
                 value={formData.contactInfo.phone}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    contactInfo: { ...prev.contactInfo, phone: e.target.value },
-                  }))
-                }
+                onChange={handleContactChange}
                 placeholder="Contact Phone"
+                className={errors?.contactInfo?.phone ? 'border-red-500' : ''}
               />
-              {errors?.contactInfo?.name && (
-                <p className="text-red-500 text-xs mt-1">{errors?.contactInfo?.name}</p>
+              {errors?.contactInfo?.phone && (
+                <p className="text-red-500 text-xs mt-1">{errors?.contactInfo?.phone}</p>
               )}
             </div>
           </div>
