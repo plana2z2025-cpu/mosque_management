@@ -220,8 +220,6 @@ export function CreateEventForm() {
     }));
   };
 
-  console.log(formData);
-
   // Handle change for target Audience
   const changeTargetAudience = (value, add = true) => {
     let targets = [...formData?.targetAudience];

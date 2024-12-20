@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
-import { categoryActions, eventActions } from '@/redux/combineActions';
+import { eventActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
