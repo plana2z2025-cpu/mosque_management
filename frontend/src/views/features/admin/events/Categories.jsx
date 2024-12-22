@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useCallback, useMemo } from 'react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
-import { categoryActions } from '@/redux/combineActions';
+import { eventActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import toast from 'react-hot-toast';
-import { EVENT_CATEGORIES } from '@/redux/categories/constant';
+import { EVENT_CATEGORIES } from '@/redux/events/constant';
 import { Trash, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ModalV1 from '@/views/components2/modal/ModalV1';
@@ -50,15 +50,12 @@ const TableRow = memo(({ row, onDelete }) => (
 
 const Categories = () => {
   const { getEventCategoriesAction, addNewEventCategoryAction, deleteCategoryAction } =
-    categoryActions;
+    eventActions;
   const dispatch = useDispatch();
 
   // Optimize selectors to select only needed fields
-  const eventCategories = useSelector((state) => state.eventCategoryState.eventCategories);
-  const profileDetails = useSelector((state) => ({
-    _id: state?.userProfileState?.profileDetails?._id,
-    name: state?.userProfileState?.profileDetails?.name,
-  }));
+  const eventCategories = useSelector((state) => state.eventState.eventCategories);
+  const profileDetails = useSelector((state) => state?.userProfileState);
 
   const [info, setInfo] = useState(INITIAL_STATE);
   const [error, setError] = useState({});
@@ -285,13 +282,6 @@ const Categories = () => {
         onClose={deletePopupModalFunc}
         title="Delete Category"
       >
-        {/* <div className="space-y-4">
-          <p>This is an example modal content.</p>
-          <p>You can put any content here!</p>
-          <button className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-            Close Modal
-          </button>
-        </div> */}
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>

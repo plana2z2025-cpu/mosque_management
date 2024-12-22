@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { CalendarIcon, Trash2, Plus, CookingPot } from 'lucide-react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useSelector, useDispatch } from 'react-redux';
-import { categoryActions, eventActions } from '@/redux/combineActions';
+import { eventActions } from '@/redux/combineActions';
 import moment from 'moment';
 import { Badge } from '@/components/ui/badge';
 import toast from 'react-hot-toast';
@@ -36,10 +36,9 @@ const targetAudienceOptions = [
 export function CreateEventForm() {
   // State to manage form data and errors
   const dispatch = useDispatch();
-  const { eventCategoryNames } = useSelector((state) => state.eventCategoryState);
+  const { eventCategoryNames } = useSelector((state) => state.eventState);
   const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
-  const { getEventAllCategoriesNamesAction } = categoryActions;
-  const { addNewEventAction } = eventActions;
+  const { addNewEventAction, getEventAllCategoriesNamesAction } = eventActions;
 
   const [formData, setFormData] = useState({
     title: '',

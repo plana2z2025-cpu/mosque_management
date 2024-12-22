@@ -6,7 +6,7 @@ import AllMosques from './views/features/supperAdmin/mosqueMgnt/AllMosques';
 import MosqueDetails from './views/features/supperAdmin/mosqueMgnt/SingleMosqueDetail';
 import MosqueRegistrationForm from './views/features/mosque/MosqueRegistration';
 import Administrators from './views/features/admin/subUsers/Administrators';
-import Categories from './views/features/admin/categories/Categories';
+import Categories from './views/features/admin/events/Categories';
 import ProfileDetails from './views/features/profileSettings/ProfileDetails';
 import CreateEventForm from './views/features/admin/events/CreateEvent';
 import AllEvents from './views/features/admin/events/AllEvents';
