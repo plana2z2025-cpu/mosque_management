@@ -9,3 +9,5 @@ export const userActions = { ...UserActions };
 export const mosqueActions = { ...MosqueAction };
 export const administratorActions = { ...AdministratorAction };
 export const eventActions = { ...EventAction };
+
+// after adding reset the action in to the logout hook
