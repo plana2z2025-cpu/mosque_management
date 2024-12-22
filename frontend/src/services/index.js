@@ -69,10 +69,12 @@ const Service = {
     }
   },
 
-  fetchDelete: async (url, token = null, body = null, contentType = 'json') => {
+  fetchDelete: async (url, token = null, body = {}, contentType = 'json') => {
     try {
       const endpoint = API_URL + url;
       const headers = handleHeaders(token, contentType);
+      console.log(headers);
+
       const response = await apiFetch.deleteMethod(endpoint, body, headers);
       return processResponse(response);
     } catch (error) {
@@ -87,8 +89,8 @@ const onFailure = async (res, url) => {
 };
 
 const onUserKickedOut = async () => {
-  localStorage.clear();
-  window.location.reload();
+  // localStorage.clear();
+  // window.location.reload();
 };
 
 export default Service;

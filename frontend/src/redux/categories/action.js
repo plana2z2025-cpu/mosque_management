@@ -57,6 +57,12 @@ const getEventAllCategoriesNamesAction = () => async (dispatch) => {
   }
 };
 
+const deleteCategoryAction = async (categoryId) => {
+  const token = getAccessToken();
+  const response = await Service.fetchDelete(`${API.BASE_TYPE}/${categoryId}`, token);
+  return response;
+};
+
 const clearEventCategoriesAction = () => (dispatch) => {
   dispatch({
     type: CLEAR_EVENT_CATEGORIES_ERRORS,
@@ -73,4 +79,5 @@ export default {
   getEventCategoriesAction,
   addNewEventCategoryAction,
   getEventAllCategoriesNamesAction,
+  deleteCategoryAction,
 };
