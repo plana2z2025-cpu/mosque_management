@@ -1,18 +1,6 @@
 const Joi = require("joi");
 const { celebrate, Segments } = require("celebrate");
 
-//    .valid(
-//      'Religious Education',
-//      'Community Services',
-//      'Youth Development',
-//      'Spiritual Growth',
-//      'Family Programs',
-//      'Social Welfare',
-//      'Islamic Studies',
-//      'Charitable Initiatives',
-//      'Cultural Engagement',
-//      'Interfaith Dialogue'
-//    )
 const createEventCategory = celebrate({
   [Segments.BODY]: Joi.object({
     name: Joi.string().required(),
