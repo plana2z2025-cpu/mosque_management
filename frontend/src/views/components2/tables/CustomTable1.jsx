@@ -14,7 +14,7 @@ const CustomTable1 = ({
   headers,
   docs,
   onRowAction,
-  actionColumn,
+  actions,
   index = true,
   cardTitle = '',
   pagination = true,
@@ -40,14 +40,14 @@ const CustomTable1 = ({
               {headers.map((header, index) => (
                 <TableHead key={index}>{header.title}</TableHead>
               ))}
-              {actionColumn && <TableHead>Actions</TableHead>}
+              {actions && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {isEmptyData ? (
               <TableRow>
                 <TableCell
-                  colSpan={headers.length + (actionColumn ? 1 : 0) + (index ? 1 : 0)}
+                  colSpan={headers.length + (actions ? 1 : 0) + (index ? 1 : 0)}
                   className="h-24 text-center"
                 >
                   No data available
@@ -62,11 +62,9 @@ const CustomTable1 = ({
                       <div className="text-sm">{item[header.key] || 'N/A'}</div>
                     </TableCell>
                   ))}
-                  {actionColumn && (
+                  {actions && (
                     <TableCell>
-                      {onRowAction && (
-                        <div className="flex gap-3">{onRowAction(item, rowIndex)}</div>
-                      )}
+                      <div className="flex gap-2">{actions(item)}</div>
                     </TableCell>
                   )}
                 </TableRow>

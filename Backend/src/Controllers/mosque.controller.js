@@ -7,6 +7,7 @@ const { USER_ALREADY_EXISTS } = require("../Constants/user.constants");
 const moment = require("moment");
 const CommonService = require("../Services/common.service");
 const mosqueModel = require("../Schema/mosque.model");
+const eventCategoryModel = require("../Schema/events/eventCategory.model");
 const sortConstants = require("../Constants/sort.constants");
 const { MEMBER, ADMIN } = require("../Constants/roles.constants");
 const {
@@ -58,6 +59,48 @@ const createNewMosqueController = async (req, res, next) => {
       role: ADMIN,
       mosque_admin: newMosque._id,
     });
+
+    let eventsData = [
+      {
+        name: "Eid ul-Fitr",
+        description:
+          "Marks the end of Ramadan fasting, celebrated with communal prayers, family gatherings, and sharing of food and gifts.",
+      },
+      {
+        name: "Eid ul-Adha",
+        description:
+          "Commemorates Prophet Ibrahim's willingness to sacrifice his son, marked by prayers, sacrifice of animals, and distribution of meat to the needy.",
+      },
+      {
+        name: "Shab-e-Barat",
+        description:
+          "Night of forgiveness and mercy in the month of Sha'ban, spent in prayer and seeking Allah's blessings.",
+      },
+      {
+        name: "Laylat al-Qadr",
+        description:
+          "Night of Power during Ramadan when the Quran was first revealed, considered more blessed than thousand months.",
+      },
+      {
+        name: "Shab-e-Meraj",
+        description:
+          "Commemorates Prophet Muhammad's miraculous night journey and ascension to heaven.",
+      },
+      {
+        name: "Milad un-Nabi",
+        description:
+          "Celebration of Prophet Muhammad's birth, marked with recitations, lectures, and sharing of food.",
+      },
+    ];
+
+    eventsData = eventsData.map((item) => ({
+      ...item,
+      mosqueId: newMosque._id,
+      createdBy: userExist._id,
+      createdRef: "user",
+    }));
+
+    await eventCategoryModel.insertMany(eventsData);
     await newRegistrationMosqueWebhook(newMosque);
     logger.info("Controller-mosque.controller-createNewMosqueController-End");
     res.status(201).json({

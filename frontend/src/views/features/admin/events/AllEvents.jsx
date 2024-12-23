@@ -1,9 +1,12 @@
 import React, { memo, useEffect, useState } from 'react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
-import { categoryActions, eventActions } from '@/redux/combineActions';
+import { eventActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
+import { Trash, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import ModalV1 from '@/views/components2/modal/ModalV1';
 
 const breadCumbs = [{ label: 'Events', href: null }];
 
@@ -14,16 +17,23 @@ const headers = [
   { title: 'Time', key: 'time' },
   { title: 'Speakers', key: 'speakers' },
 ];
+
+const INITIAL_STATE = {
+  limit: 10,
+  page: 1,
+  name: '',
+  isOpen: false,
+};
+
+const TableRow = memo(({ row, onDelete }) => (
+  <Trash color="red" className="cursor-pointer size-5" />
+));
+
 const AllEvents = () => {
   const { getCommunityEventsAction } = eventActions;
   const dispatch = useDispatch();
   const { allEvents } = useSelector((state) => state.eventState);
-  const [info, setInfo] = useState({
-    limit: 10,
-    page: 1,
-    name: '',
-    isOpen: false,
-  });
+  const [info, setInfo] = useState(INITIAL_STATE);
 
   useEffect(() => {
     if (!allEvents || allEvents?.currentPage !== info?.page) {
@@ -47,6 +57,7 @@ const AllEvents = () => {
         totalPages={allEvents?.totalPages}
         currentPage={allEvents?.currentPage}
         onPageChange={(page) => setInfo((prev) => ({ ...prev, page }))}
+        actions={(row) => <TableRow row={row} />}
       />
     </Mainwrapper>
   );

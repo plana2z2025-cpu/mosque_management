@@ -1,24 +1,43 @@
-import { CLEAR_EVENT_ERRORS, RESET_EVENT_STATE, COMMUNITY_EVENTS } from './constant';
+import {
+  CLEAR_EVENT_ERRORS,
+  RESET_EVENT_STATE,
+  COMMUNITY_EVENTS,
+  EVENT_CATEGORIES,
+  EVENT_CATEGORIES_NAMES,
+} from './constant';
 
 const initialState = {
   loading: false,
   error: null,
   statusCode: null,
   allEvents: null,
+  eventCategories: null,
+  eventCategoryNames: null,
 };
 
 export const EventReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [COMMUNITY_EVENTS.request]: () => ({
-      ...state,
-      loading: true,
-    }),
+    [COMMUNITY_EVENTS.request || EVENT_CATEGORIES.request || EVENT_CATEGORIES_NAMES.request]:
+      () => ({
+        ...state,
+        loading: true,
+      }),
     [COMMUNITY_EVENTS.success]: () => ({
       ...state,
       loading: false,
       allEvents: action.payload,
     }),
-    [COMMUNITY_EVENTS.fail]: () => ({
+    [EVENT_CATEGORIES.success]: () => ({
+      ...state,
+      loading: false,
+      eventCategories: action.payload,
+    }),
+    [EVENT_CATEGORIES_NAMES.success]: () => ({
+      ...state,
+      loading: false,
+      eventCategoryNames: action.payload,
+    }),
+    [COMMUNITY_EVENTS.fail || EVENT_CATEGORIES.fail || EVENT_CATEGORIES_NAMES.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,

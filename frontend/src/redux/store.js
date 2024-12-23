@@ -3,7 +3,6 @@ import { LoginReducer } from './login/reducer';
 import { UserProfileReducer } from './userProfile/reducer';
 import { MosqueReducer } from './mosques/reducer';
 import { AdministratorReducer } from './subUsers/reducer';
-import { EventCategoriesReducer } from './categories/reducer';
 import { EventReducer } from './events/reducer';
 
 const initialState = {};
@@ -13,7 +12,6 @@ const reducer = {
   userProfileState: UserProfileReducer,
   mosqueState: MosqueReducer,
   administratorState: AdministratorReducer,
-  eventCategoryState: EventCategoriesReducer,
   eventState: EventReducer,
 };
 const store = configureStore({

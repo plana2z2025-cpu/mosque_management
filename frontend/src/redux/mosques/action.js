@@ -71,22 +71,38 @@ const registerMosqueAction = async (json) => {
   return response;
 };
 
-const getCommunityMosqueDetailsAction = () => async (dispatch) => {
-  dispatch({ type: COMMUNITY_MOSQUE_DETAILS.request });
+const getCommunityMosqueDetailsAction =
+  (updateDetails = null) =>
+  async (dispatch) => {
+    if (updateDetails) {
+      dispatch({ type: COMMUNITY_MOSQUE_DETAILS.success, payload: updateDetails });
+      return;
+    }
+    dispatch({ type: COMMUNITY_MOSQUE_DETAILS.request });
+    const token = getAccessToken();
+    const response = await Service.fetchGet(
+      `${API.MOSQUE_TYPES.MOSQUE}${API.MOSQUE_TYPES.COMMUNITY}${API.MOSQUE_TYPES.MOSQUE_DETAIL}`,
+      token
+    );
+
+    if (response[0] === true) {
+      dispatch({ type: COMMUNITY_MOSQUE_DETAILS.success, payload: response[1]?.data });
+    } else {
+      dispatch({
+        type: COMMUNITY_MOSQUE_DETAILS.fail,
+        payload: response[1],
+      });
+    }
+  };
+
+const updateMosqueTimingsAction = async (json) => {
   const token = getAccessToken();
-  const response = await Service.fetchGet(
-    `${API.MOSQUE_TYPES.MOSQUE}${API.MOSQUE_TYPES.COMMUNITY}${API.MOSQUE_TYPES.MOSQUE_DETAIL}`,
+  const response = await Service.fetchPut(
+    `${API.BASE_TYPE}${API.MOSQUE_TYPES.COMMUNITY}${API.MOSQUE_TYPES.MOSQUE_TIMINGS}`,
+    json,
     token
   );
-
-  if (response[0] === true) {
-    dispatch({ type: COMMUNITY_MOSQUE_DETAILS.success, payload: response[1]?.data });
-  } else {
-    dispatch({
-      type: COMMUNITY_MOSQUE_DETAILS.fail,
-      payload: response[1],
-    });
-  }
+  return response;
 };
 
 const clearMosqueErrorsAction = () => (dispatch) => {
@@ -107,4 +123,5 @@ export default {
   resetMosqueAction,
   clearMosqueErrorsAction,
   getCommunityMosqueDetailsAction,
+  updateMosqueTimingsAction,
 };

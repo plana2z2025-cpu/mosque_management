@@ -6,4 +6,7 @@ export const MOSQUE_TYPES = {
   SLUG_VERIFY: '/slug-verify/available',
   COMMUNITY: '/community',
   MOSQUE_DETAIL: '/mosque-detail',
+  MOSQUE_TIMINGS: '/mosque-timings',
 };
+
+export const BASE_TYPE = '/mosque';
