@@ -104,7 +104,7 @@ const data = {
   quickAccess: [
     {
       name: 'Timings',
-      url: '/timings',
+      url: '/admin/timings',
       icon: Clock,
     },
     {
