@@ -15,7 +15,7 @@ const createEventCategoryController = async (req, res, next) => {
     const existingCategory = await eventCategoryModel.findOne({ name });
     if (existingCategory) {
       return next(
-        httpErrors.BadRequest(CategoryConstant.EVENT_CATEGORY_NOT_FOUND)
+        httpErrors.BadRequest(CategoryConstant.EVENT_CATEGORY_ALREADY_EXISTS)
       );
     }
 

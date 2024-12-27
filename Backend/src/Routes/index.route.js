@@ -4,6 +4,7 @@ const MosqueRoutes = require("./mosque.routes");
 const EventRoutes = require("./events/event.routes");
 const EventCategoryRoutes = require("./events/category.routes");
 const SubUserRoutes = require("./users/subUser.routes");
+const ExpenseRoutes = require("./expenses/expenses.routes");
 const ExpenseCategoryRoutes = require("./expenses/category.routes");
 
 // Route config
@@ -31,7 +32,7 @@ IndexRoutes.use("/event/category", EventCategoryRoutes);
 //  Event Routes
 // ----------------------------------------
 // event routes
-// IndexRoutes.use("/event", EventRoutes);
+IndexRoutes.use("/expense", ExpenseRoutes);
 // event category routes
 IndexRoutes.use("/expenses/category", ExpenseCategoryRoutes);
 
