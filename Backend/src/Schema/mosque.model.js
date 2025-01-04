@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto");
+const { mosque, userMosque, user } = require("../Constants/model.constants");
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -91,13 +92,13 @@ const ModelSchema = new mongoose.Schema(
     imams: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: user,
       },
     ],
     administrators: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user_mosque",
+        ref: userMosque,
       },
     ],
     timings: {
@@ -157,6 +158,6 @@ ModelSchema.pre("save", function (next) {
   next();
 });
 
-const mosqueModel = mongoose.model("mosque", ModelSchema);
+const mosqueModel = mongoose.model(mosque, ModelSchema);
 
 module.exports = mosqueModel;

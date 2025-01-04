@@ -1,4 +1,10 @@
 const mongoose = require("mongoose");
+const {
+  mosque,
+  userMosque,
+  eventCategory,
+  user,
+} = require("../../Constants/model.constants");
 
 //   enum: [
 //     'Religious Education',
@@ -37,7 +43,7 @@ const ModelSchema = new mongoose.Schema(
     },
     mosqueId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "mosque",
+      ref: mosque,
       required: true,
     },
     createdBy: {
@@ -47,12 +53,12 @@ const ModelSchema = new mongoose.Schema(
     },
     createdRef: {
       type: String,
-      enum: ["user", "user_mosque"],
+      enum: [user, userMosque],
       required: true,
     },
     updatedRef: {
       type: String,
-      enum: ["user", "user_mosque"],
+      enum: [user, userMosque],
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -63,5 +69,5 @@ const ModelSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-eventCategoryModel = mongoose.model("eventcategory", ModelSchema);
+const eventCategoryModel = mongoose.model(eventCategory, ModelSchema);
 module.exports = eventCategoryModel;
