@@ -11,6 +11,7 @@ import {
   Wallet,
   CreditCard,
   Clock,
+  Receipt,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -85,6 +86,22 @@ const data = {
         {
           title: 'Events',
           url: '/admin/events',
+        },
+      ],
+    },
+
+    {
+      title: 'Expenses',
+      url: '#',
+      icon: Receipt,
+      items: [
+        {
+          title: 'Category',
+          url: '/admin/expenses/categories',
+        },
+        {
+          title: 'Expenses',
+          url: '/admin/expenses',
         },
       ],
     },

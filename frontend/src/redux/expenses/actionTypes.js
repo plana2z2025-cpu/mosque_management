@@ -12,5 +12,5 @@ export const EXPENSE_CATEGORIES_TYPE = {
   NAMES: '/names',
 };
 
-export const BASE_TYPE = '/expenses';
+export const BASE_TYPE = '/expense';
 export const BASE_TYPE_CATEGORY = '/expenses/category';

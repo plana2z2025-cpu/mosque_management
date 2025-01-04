@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useCallback, useMemo } from 'react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
-import { eventActions, expenseActions } from '@/redux/combineActions';
+import { expenseActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
@@ -265,7 +265,7 @@ const ExpenseCategories = () => {
       <CustomTable1
         headers={headers}
         docs={tableData}
-        cardTitle="Categories"
+        cardTitle="Expenses"
         totalPages={expenseCategories?.totalPages}
         currentPage={expenseCategories?.currentPage}
         onPageChange={onPageChange}

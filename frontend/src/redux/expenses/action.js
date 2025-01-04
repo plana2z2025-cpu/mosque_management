@@ -26,7 +26,7 @@ const getAllExpensesAction =
     dispatch({ type: EXPENSES.request });
     const token = getAccessToken();
     const response = await Service.fetchGet(
-      `${API.BASE_TYPE}${API.EXPENSE_TYPE.EXPENSES}${query ? '?' + query : ''}`,
+      `${API.BASE_TYPE}${API.EXPENSE_TYPE.ALL}${query ? '?' + query : ''}`,
       token
     );
 

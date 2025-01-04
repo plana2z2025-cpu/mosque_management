@@ -12,6 +12,7 @@ import CreateEventForm from './views/features/admin/events/CreateEvent';
 import AllEvents from './views/features/admin/events/AllEvents';
 import CommunityTimings from './views/features/admin/timings/Timings';
 import ExpenseCategories from './views/features/admin/expenses/Categories';
+import AllExpenses from './views/features/admin/expenses/AllExpenses';
 
 const allRoutesMapper = [
   {
@@ -30,7 +31,7 @@ const allRoutesMapper = [
     path: '/admin',
     component: (
       <AuthWrapper>
-        <ExpenseCategories />
+        <AllExpenses />
       </AuthWrapper>
     ),
   },
@@ -71,6 +72,22 @@ const allRoutesMapper = [
     component: (
       <AuthWrapper>
         <Categories />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/expenses',
+    component: (
+      <AuthWrapper>
+        <AllExpenses />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/expenses/categories',
+    component: (
+      <AuthWrapper>
+        <ExpenseCategories />
       </AuthWrapper>
     ),
   },
