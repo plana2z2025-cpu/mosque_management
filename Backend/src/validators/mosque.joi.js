@@ -105,7 +105,7 @@ const createMosqueSlugValidation = celebrate({
 const updateMosqueDetailsValidation = celebrate({
   body: Joi.object({
     name: Joi.string().optional(),
-    // slug :Joi.string().
+    slug: Joi.string().required(),
     address: Joi.object({
       street: Joi.string().optional(),
       city: Joi.string().optional(),

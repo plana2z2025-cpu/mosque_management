@@ -1,9 +1,9 @@
-const { Joi } = require("joi");
+const Joi = require("joi");
 const { celebrate, Segments } = require("celebrate");
 
 const createPayeeValidation = celebrate({
   [Segments.BODY]: Joi.object({
-    payeeName: Joi.string().required().min(2).max(50),
+    payeeName: Joi.string().required().min(2).max(50).lowercase(),
     contactNumber: Joi.string().optional().allow(null, ""),
     emailAddress: Joi.string().optional().allow(null, "").email(),
     bankDetails: Joi.object({
@@ -17,10 +17,10 @@ const createPayeeValidation = celebrate({
 
 const updatePayeeValidation = celebrate({
   [Segments.PARAMS]: Joi.object({
-    id: Joi.string().required(), // Assuming you're using a string ID for the payee
+    payeeId: Joi.string().required(), // Assuming you're using a string ID for the payee
   }),
   [Segments.BODY]: Joi.object({
-    payeeName: Joi.string().optional().min(2).max(50),
+    payeeName: Joi.string().optional().min(2).max(50).lowercase(),
     contactNumber: Joi.string().optional().allow(null, ""),
     emailAddress: Joi.string().optional().allow(null, "").email(),
     bankDetails: Joi.object({

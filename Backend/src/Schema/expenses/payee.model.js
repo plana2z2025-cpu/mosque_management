@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const { payeeRecipient } = require("../../Constants/model.constants");
+const { mosque, user } = require("../../Constants/model.constants");
 
 const ModelSchema = new mongoose.Schema({
   payeeName: {
-    // Updated field name
     type: String,
     required: true,
+    lowercase: true,
   },
   contactNumber: {
     type: String,
@@ -29,8 +30,17 @@ const ModelSchema = new mongoose.Schema({
   upiPhoneNumber: {
     type: String,
   },
+  mosqueId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: mosque,
+    required: true,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: user,
+    required: true,
+  },
 });
 
-// Export the recipient model
 const PayeeRecipientModel = mongoose.model(payeeRecipient, ModelSchema);
 module.exports = PayeeRecipientModel;
