@@ -6,6 +6,7 @@ const {
   MEMBER,
   ADMIN,
 } = require("../../Constants/roles.constants");
+const { user, mosque } = require("../../Constants/model.constants");
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -30,7 +31,7 @@ const ModelSchema = new mongoose.Schema(
     },
     mosque_admin: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "mosque",
+      ref: mosque,
     },
     isVerified: {
       type: Boolean,
@@ -47,6 +48,6 @@ ModelSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-const userModel = mongoose.model("user", ModelSchema);
+const userModel = mongoose.model(user, ModelSchema);
 
 module.exports = userModel;

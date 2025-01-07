@@ -4,6 +4,7 @@ import { UserProfileReducer } from './userProfile/reducer';
 import { MosqueReducer } from './mosques/reducer';
 import { AdministratorReducer } from './subUsers/reducer';
 import { EventReducer } from './events/reducer';
+import { ExpenseReducer } from './expenses/reducer';
 
 const initialState = {};
 
@@ -13,6 +14,7 @@ const reducer = {
   mosqueState: MosqueReducer,
   administratorState: AdministratorReducer,
   eventState: EventReducer,
+  expenseState: ExpenseReducer,
 };
 const store = configureStore({
   reducer,

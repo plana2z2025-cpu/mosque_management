@@ -18,6 +18,7 @@
   - [ ] Implement form validation (e.g., required fields, email validation)
   - [ ] Set up backend endpoint to handle form submissions
   - [ ] Test form submission and data storage
+  - [ ] Adding a Recipient Details
 
 -----------------------------------------------------------------------------------
 ## Upcoming Tasks
@@ -31,10 +32,12 @@
 - [ ] Event Management
   - [ ] Allow admins to create, edit, and delete events
   - [ ] Display events to users with date, time, and description
+- [] Delete Sub-Categories 
+  - [] check whether 1st all events || expenses should be deleted or not 
 
 -----------------------------------------------------------------------------------
 ## Future Enhancements
 -----------------------------------------------------------------------------------
 - need to have a mosque galleries kind section.
 - students on boarding to mosque if any.
-
+- cleaning the mosque schedule for contribution 

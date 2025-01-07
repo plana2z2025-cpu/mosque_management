@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const { userMosque, user, mosque } = require("../../Constants/model.constants");
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -13,12 +14,12 @@ const ModelSchema = new mongoose.Schema(
     },
     rootUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: user,
       required: true,
     },
     mosqueId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "mosque",
+      ref: mosque,
     },
     mosqueUniqueId: {
       type: String,
@@ -26,7 +27,7 @@ const ModelSchema = new mongoose.Schema(
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: user,
       required: true,
     },
   },
@@ -40,6 +41,6 @@ ModelSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-const userMosqueModel = mongoose.model("user_mosque", ModelSchema);
+const userMosqueModel = mongoose.model(userMosque, ModelSchema);
 
 module.exports = userMosqueModel;

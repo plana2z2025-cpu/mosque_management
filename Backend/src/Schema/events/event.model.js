@@ -1,10 +1,29 @@
 const mongoose = require("mongoose");
+const {
+  event,
+  eventCategory,
+  user,
+  userMosque,
+  mosque,
+} = require("../../Constants/model.constants");
+
+const enumStatus = ["draft", "published", "cancelled"];
+const enumTargetAudience = [
+  "men",
+  "women",
+  "children",
+  "youth",
+  "seniors",
+  "families",
+  "converts",
+  "all",
+];
 
 const ModelSchema = new mongoose.Schema(
   {
     mosqueId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "mosque",
+      ref: mosque,
       required: true,
     },
     title: {
@@ -17,7 +36,7 @@ const ModelSchema = new mongoose.Schema(
     },
     type: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "eventcategory",
+      ref: eventCategory,
       required: true,
     },
     startDate: {
@@ -45,17 +64,8 @@ const ModelSchema = new mongoose.Schema(
     ],
     targetAudience: {
       type: [String],
-      default: "men",
-      enum: [
-        "men",
-        "women",
-        "children",
-        "youth",
-        "seniors",
-        "families",
-        "converts",
-        "all",
-      ],
+      default: enumTargetAudience[0],
+      enum: enumTargetAudience,
     },
     contactInfo: {
       name: String,
@@ -66,8 +76,8 @@ const ModelSchema = new mongoose.Schema(
     tags: [String],
     status: {
       type: String,
-      enum: ["draft", "published", "cancelled"],
-      default: "draft",
+      enum: enumStatus,
+      default: enumStatus[1],
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -76,12 +86,12 @@ const ModelSchema = new mongoose.Schema(
     },
     createdRef: {
       type: String,
-      enum: ["user", "user_mosque"],
+      enum: [user, userMosque],
       required: true,
     },
     updatedRef: {
       type: String,
-      enum: ["user", "user_mosque"],
+      enum: [user, userMosque],
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -93,6 +103,6 @@ const ModelSchema = new mongoose.Schema(
   }
 );
 
-const eventModel = mongoose.model("event", ModelSchema);
+const eventModel = mongoose.model(event, ModelSchema);
 
 module.exports = eventModel;

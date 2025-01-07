@@ -277,7 +277,7 @@ const updateCommunityMosqueDetailsController = async (req, res, next) => {
     );
 
     const details = req.body;
-    const isSlugPresent = await mosqueModel.findOne({ slug });
+    const isSlugPresent = await mosqueModel.findOne({ slug: req.body.slug });
     if (isSlugPresent) {
       return next(httpErrors.BadRequest(MOSQUE_CONSTANTS.SLUG_NOT_PRESENT));
     }

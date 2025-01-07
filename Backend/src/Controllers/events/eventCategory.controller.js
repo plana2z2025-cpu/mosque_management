@@ -15,7 +15,7 @@ const createEventCategoryController = async (req, res, next) => {
     const existingCategory = await eventCategoryModel.findOne({ name });
     if (existingCategory) {
       return next(
-        httpErrors.BadRequest(CategoryConstant.EVENT_CATEGORY_NOT_FOUND)
+        httpErrors.BadRequest(CategoryConstant.EVENT_CATEGORY_ALREADY_EXISTS)
       );
     }
 
@@ -94,10 +94,19 @@ const getAllEventCategoriesController = async (req, res, next) => {
     limit = Number(limit);
 
     const skip_docs = (page - 1) * limit;
-    const totalDocs = await eventCategoryModel.countDocuments();
+    const totalDocs = await eventCategoryModel.countDocuments({
+      mosqueId: req.mosqueId,
+    });
     const totalPages = Math.ceil(totalDocs / limit);
 
-    const query = search ? { name: { $regex: search, $options: "i" } } : {};
+    const query = {
+      mosqueId: req.mosqueId,
+    };
+    console.log("query", query);
+
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
 
     const docs = await eventCategoryModel
       .find(query)

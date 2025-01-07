@@ -1,4 +1,10 @@
 const mongoose = require("mongoose");
+const {
+  mosque,
+  user,
+  userMosque,
+  expenseCategory,
+} = require("../../Constants/model.constants");
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -11,7 +17,7 @@ const ModelSchema = new mongoose.Schema(
     description: String,
     mosqueId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "mosque",
+      ref: mosque,
       required: true,
     },
     createdBy: {
@@ -21,12 +27,12 @@ const ModelSchema = new mongoose.Schema(
     },
     createdRef: {
       type: String,
-      enum: ["user", "user_mosque"],
+      enum: [user, userMosque],
       required: true,
     },
     updatedRef: {
       type: String,
-      enum: ["user", "user_mosque"],
+      enum: [user, userMosque],
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -36,5 +42,5 @@ const ModelSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const expenseCategoryModel = mongoose.model("expensecategory", ModelSchema);
+const expenseCategoryModel = mongoose.model(expenseCategory, ModelSchema);
 module.exports = expenseCategoryModel;

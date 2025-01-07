@@ -1,5 +1,7 @@
 import React, { memo, useRef, useEffect } from 'react';
 import { X } from 'lucide-react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
 const ModalV1 = ({
   isOpen,
@@ -8,7 +10,6 @@ const ModalV1 = ({
   size = 'medium', // 'small', 'medium', 'full'
   title = '',
 }) => {
-  console.log('rerender');
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -20,7 +21,17 @@ const ModalV1 = ({
 
     document.addEventListener('keydown', handleEscapeKey);
     return () => document.removeEventListener('keydown', handleEscapeKey);
-  }, [isOpen, onClose]);
+  }, [isOpen]);
+
+  useGSAP(() => {
+    if (isOpen) {
+      gsap.fromTo(
+        modalRef.current,
+        { opacity: 0, y: -100 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }
+      );
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -30,9 +41,19 @@ const ModalV1 = ({
     full: 'max-w-full mx-4',
   };
 
+  const closeFunctionGsap = () => {
+    gsap.to(modalRef.current, {
+      opacity: 0,
+      y: -50,
+      duration: 0.5,
+      ease: 'power3.in',
+      onComplete: () => onClose(null),
+    });
+  };
+
   const handleOutsideClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
-      onClose();
+      closeFunctionGsap();
     }
   };
 
@@ -52,7 +73,7 @@ const ModalV1 = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-semibold">{title}</h2>
-          <button onClick={() => onClose(null)}>
+          <button onClick={closeFunctionGsap}>
             <X className="w-6 h-6" />
           </button>
         </div>
