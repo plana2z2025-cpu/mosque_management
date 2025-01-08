@@ -17,6 +17,8 @@ const {
   getAllEventController,
   deleteEventController,
   updateEventController,
+  eventTypeCountGraphController,
+  eventStatusBasedCountGraphController,
 } = require("../../Controllers/events/event.controller");
 
 EventRoutes.route("/new-event").post(
@@ -53,5 +55,19 @@ EventRoutes.route("/:eventId")
     CheckMosqueAccess,
     deleteEventController
   );
+
+EventRoutes.route("/graph/event-type-count").get(
+  Authentication,
+  Authorization(ADMIN),
+  CheckMosqueAccess,
+  eventTypeCountGraphController
+);
+
+EventRoutes.route("/graph/event-status-count").get(
+  Authentication,
+  Authorization(ADMIN),
+  CheckMosqueAccess,
+  eventStatusBasedCountGraphController
+);
 
 module.exports = EventRoutes;

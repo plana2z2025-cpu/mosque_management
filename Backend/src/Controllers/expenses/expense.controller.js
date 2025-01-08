@@ -1,16 +1,17 @@
 const expenseModel = require("../../Schema/expenses/expense.model");
 const expenseCategoryModel = require("../../Schema/expenses/expenseCategory.model");
+const payeeModel = require("../../Schema/expenses/payee.model");
 const logger = require("../../Config/logger.config");
 const httpErrors = require("http-errors");
 const expenseConstant = require("../../Constants/expense.constants");
-const moment = require("moment");
+// const moment = require("moment");
 const sortConstants = require("../../Constants/sort.constants");
+const payeeConstant = require("../../Constants/payee.constants");
 
 const createExpenseController = async (req, res, next) => {
   try {
     logger.info("Controller - expenses - createExpenseController - Start");
-    const { amount, description, date, category, paymentMethod, status } =
-      req.body;
+    const { category } = req.body;
 
     const isCategoryExist = await expenseCategoryModel
       .findById(category)
@@ -21,13 +22,15 @@ const createExpenseController = async (req, res, next) => {
       );
     }
 
+    if (req.body.payeeId) {
+      const isPayeeExist = await payeeModel.findById(req.body.payeeId).lean();
+      if (!isPayeeExist) {
+        return next(httpErrors.NotFound(payeeConstant.PAYEE_NOT_FOUND));
+      }
+    }
+
     const expense = new expenseModel({
-      amount,
-      description,
-      date,
-      category,
-      paymentMethod,
-      status,
+      ...req.body,
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
       createdRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
@@ -61,7 +64,8 @@ const getExpenseByIdController = async (req, res, next) => {
       .findById(expenseId)
       .populate("category", "name")
       .populate("createdBy", "name")
-      .populate("updatedBy", "name");
+      .populate("updatedBy", "name")
+      .populate("payeeId", "payeeName");
 
     if (!expense) {
       return next(httpErrors.NotFound(expenseConstant.EXPENSE_NOT_FOUND));
@@ -113,6 +117,7 @@ const getAllExpensesController = async (req, res, next) => {
       .populate("category", "name")
       .populate("createdBy", "name")
       .populate("updatedBy", "name")
+      .populate("payeeId", "payeeName")
       .limit(limit)
       .skip(skip_docs)
       .sort(sortConstants["-createdAt"]);
