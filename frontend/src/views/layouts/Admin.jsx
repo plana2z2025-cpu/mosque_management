@@ -45,6 +45,7 @@ import useLogout from '@/hooks/useLogout';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { mosqueActions } from '@/redux/combineActions';
+import getInitials from '@/helpers/get-initials';
 
 const data = {
   user: {
@@ -74,6 +75,7 @@ const data = {
       title: 'Programs & Events',
       url: '#',
       icon: Calendar,
+      isActive: true,
       items: [
         {
           title: 'Categories',
@@ -94,6 +96,7 @@ const data = {
       title: 'Expenses',
       url: '#',
       icon: Receipt,
+      isActive: true,
       items: [
         {
           title: 'Category',
@@ -132,7 +135,7 @@ const data = {
   ],
 };
 
-const AdminSidebar = ({ children }) => {
+const AdminSidebar = ({ user, children }) => {
   const logoutFunction = useLogout();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -236,12 +239,15 @@ const AdminSidebar = ({ children }) => {
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={data.user.avatar} alt={data.user.name} />
-                      <AvatarFallback className="rounded-lg">MA</AvatarFallback>
+                      <AvatarImage src={user?.avatar} alt={user?.name} />
+                      <AvatarFallback className="rounded-lg">
+                        {' '}
+                        {getInitials(user?.name)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{data.user.name}</span>
-                      <span className="truncate text-xs">{data.user.email}</span>
+                      <span className="truncate font-semibold">{user?.name}</span>
+                      <span className="truncate text-xs">{user?.email}</span>
                     </div>
                     <ChevronsUpDown className="ml-auto size-4" />
                   </SidebarMenuButton>
@@ -255,12 +261,15 @@ const AdminSidebar = ({ children }) => {
                   <DropdownMenuLabel className="p-0 font-normal">
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src={data.user.avatar} alt={data.user.name} />
-                        <AvatarFallback className="rounded-lg">MA</AvatarFallback>
+                        <AvatarImage src={user?.avatar} alt={user?.name} />
+                        <AvatarFallback className="rounded-lg">
+                          {' '}
+                          {getInitials(user?.name)}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-semibold">{data.user.name}</span>
-                        <span className="truncate text-xs">{data.user.email}</span>
+                        <span className="truncate font-semibold">{user?.name}</span>
+                        <span className="truncate text-xs">{user?.email}</span>
                       </div>
                     </div>
                   </DropdownMenuLabel>
