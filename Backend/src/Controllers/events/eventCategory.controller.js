@@ -12,7 +12,10 @@ const createEventCategoryController = async (req, res, next) => {
     );
     const { name, description, icon } = req.body;
 
-    const existingCategory = await eventCategoryModel.findOne({ name });
+    const existingCategory = await eventCategoryModel.findOne({
+      name,
+      mosqueId: req.mosqueId,
+    });
     if (existingCategory) {
       return next(
         httpErrors.BadRequest(CategoryConstant.EVENT_CATEGORY_ALREADY_EXISTS)
@@ -57,7 +60,7 @@ const getEventCategoryByIdController = async (req, res, next) => {
     );
     const { categoryId } = req.params;
     const category = await eventCategoryModel
-      .findById(categoryId)
+      .findOne({ _id: categoryId, mosqueId: req.mosqueId })
       .populate("createdBy", "name")
       .populate("updatedBy", "name");
 
@@ -158,7 +161,9 @@ const updateEventCategoryController = async (req, res, next) => {
     details.updatedRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
 
     const updatedCategory = await eventCategoryModel
-      .findByIdAndUpdate(categoryId, details, { new: true })
+      .findOneAndUpdate({ _id: categoryId, mosqueId: req.mosqueId }, details, {
+        new: true,
+      })
       .populate("createdBy", "name")
       .populate("updatedBy", "name");
 
@@ -193,9 +198,10 @@ const deleteEventCategoryController = async (req, res, next) => {
     );
     const { categoryId } = req.params;
 
-    const deletedCategory = await eventCategoryModel.findByIdAndDelete(
-      categoryId
-    );
+    const deletedCategory = await eventCategoryModel.findOneAndDelete({
+      _id: categoryId,
+      mosqueId: req.mosqueId,
+    });
 
     if (!deletedCategory) {
       return next(

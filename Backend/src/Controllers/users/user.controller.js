@@ -4,6 +4,7 @@ const USER_CONSTANTS = require("../../Constants/user.constants");
 const logger = require("../../Config/logger.config");
 const { VerifyPasswordMethod } = require("../../Utils/verify.password");
 const { CreateAccessToken } = require("../../Utils/jwt.token");
+const userModel = require("../../Schema/users/user.model");
 
 const LoginUserController = async (req, res, next) => {
   try {
@@ -70,10 +71,13 @@ const RegisterController = async (req, res, next) => {
 
 const MyProfileController = async (req, res, next) => {
   try {
+    const data = await userModel
+      .findById(req.user._id)
+      .populate("mosque_admin", "name");
     res.status(200).json({
       success: true,
       statusCode: 200,
-      data: req.user,
+      data: data,
     });
   } catch (error) {
     logger.warn("Controller-user.controller-RegisterController-End", error);
