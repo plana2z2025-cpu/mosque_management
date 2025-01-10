@@ -1,19 +1,20 @@
 const expenseModel = require("../../Schema/expenses/expense.model");
 const expenseCategoryModel = require("../../Schema/expenses/expenseCategory.model");
+const payeeModel = require("../../Schema/expenses/payee.model");
 const logger = require("../../Config/logger.config");
 const httpErrors = require("http-errors");
 const expenseConstant = require("../../Constants/expense.constants");
-const moment = require("moment");
+// const moment = require("moment");
 const sortConstants = require("../../Constants/sort.constants");
+const payeeConstant = require("../../Constants/payee.constants");
 
 const createExpenseController = async (req, res, next) => {
   try {
     logger.info("Controller - expenses - createExpenseController - Start");
-    const { amount, description, date, category, paymentMethod, status } =
-      req.body;
+    const { category } = req.body;
 
     const isCategoryExist = await expenseCategoryModel
-      .findById(category)
+      .findOne({ _id: category, mosqueId: req.mosqueId })
       .lean();
     if (!isCategoryExist) {
       return next(
@@ -21,13 +22,17 @@ const createExpenseController = async (req, res, next) => {
       );
     }
 
+    if (req.body.payeeId) {
+      const isPayeeExist = await payeeModel
+        .findOne({ _id: req.body.payeeId })
+        .lean();
+      if (!isPayeeExist) {
+        return next(httpErrors.NotFound(payeeConstant.PAYEE_NOT_FOUND));
+      }
+    }
+
     const expense = new expenseModel({
-      amount,
-      description,
-      date,
-      category,
-      paymentMethod,
-      status,
+      ...req.body,
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
       createdRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
@@ -58,10 +63,11 @@ const getExpenseByIdController = async (req, res, next) => {
 
     const { expenseId } = req.params;
     const expense = await expenseModel
-      .findById(expenseId)
+      .findOne({ _id: expenseId, mosqueId: req.mosqueId })
       .populate("category", "name")
       .populate("createdBy", "name")
-      .populate("updatedBy", "name");
+      .populate("updatedBy", "name")
+      .populate("payeeId", "payeeName");
 
     if (!expense) {
       return next(httpErrors.NotFound(expenseConstant.EXPENSE_NOT_FOUND));
@@ -105,7 +111,9 @@ const getAllExpensesController = async (req, res, next) => {
     }
 
     const skip_docs = (page - 1) * limit;
-    const totalDocs = await expenseModel.countDocuments(query);
+    const totalDocs = await expenseModel.countDocuments({
+      mosqueId: req.mosqueId,
+    });
     const totalPages = Math.ceil(totalDocs / limit);
 
     const docs = await expenseModel
@@ -113,6 +121,7 @@ const getAllExpensesController = async (req, res, next) => {
       .populate("category", "name")
       .populate("createdBy", "name")
       .populate("updatedBy", "name")
+      .populate("payeeId", "payeeName")
       .limit(limit)
       .skip(skip_docs)
       .sort(sortConstants["-createdAt"]);
@@ -153,7 +162,9 @@ const updateExpenseController = async (req, res, next) => {
     details.updatedRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
 
     const updatedExpense = await expenseModel
-      .findByIdAndUpdate(expenseId, details, { new: true })
+      .findOneAndUpdate({ _id: expenseId, mosqueId: req.mosqueId }, details, {
+        new: true,
+      })
       .populate("category", "name")
       .populate("createdBy", "name")
       .populate("updatedBy", "name");
@@ -184,7 +195,10 @@ const deleteExpenseController = async (req, res, next) => {
     logger.info("Controller - expenses - deleteExpenseController - Start");
 
     const { expenseId } = req.params;
-    const deletedExpense = await expenseModel.findByIdAndDelete(expenseId);
+    const deletedExpense = await expenseModel.findOneAndDelete({
+      _id: expenseId,
+      mosqueId: req.mosqueId,
+    });
 
     if (!deletedExpense) {
       return next(httpErrors.NotFound(expenseConstant.EXPENSE_NOT_FOUND));

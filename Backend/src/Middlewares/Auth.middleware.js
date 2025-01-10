@@ -83,6 +83,7 @@ module.exports.CheckMosqueAccess = async (req, res, next) => {
 
     if (__type__ === "ROOT" && role === ADMIN) {
       req.mosqueId = mosqueExist._id;
+      logger.warn(`req mosqueId : ${req.mosqueId}`);
       return next();
     }
 

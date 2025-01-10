@@ -3,7 +3,7 @@ module.exports = {
   userMosque: "user_mosque",
   mosque: "mosque",
   event: "event",
-  eventCategory: "event_category",
+  eventCategory: "event_categories",
   expense: "expense",
   expenseCategory: "expense_category",
   payeeRecipient: "payee_recipient",

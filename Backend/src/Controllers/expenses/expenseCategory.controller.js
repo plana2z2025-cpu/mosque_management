@@ -12,7 +12,10 @@ const createExpenseCategoryController = async (req, res, next) => {
 
     const { name, description } = req.body;
 
-    const existingCategory = await expenseCategoryModel.findOne({ name });
+    const existingCategory = await expenseCategoryModel.findOne({
+      name,
+      mosqueId: req.mosqueId,
+    });
     if (existingCategory) {
       return next(
         httpErrors.BadRequest(ExpenseConstant.EXPENSE_CATEGORY_EXISTS)
@@ -56,7 +59,7 @@ const getExpenseCategoryByIdController = async (req, res, next) => {
 
     const { categoryId } = req.params;
     const category = await expenseCategoryModel
-      .findById(categoryId)
+      .findOne({ _id: categoryId, mosqueId: req.mosqueId })
       .populate("createdBy", "name")
       .populate("updatedBy", "name");
 
@@ -95,10 +98,18 @@ const getAllExpenseCategoriesController = async (req, res, next) => {
     limit = Number(limit);
 
     const skip_docs = (page - 1) * limit;
-    const totalDocs = await expenseCategoryModel.countDocuments();
+    const totalDocs = await expenseCategoryModel.countDocuments({
+      mosqueId: req.mosqueId,
+    });
     const totalPages = Math.ceil(totalDocs / limit);
 
-    const query = search ? { name: { $regex: search, $options: "i" } } : {};
+    const query = {
+      mosqueId: req.mosqueId,
+    };
+
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
 
     const docs = await expenseCategoryModel
       .find(query)
@@ -151,7 +162,9 @@ const updateExpenseCategoryController = async (req, res, next) => {
     details.updatedRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
 
     const updatedCategory = await expenseCategoryModel
-      .findByIdAndUpdate(categoryId, details, { new: true })
+      .findOneAndUpdate({ _id: categoryId, mosqueId: req.mosqueId }, details, {
+        new: true,
+      })
       .populate("createdBy", "name")
       .populate("updatedBy", "name");
 
@@ -187,9 +200,10 @@ const deleteExpenseCategoryController = async (req, res, next) => {
 
     const { categoryId } = req.params;
 
-    const deletedCategory = await expenseCategoryModel.findByIdAndDelete(
-      categoryId
-    );
+    const deletedCategory = await expenseCategoryModel.findOneAndDelete({
+      _id: categoryId,
+      mosqueId: req.mosqueId,
+    });
 
     if (!deletedCategory) {
       return next(

@@ -11,6 +11,7 @@ const createExpenseValidation = celebrate({
     paymentMethod: Joi.string()
       .valid("cash", "UPI", "card", "check", "other")
       .required(),
+    payeeId: Joi.string().optional(),
     receiptImage: Joi.string().uri().allow(null, ""),
     status: Joi.string().valid("paid", "pending").default("pending"),
   }),
