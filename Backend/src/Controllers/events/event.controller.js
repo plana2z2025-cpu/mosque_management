@@ -96,7 +96,9 @@ const getAllEventController = async (req, res, next) => {
     limit = Number(limit);
 
     const skip_docs = (page - 1) * limit;
-    const totalDocs = await eventModel.countDocuments();
+    const totalDocs = await eventModel.countDocuments({
+      mosqueId: req.mosqueId,
+    });
     const totalPages = Math.ceil(totalDocs / limit);
 
     const query = search ? { name: { $regex: search, $options: "i" } } : {};

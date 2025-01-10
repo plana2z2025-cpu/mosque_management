@@ -14,7 +14,7 @@ const createExpenseController = async (req, res, next) => {
     const { category } = req.body;
 
     const isCategoryExist = await expenseCategoryModel
-      .findById(category)
+      .findOne({ _id: category, mosqueId: req.mosqueId })
       .lean();
     if (!isCategoryExist) {
       return next(
@@ -23,7 +23,9 @@ const createExpenseController = async (req, res, next) => {
     }
 
     if (req.body.payeeId) {
-      const isPayeeExist = await payeeModel.findById(req.body.payeeId).lean();
+      const isPayeeExist = await payeeModel
+        .findOne({ _id: req.body.payeeId })
+        .lean();
       if (!isPayeeExist) {
         return next(httpErrors.NotFound(payeeConstant.PAYEE_NOT_FOUND));
       }
@@ -61,7 +63,7 @@ const getExpenseByIdController = async (req, res, next) => {
 
     const { expenseId } = req.params;
     const expense = await expenseModel
-      .findById(expenseId)
+      .findOne({ _id: expenseId, mosqueId: req.mosqueId })
       .populate("category", "name")
       .populate("createdBy", "name")
       .populate("updatedBy", "name")
@@ -109,7 +111,9 @@ const getAllExpensesController = async (req, res, next) => {
     }
 
     const skip_docs = (page - 1) * limit;
-    const totalDocs = await expenseModel.countDocuments(query);
+    const totalDocs = await expenseModel.countDocuments({
+      mosqueId: req.mosqueId,
+    });
     const totalPages = Math.ceil(totalDocs / limit);
 
     const docs = await expenseModel
@@ -158,7 +162,9 @@ const updateExpenseController = async (req, res, next) => {
     details.updatedRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
 
     const updatedExpense = await expenseModel
-      .findByIdAndUpdate(expenseId, details, { new: true })
+      .findOneAndUpdate({ _id: expenseId, mosqueId: req.mosqueId }, details, {
+        new: true,
+      })
       .populate("category", "name")
       .populate("createdBy", "name")
       .populate("updatedBy", "name");
@@ -189,7 +195,10 @@ const deleteExpenseController = async (req, res, next) => {
     logger.info("Controller - expenses - deleteExpenseController - Start");
 
     const { expenseId } = req.params;
-    const deletedExpense = await expenseModel.findByIdAndDelete(expenseId);
+    const deletedExpense = await expenseModel.findOneAndDelete({
+      _id: expenseId,
+      mosqueId: req.mosqueId,
+    });
 
     if (!deletedExpense) {
       return next(httpErrors.NotFound(expenseConstant.EXPENSE_NOT_FOUND));

@@ -52,7 +52,10 @@ const getPayeeByIdController = async (req, res, next) => {
     );
 
     const { payeeId } = req.params;
-    const payee = await payeeModel.findById(payeeId);
+    const payee = await payeeModel.findOne({
+      _id: payeeId,
+      mosqueId: req.mosqueId,
+    });
     //   .populate("createdBy", "name")
     //   .populate("updatedBy", "name");
 
@@ -144,9 +147,13 @@ const updatePayeeController = async (req, res, next) => {
       updatedRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
     };
 
-    const updatedPayee = await payeeModel.findByIdAndUpdate(payeeId, details, {
-      new: true,
-    });
+    const updatedPayee = await payeeModel.findOneAndUpdate(
+      { _id: payeeId, mosqueId: req.mosqueId },
+      details,
+      {
+        new: true,
+      }
+    );
     //   .populate("createdBy", "name")
     //   .populate("updatedBy", "name");
 
@@ -178,7 +185,10 @@ const deletePayeeController = async (req, res, next) => {
     );
 
     const { payeeId } = req.params;
-    const deletedPayee = await payeeModel.findByIdAndDelete(payeeId);
+    const deletedPayee = await payeeModel.findOneAndDelete({
+      _id: payeeId,
+      mosqueId: req.mosqueId,
+    });
 
     if (!deletedPayee) {
       return next(httpErrors.NotFound(payeeConstant.PAYEE_NOT_FOUND));
