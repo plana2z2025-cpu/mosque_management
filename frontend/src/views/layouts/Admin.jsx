@@ -58,15 +58,15 @@ const data = {
       title: 'Dashboard',
       url: '#',
       icon: School,
-      isActive: false,
+      isActive: true,
       items: [
         {
           title: 'Overview',
-          url: '#/dashboard/overview',
+          url: '/admin/dashboard/overview',
         },
         {
           title: 'Analytics',
-          url: '#/dashboard/analytics',
+          url: '/admin/dashboard/analytics',
         },
       ],
     },

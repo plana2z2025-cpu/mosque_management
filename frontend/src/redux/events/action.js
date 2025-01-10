@@ -4,6 +4,8 @@ import {
   RESET_EVENT_STATE,
   EVENT_CATEGORIES,
   EVENT_CATEGORIES_NAMES,
+  EVENT_TYPE_GRAPH,
+  EVENT_STATUS_GRAPH,
 } from './constant';
 import Service from '@/services';
 import * as API from './actionTypes';
@@ -100,6 +102,44 @@ const deleteCategoryAction = async (categoryId) => {
 };
 
 // ----------------------------------------------------------------
+// GRAPHS
+// ----------------------------------------------------------------
+const eventTypeBasedCountAction = () => async (dispatch) => {
+  const token = getAccessToken();
+  dispatch({ type: EVENT_TYPE_GRAPH.request });
+  const response = await Service.fetchGet(
+    `${API.BASE_TYPE}${API.EVENT_TYPE.GRAPH}${API.EVENT_TYPE.EVENT_TYPE_GRAPH}`,
+    token
+  );
+
+  if (response[0] === true) {
+    dispatch({ type: EVENT_TYPE_GRAPH.success, payload: response[1].data });
+  } else {
+    dispatch({
+      type: EVENT_TYPE_GRAPH.fail,
+      payload: response[1],
+    });
+  }
+};
+
+const eventStatusBasedCountAction = () => async (dispatch) => {
+  const token = getAccessToken();
+  dispatch({ type: EVENT_STATUS_GRAPH.request });
+  const response = await Service.fetchGet(
+    `${API.BASE_TYPE}${API.EVENT_TYPE.GRAPH}${API.EVENT_TYPE.EVENT_STATUS_GRAPH}`,
+    token
+  );
+
+  if (response[0] === true) {
+    dispatch({ type: EVENT_STATUS_GRAPH.success, payload: response[1].data });
+  } else {
+    dispatch({
+      type: EVENT_STATUS_GRAPH.fail,
+      payload: response[1],
+    });
+  }
+};
+// ----------------------------------------------------------------
 // CLEAR & RESET STATES
 // ----------------------------------------------------------------
 
@@ -126,4 +166,8 @@ export default {
   addNewEventCategoryAction,
   getEventAllCategoriesNamesAction,
   deleteCategoryAction,
+
+  // GRAPHS
+  eventTypeBasedCountAction,
+  eventStatusBasedCountAction,
 };

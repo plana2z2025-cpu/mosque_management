@@ -3,6 +3,9 @@ export const EVENT_TYPE = {
   EVENTS: '/events',
   ALL: '/all',
   NAMES: '/names',
+  GRAPH: '/graph',
+  EVENT_TYPE_GRAPH: '/event-type-count',
+  EVENT_STATUS_GRAPH: '/event-status-count',
 };
 
 export const EVENT_CATEGORIES_TYPE = {

@@ -13,6 +13,7 @@ import AllEvents from './views/features/admin/events/AllEvents';
 import CommunityTimings from './views/features/admin/timings/Timings';
 import ExpenseCategories from './views/features/admin/expenses/Categories';
 import AllExpenses from './views/features/admin/expenses/AllExpenses';
+import Analytics from './views/features/admin/dashboard/Analytics';
 
 const allRoutesMapper = [
   {
@@ -96,6 +97,14 @@ const allRoutesMapper = [
     component: (
       <AuthWrapper>
         <Administrators />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/dashboard/analytics',
+    component: (
+      <AuthWrapper>
+        <Analytics />
       </AuthWrapper>
     ),
   },
