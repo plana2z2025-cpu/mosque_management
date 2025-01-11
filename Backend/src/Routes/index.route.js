@@ -7,6 +7,7 @@ const SubUserRoutes = require("./users/subUser.routes");
 const ExpenseRoutes = require("./expenses/expenses.routes");
 const ExpenseCategoryRoutes = require("./expenses/category.routes");
 const PayeeRoutes = require("./expenses/payee.routes");
+const ExpenseGraphRoutes = require("./expenses/graphexpense.routes");
 
 // Route config
 const IndexRoutes = express.Router();
@@ -34,6 +35,7 @@ IndexRoutes.use("/event/category", EventCategoryRoutes);
 // ----------------------------------------
 // event routes
 IndexRoutes.use("/expense", ExpenseRoutes);
+IndexRoutes.use("/expenses/graph", ExpenseGraphRoutes);
 // event category routes
 IndexRoutes.use("/expenses/category", ExpenseCategoryRoutes);
 IndexRoutes.use("/expenses/payee", PayeeRoutes);

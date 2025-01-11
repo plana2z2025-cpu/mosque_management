@@ -5,6 +5,6 @@ module.exports = {
   event: "event",
   eventCategory: "event_categories",
   expense: "expense",
-  expenseCategory: "expense_category",
+  expenseCategory: "expense_categories",
   payeeRecipient: "payee_recipient",
 };
