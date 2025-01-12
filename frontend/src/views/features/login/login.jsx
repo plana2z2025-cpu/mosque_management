@@ -49,7 +49,7 @@ const Login = () => {
     if (isLoginSuccess) {
       dispatch(resetLoginAction());
       if (role === SUPPER_ADMIN) navigate('/superadmin/mosques');
-      else if (role === ADMIN) navigate('/admin');
+      else if (role === ADMIN) navigate('/admin/dashboard/analytics');
     }
   }, [error, isLoginSuccess]);
 
