@@ -35,7 +35,7 @@ const expenseGraphController = async (req, res, next) => {
         $project: {
           _id: 1,
           count: 1,
-          eventType: { $arrayElemAt: ["$expenseType.name", 0] },
+          expenseType: { $arrayElemAt: ["$expenseType.name", 0] },
         },
       },
     ];
@@ -96,7 +96,7 @@ const expenseGraphController = async (req, res, next) => {
     }, {});
 
     expensePaymentGraph = enumPaymentMethod.map((status) => ({
-      status,
+      mode: status,
       count: expensePaymentGraph[status] || 0, // Default to 0 if not found
     }));
 
