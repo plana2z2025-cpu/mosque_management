@@ -4,6 +4,7 @@ import {
   EXPENSES,
   EXPENSE_CATEGORIES,
   EXPENSE_CATEGORIES_NAMES,
+  EXPENSE_DASHBOARD_GRAPH,
 } from './constant';
 
 const initialState = {
@@ -13,11 +14,17 @@ const initialState = {
   allExpenses: null,
   expenseCategories: null,
   expenseCategoryNames: null,
+  expenseTypeGraph: null,
+  expenseStatusGraph: null,
+  expensePaymentGraph: null,
 };
 
 export const ExpenseReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [EXPENSES.request || EXPENSE_CATEGORIES.request || EXPENSE_CATEGORIES_NAMES.request]: () => ({
+    [EXPENSES.request ||
+    EXPENSE_CATEGORIES.request ||
+    EXPENSE_CATEGORIES_NAMES.request ||
+    EXPENSE_DASHBOARD_GRAPH.request]: () => ({
       ...state,
       loading: true,
     }),
@@ -36,7 +43,17 @@ export const ExpenseReducer = (state = initialState, action) => {
       loading: false,
       expenseCategoryNames: action.payload,
     }),
-    [EXPENSES.fail || EXPENSE_CATEGORIES.fail || EXPENSE_CATEGORIES_NAMES.fail]: () => ({
+    [EXPENSE_DASHBOARD_GRAPH.success]: () => ({
+      ...state,
+      loading: false,
+      expenseTypeGraph: action.payload?.expenseTypeGraph || [],
+      expenseStatusGraph: action.payload?.expenseStatusGraph || [],
+      expensePaymentGraph: action.payload?.expensePaymentGraph || [],
+    }),
+    [EXPENSES.fail ||
+    EXPENSE_CATEGORIES.fail ||
+    EXPENSE_CATEGORIES_NAMES.fail ||
+    EXPENSE_DASHBOARD_GRAPH.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,

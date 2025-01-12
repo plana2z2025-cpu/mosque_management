@@ -3,6 +3,8 @@ export const EXPENSE_TYPE = {
   EXPENSES: '/expenses',
   ALL: '/all',
   NAMES: '/names',
+  GRAPH: '/graph',
+  DASHBOARD: '/dashboard',
 };
 
 export const EXPENSE_CATEGORIES_TYPE = {

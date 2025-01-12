@@ -34,8 +34,6 @@ const Service = {
   fetchGet: async (url, token = null, contentType = null) => {
     try {
       const endpoint = API_URL + url;
-      console.log(token);
-
       const headers = handleHeaders(token, contentType);
       const response = await apiFetch.getMethod(endpoint, headers);
       return processResponse(response);

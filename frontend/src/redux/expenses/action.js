@@ -4,6 +4,7 @@ import {
   EXPENSES,
   EXPENSE_CATEGORIES,
   EXPENSE_CATEGORIES_NAMES,
+  EXPENSE_DASHBOARD_GRAPH,
 } from './constant';
 import Service from '@/services';
 import * as API from './actionTypes';
@@ -100,6 +101,27 @@ const deleteExpenseCategoryAction = async (categoryId) => {
 };
 
 // ----------------------------------------------------------------
+// GRAPHS
+// ----------------------------------------------------------------
+const expenseDashboardGraphAction = () => async (dispatch) => {
+  const token = getAccessToken();
+  dispatch({ type: EXPENSE_DASHBOARD_GRAPH.request });
+  const response = await Service.fetchGet(
+    `${API.EXPENSE_TYPE.EXPENSES}${API.EXPENSE_TYPE.GRAPH}${API.EXPENSE_TYPE.DASHBOARD}`,
+    token
+  );
+
+  if (response[0] === true) {
+    dispatch({ type: EXPENSE_DASHBOARD_GRAPH.success, payload: response[1].data });
+  } else {
+    dispatch({
+      type: EXPENSE_DASHBOARD_GRAPH.fail,
+      payload: response[1],
+    });
+  }
+};
+
+// ----------------------------------------------------------------
 // CLEAR & RESET STATES
 // ----------------------------------------------------------------
 
@@ -126,4 +148,7 @@ export default {
   addNewExpenseCategoryAction,
   getAllExpenseCategoryNamesAction,
   deleteExpenseCategoryAction,
+
+  // GRAPHS
+  expenseDashboardGraphAction,
 };

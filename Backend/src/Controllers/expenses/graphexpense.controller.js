@@ -1,6 +1,4 @@
 const expenseModel = require("../../Schema/expenses/expense.model");
-const expenseCategoryModel = require("../../Schema/expenses/expenseCategory.model");
-const payeeModel = require("../../Schema/expenses/payee.model");
 const mongoose = require("mongoose");
 const logger = require("../../Config/logger.config");
 const httpErrors = require("http-errors");
@@ -73,12 +71,34 @@ const expenseGraphController = async (req, res, next) => {
     const expenseTypeGraph = await expenseModel.aggregate(
       expenseTypeGraphAggregation
     );
-    const expenseStatusGraph = await expenseModel.aggregate(
+
+    let expenseStatusGraph = await expenseModel.aggregate(
       expenseStatusGraphAggregation
     );
-    const expensePaymentGraph = await expenseModel.aggregate(
+    const enumStatus = ["paid", "pending"];
+    expenseStatusGraph = expenseStatusGraph.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {});
+
+    expenseStatusGraph = enumStatus.map((status) => ({
+      status,
+      count: expenseStatusGraph[status] || 0,
+    }));
+
+    let expensePaymentGraph = await expenseModel.aggregate(
       expensePaymentGraphAggregation
     );
+    const enumPaymentMethod = ["cash", "UPI", "card", "check", "other"];
+    expensePaymentGraph = expensePaymentGraph.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {});
+
+    expensePaymentGraph = enumPaymentMethod.map((status) => ({
+      status,
+      count: expensePaymentGraph[status] || 0, // Default to 0 if not found
+    }));
 
     logger.info("Controller - graph-expenses - expenseGraphController - End");
     res.status(200).json({
