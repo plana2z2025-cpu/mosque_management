@@ -55,6 +55,6 @@ export class RequestMethodInstance {
     return await axios.put(url, body, headers);
   }
   async deleteMethod(url, body, headers) {
-    return await axios.put(url, body, headers);
+    return await axios.delete(url, body, headers);
   }
 }
