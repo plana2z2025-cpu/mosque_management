@@ -2,8 +2,7 @@ import {
   CLEAR_PAYEE_ERRORS,
   RESET_PAYEE_STATE,
   PAYEE,
-  // EXPENSE_CATEGORIES,
-  // EXPENSE_CATEGORIES_NAMES,
+  UPDATE_PAYEE,
 } from './constant';
 
 const initialState = {
@@ -11,8 +10,6 @@ const initialState = {
   error: null,
   statusCode: null,
   allPayee: null,
-  // expenseCategories: null,
-  // expenseCategoryNames: null,
 };
 
 export const PayementsReducer = (state = initialState, action) => {
@@ -26,24 +23,39 @@ export const PayementsReducer = (state = initialState, action) => {
       loading: false,
       allPayee: action.payload,
     }),
-    // [EXPENSE_CATEGORIES.success]: () => ({
-    //   ...state,
-    //   loading: false,
-    //   expenseCategories: action.payload,
-    // }),
-    // [EXPENSE_CATEGORIES_NAMES.success]: () => ({
-    //   ...state,
-    //   loading: false,
-    //   expenseCategoryNames: action.payload,
-    // }),
     [PAYEE.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,
       statusCode: action?.payload?.statusCode || 500,
     }),
+    [UPDATE_PAYEE.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [UPDATE_PAYEE.success]: () => ({
+      ...state,
+      loading: false,
+      allPayee: state.allPayee
+        ? {
+          ...state.allPayee,
+          data: Array.isArray(state.allPayee.data)
+            ? state.allPayee.data.map((payee) =>
+              payee.id === action.payload.id ? action.payload : payee
+            )
+            : state.allPayee.data,
+        }
+        : null,
+    }),
 
-    // errors, reset, default
+    [UPDATE_PAYEE.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+
+    // Errors, Reset, Default
     [CLEAR_PAYEE_ERRORS]: () => ({
       ...state,
       statusCode: null,

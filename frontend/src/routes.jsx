@@ -85,7 +85,7 @@ const allRoutesMapper = [
     ),
   },
   {
-    path: '/admin/expenses/payee/payees',
+    path: '/admin/expenses/payees',
     component: (
       <AuthWrapper>
         <AllBeneficiaries />
@@ -94,6 +94,14 @@ const allRoutesMapper = [
   },
   {
     path: '/admin/expenses/payee/create-new-payee',
+    component: (
+      <AuthWrapper>
+        <CreatePayeeForm/>
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/expenses/payee/:id',
     component: (
       <AuthWrapper>
         <CreatePayeeForm/>

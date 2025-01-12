@@ -108,7 +108,7 @@ const data = {
         },
         {
           title: 'Beneficiaries',
-          url: '/admin/expenses/payee/payees',
+          url: '/admin/expenses/payees',
         },
       ],
     },

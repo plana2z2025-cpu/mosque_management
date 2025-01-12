@@ -1,14 +1,15 @@
 import React, { memo, useEffect, useState, useCallback } from 'react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
-import { PayeeActions } from '@/redux/combineActions';
+import { payeeActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
-import { Trash, AlertCircle } from 'lucide-react';
+import { Trash, AlertCircle, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const breadCumbs = [{ label: 'Beneficiaries', href: null }];
 
@@ -35,15 +36,21 @@ const resolveNestedKey = (obj, key) => {
   return key.split('.').reduce((acc, part) => acc && acc[part], obj);
 };
 
-const TableRow = memo(({ row, onDelete }) => (
-  <Trash color="red" className="cursor-pointer size-5" onClick={() => {
-    console.log('Row data:', row);
-    onDelete(row)}} />
+const TableRow = memo(({ row, onDelete,onUpdate }) => (
+  <>
+    <Trash color="red" className="cursor-pointer size-5" onClick={() => {
+      onDelete(row)
+    }} />
+    <Pencil color="black" className="cursor-pointer size-5" onClick={() => {
+      onUpdate(row)
+    }} />
+  </>
 ));
 
 const AllBeneficiaries = () => {
-  const { getAllPayeeAction, deletePayeeAction } = PayeeActions;
+  const { getAllPayeeAction, deletePayeeAction } = payeeActions;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { allPayee } = useSelector((state) => state?.payeeState || {});
   const [info, setInfo] = useState(INITIAL_STATE);
 
@@ -64,8 +71,7 @@ const AllBeneficiaries = () => {
 
   const deletePopupModalFunc = useCallback((deleteId = null) => {
     setInfo((prev) => ({ ...prev, deleteId, deleteInput: '' })
-  )
-  console.log(info);
+    )
   }, []);
 
   const changeInputDeleteHandlerFunction = useCallback((e) => {
@@ -80,6 +86,7 @@ const AllBeneficiaries = () => {
 
     if (response[0] === true) {
       toast.success('Payee deleted successfully');
+
       dispatch(getAllPayeeAction(`limit=${info?.limit}&page=${info?.page}`));
       setInfo((prev) => ({ ...prev, deleteId: null, deleteInput: '', deleteLoading: false }));
     } else {
@@ -88,8 +95,17 @@ const AllBeneficiaries = () => {
     }
   }, [dispatch, info?.deleteId, info?.deleteLoading, info?.limit, info?.page]);
 
+  const UpdateBeneficiary = (row) => {
+    navigate(`/admin/expenses/payee/${row?.original?._id}`, { state: { payee: row?.original } });
+
+  };
+
+
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
+      <div className="w-full flex justify-end">      
+            <Button variant="outline" onClick={() => navigate('/admin/expenses/payee/create-new-payee')} >Add New Beneficiary</Button>
+        </div>
       <CustomTable1
         headers={headers}
         docs={mappedDocs}
@@ -97,7 +113,7 @@ const AllBeneficiaries = () => {
         totalPages={allPayee?.totalPages}
         currentPage={allPayee?.currentPage}
         onPageChange={(page) => setInfo((prev) => ({ ...prev, page }))}
-        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} />}
+        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={UpdateBeneficiary}/>}
       />
 
       {/* Delete Confirmation Modal */}
