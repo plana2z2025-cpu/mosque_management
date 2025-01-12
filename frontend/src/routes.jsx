@@ -15,6 +15,7 @@ import ExpenseCategories from './views/features/admin/expenses/Categories';
 import AllExpenses from './views/features/admin/expenses/AllExpenses';
 import AllBeneficiaries from './views/features/admin/payments/AllBeneficiaries';
 import CreatePayeeForm from './views/features/admin/payments/createPayee'
+import Analytics from './views/features/admin/dashboard/Analytics';
 const allRoutesMapper = [
   {
     path: '/',
@@ -121,6 +122,14 @@ const allRoutesMapper = [
     component: (
       <AuthWrapper>
         <Administrators />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/dashboard/analytics',
+    component: (
+      <AuthWrapper>
+        <Analytics />
       </AuthWrapper>
     ),
   },
