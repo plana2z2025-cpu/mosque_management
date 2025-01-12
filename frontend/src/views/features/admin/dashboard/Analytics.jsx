@@ -12,27 +12,19 @@ import EventStatusBasedCount from '@/views/components2/graphs/EventStatusBasedCo
 const breadCumbs = [{ label: 'Analytics', href: null }];
 
 const Analytics = () => {
-  const { eventTypeBasedCountAction, eventStatusBasedCountAction } = eventActions;
+  const { eventDashboardGraphAction } = eventActions;
   const dispatch = useDispatch();
   const { eventTypeBasedCount, eventStatusBasedCount } = useSelector((state) => state.eventState);
 
   useEffect(() => {
-    if (!eventTypeBasedCount) {
-      fetchEventTypeGraphCount();
-    }
-
-    if (!eventStatusBasedCount) {
-      fetchEventStatusGraphCount();
+    if (!eventTypeBasedCount || !eventStatusBasedCount) {
+      fetchEventDashboardGraphCount();
     }
   }, [eventTypeBasedCount, eventStatusBasedCount]);
 
-  const fetchEventTypeGraphCount = useCallback(() => {
-    dispatch(eventTypeBasedCountAction());
-  }, [eventTypeBasedCount]);
-
-  const fetchEventStatusGraphCount = useCallback(() => {
-    dispatch(eventStatusBasedCountAction());
-  }, [eventStatusBasedCount]);
+  const fetchEventDashboardGraphCount = useCallback(() => {
+    dispatch(eventDashboardGraphAction());
+  }, [eventTypeBasedCount, eventStatusBasedCount]);
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>

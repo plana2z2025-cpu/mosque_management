@@ -53,9 +53,6 @@ const EventTypeBasedCount = ({ data }) => {
         borderRadius: 4,
         horizontal: true,
         distributed: true,
-        // dataLabels: {
-        //   position: 'top',
-        // },
       },
     },
 

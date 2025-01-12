@@ -4,8 +4,7 @@ export const EVENT_TYPE = {
   ALL: '/all',
   NAMES: '/names',
   GRAPH: '/graph',
-  EVENT_TYPE_GRAPH: '/event-type-count',
-  EVENT_STATUS_GRAPH: '/event-status-count',
+  DASHBOARD: '/dashboard',
 };
 
 export const EVENT_CATEGORIES_TYPE = {

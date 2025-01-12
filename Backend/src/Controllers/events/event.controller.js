@@ -211,103 +211,10 @@ const deleteEventController = async (req, res, next) => {
   }
 };
 
-// event type count graph
-const eventTypeCountGraphController = async (req, res, next) => {
-  try {
-    logger.info(
-      "Controller - events - eventCategory - eventTypeCountGraphController - Start"
-    );
-    const aggregation = [
-      {
-        $match: {
-          mosqueId: new mongoose.Types.ObjectId(req.mosqueId),
-        },
-      },
-      {
-        $group: {
-          _id: "$type",
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $lookup: {
-          from: eventCategory,
-          localField: "_id",
-          foreignField: "_id",
-          as: "eventType",
-        },
-      },
-
-      {
-        $project: {
-          _id: 1,
-          count: 1,
-          eventType: { $arrayElemAt: ["$eventType.name", 0] },
-        },
-      },
-    ];
-    const eventTypeCount = await eventModel.aggregate(aggregation);
-    logger.info(
-      "Controller - events - eventCategory - eventTypeCountGraphController - End"
-    );
-    res.status(200).json({
-      success: true,
-      statusCode: 200,
-      data: eventTypeCount,
-      graph: "event  type based count",
-    });
-  } catch (error) {
-    logger.error(
-      "Controller - events - eventCategory - eventTypeCountGraphController - error",
-      error
-    );
-    next(httpErrors.InternalServerError(error.message));
-  }
-};
-
-const eventStatusBasedCountGraphController = async (req, res, next) => {
-  try {
-    logger.info(
-      "Controller - events - eventCategory - eventStatusBasedCountGraphController - Start"
-    );
-    const aggregation = [
-      {
-        $match: {
-          mosqueId: new mongoose.Types.ObjectId(req.mosqueId),
-        },
-      },
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
-        },
-      },
-    ];
-    const eventStatusCount = await eventModel.aggregate(aggregation);
-    logger.info(
-      "Controller - events - eventCategory - eventStatusBasedCountGraphController - End"
-    );
-    res.status(200).json({
-      success: true,
-      statusCode: 200,
-      data: eventStatusCount,
-      graph: "event  status based count",
-    });
-  } catch (error) {
-    logger.error(
-      "Controller - events - eventCategory - eventStatusBasedCountGraphController - error",
-      error
-    );
-    next(httpErrors.InternalServerError(error.message));
-  }
-};
-
 module.exports = {
   createEventController,
   getEventByIdController,
   getAllEventController,
   deleteEventController,
   updateEventController,
-  eventTypeCountGraphController,
-  eventStatusBasedCountGraphController,
 };

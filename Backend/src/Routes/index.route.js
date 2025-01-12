@@ -8,6 +8,7 @@ const ExpenseRoutes = require("./expenses/expenses.routes");
 const ExpenseCategoryRoutes = require("./expenses/category.routes");
 const PayeeRoutes = require("./expenses/payee.routes");
 const ExpenseGraphRoutes = require("./expenses/graphexpense.routes");
+const EventGraphRoutes = require("./events/graphevent.routes");
 
 // Route config
 const IndexRoutes = express.Router();
@@ -27,6 +28,8 @@ IndexRoutes.use("/mosque", MosqueRoutes);
 // ----------------------------------------
 // event routes
 IndexRoutes.use("/event", EventRoutes);
+IndexRoutes.use("/event/graph", EventGraphRoutes);
+
 // event category routes
 IndexRoutes.use("/event/category", EventCategoryRoutes);
 

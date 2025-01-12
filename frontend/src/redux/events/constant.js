@@ -15,16 +15,11 @@ export const EVENT_CATEGORIES_NAMES = {
   fail: 'EVENT_CATEGORIES_NAMES.fail',
 };
 
-export const EVENT_TYPE_GRAPH = {
-  request: 'EVENT_TYPE_GRAPH.request',
-  success: 'EVENT_TYPE_GRAPH.success',
-  fail: 'EVENT_TYPE_GRAPH.fail',
+export const EVENT_DASHBOARD_GRAPH = {
+  request: 'EVENT_DASHBOARD_GRAPH.request',
+  success: 'EVENT_DASHBOARD_GRAPH.success',
+  fail: 'EVENT_DASHBOARD_GRAPH.fail',
 };
 
-export const EVENT_STATUS_GRAPH = {
-  request: 'EVENT_STATUS_GRAPH.request',
-  success: 'EVENT_STATUS_GRAPH.success',
-  fail: 'EVENT_STATUS_GRAPH.fail',
-};
 export const CLEAR_EVENT_ERRORS = 'CLEAR_EVENT_ERRORS';
 export const RESET_EVENT_STATE = 'RESET_EVENT_STATE';

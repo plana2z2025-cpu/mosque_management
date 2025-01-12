@@ -4,8 +4,7 @@ import {
   COMMUNITY_EVENTS,
   EVENT_CATEGORIES,
   EVENT_CATEGORIES_NAMES,
-  EVENT_TYPE_GRAPH,
-  EVENT_STATUS_GRAPH,
+  EVENT_DASHBOARD_GRAPH,
 } from './constant';
 
 const initialState = {
@@ -24,8 +23,7 @@ export const EventReducer = (state = initialState, action) => {
     [COMMUNITY_EVENTS.request ||
     EVENT_CATEGORIES.request ||
     EVENT_CATEGORIES_NAMES.request ||
-    EVENT_TYPE_GRAPH.request ||
-    EVENT_STATUS_GRAPH.request]: () => ({
+    EVENT_DASHBOARD_GRAPH.request]: () => ({
       ...state,
       loading: true,
     }),
@@ -44,21 +42,16 @@ export const EventReducer = (state = initialState, action) => {
       loading: false,
       eventCategoryNames: action.payload,
     }),
-    [EVENT_TYPE_GRAPH.success]: () => ({
+    [EVENT_DASHBOARD_GRAPH.success]: () => ({
       ...state,
       loading: false,
-      eventTypeBasedCount: action.payload,
-    }),
-    [EVENT_STATUS_GRAPH.success]: () => ({
-      ...state,
-      loading: false,
-      eventStatusBasedCount: action.payload,
+      eventTypeBasedCount: action.payload?.eventTypeBasedCount || [],
+      eventStatusBasedCount: action.payload?.eventStatusBasedCount || [],
     }),
     [COMMUNITY_EVENTS.fail ||
     EVENT_CATEGORIES.fail ||
     EVENT_CATEGORIES_NAMES.fail ||
-    EVENT_TYPE_GRAPH.fail ||
-    EVENT_STATUS_GRAPH.fail]: () => ({
+    EVENT_DASHBOARD_GRAPH.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,
