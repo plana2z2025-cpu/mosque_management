@@ -185,6 +185,7 @@ const deletePayeeController = async (req, res, next) => {
     );
 
     const { payeeId } = req.params;
+    console.log('Deleting payee with mosqueId:', req.mosqueId);
     const deletedPayee = await payeeModel.findOneAndDelete({
       _id: payeeId,
       mosqueId: req.mosqueId,

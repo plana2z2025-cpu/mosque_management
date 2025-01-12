@@ -106,8 +106,13 @@ const data = {
           title: 'Expenses',
           url: '/admin/expenses',
         },
+        {
+          title: 'Beneficiaries',
+          url: '/admin/expenses/payees',
+        },
       ],
     },
+    
 
     {
       title: 'Administrators',
