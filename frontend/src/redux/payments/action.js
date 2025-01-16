@@ -1,18 +1,18 @@
 import {
   CLEAR_PAYEE_ERRORS,
   RESET_PAYEE_STATE,
-  PAYEE,
-  UPDATE_PAYEE
+  PAYEES_LIST,
+  UPDATE_PAYEE,
+  SINGLE_PAYEE_DETAIL,
 } from './constant';
 import Service from '@/services';
 import * as API from './actionTypes';
 import { getAccessToken } from '@/helpers/local-storage';
 
-
 const addNewPayeeAction = async (json) => {
   const token = getAccessToken();
   const response = await Service.fetchPost(
-    `/expenses/payee/create-new-payee`,
+    `${API.BASE_PAYEE}${API.PAYEE_TYPES.CREATE_NEW_PAYEE}`,
     json,
     token
   );
@@ -20,31 +20,36 @@ const addNewPayeeAction = async (json) => {
   return response;
 };
 
-const getPayeeDetailsAction = async (payeeId) => {
+const getPayeeDetailsAction = (payeeId) => async (dispatch) => {
   const token = getAccessToken();
-  const response = await Service.fetchGet(`/expenses/payee/${payeeId}`, token);
-  return response;
+  dispatch({ type: SINGLE_PAYEE_DETAIL.request });
+  const response = await Service.fetchGet(`${API.BASE_PAYEE}/${payeeId}`, token);
+  if (response[0] === true) {
+    dispatch({ type: SINGLE_PAYEE_DETAIL.success, payload: response[1].data });
+  } else {
+    dispatch({ type: SINGLE_PAYEE_DETAIL.fail, payload: response[1] });
+  }
 };
 
 const getAllPayeeAction =
   (query = null) =>
-    async (dispatch) => {
-      dispatch({ type: PAYEE.request });
-      const token = getAccessToken();
-      const response = await Service.fetchGet(
-        `${API.BASE_PAYEE}${API.PAYEES}${query ? '?' + query : ''}`,
-        token
-      );
+  async (dispatch) => {
+    dispatch({ type: PAYEES_LIST.request });
+    const token = getAccessToken();
+    const response = await Service.fetchGet(
+      `${API.BASE_PAYEE}${API.PAYEE_TYPES.PAYEES}${query ? '?' + query : ''}`,
+      token
+    );
 
-      if (response[0] === true) {
-        dispatch({ type: PAYEE.success, payload: response[1].data });
-      } else {
-        dispatch({
-          type: PAYEE.fail,
-          payload: response[1],
-        });
-      }
-    };
+    if (response[0] === true) {
+      dispatch({ type: PAYEES_LIST.success, payload: response[1].data });
+    } else {
+      dispatch({
+        type: PAYEES_LIST.fail,
+        payload: response[1],
+      });
+    }
+  };
 
 const updatePayeeAction = (payeeId, json) => async (dispatch) => {
   dispatch({ type: UPDATE_PAYEE.request });
@@ -62,7 +67,6 @@ const updatePayeeAction = (payeeId, json) => async (dispatch) => {
     return [error.status || 500, { message: error.message }]; // Return failure with status and message
   }
 };
-
 
 const deletePayeeAction = async (payeeId) => {
   const token = getAccessToken();

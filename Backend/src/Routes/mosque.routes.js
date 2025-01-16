@@ -38,8 +38,8 @@ MosqueRoutes.route("/create-new/slug-verify/available").post(
 );
 
 MosqueRoutes.route("/mosques").get(
-  Authentication,
-  Authorization(SUPPER_ADMIN),
+  // Authentication,
+  // Authorization(SUPPER_ADMIN),
   getMosquesListController
 );
 MosqueRoutes.route("/mosques/:slug").get(

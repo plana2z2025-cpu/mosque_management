@@ -5,11 +5,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
 import { Trash, AlertCircle, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { PAYEES_LIST, SINGLE_PAYEE_DETAIL } from '@/redux/payments/constant';
 
 const breadCumbs = [{ label: 'Beneficiaries', href: null }];
 
@@ -36,14 +43,22 @@ const resolveNestedKey = (obj, key) => {
   return key.split('.').reduce((acc, part) => acc && acc[part], obj);
 };
 
-const TableRow = memo(({ row, onDelete,onUpdate }) => (
+const TableRow = memo(({ row, onDelete, onUpdate }) => (
   <>
-    <Trash color="red" className="cursor-pointer size-5" onClick={() => {
-      onDelete(row)
-    }} />
-    <Pencil color="black" className="cursor-pointer size-5" onClick={() => {
-      onUpdate(row)
-    }} />
+    <Trash
+      color="red"
+      className="cursor-pointer size-5"
+      onClick={() => {
+        onDelete(row);
+      }}
+    />
+    <Pencil
+      color="black"
+      className="cursor-pointer size-5"
+      onClick={() => {
+        onUpdate(row);
+      }}
+    />
   </>
 ));
 
@@ -70,8 +85,7 @@ const AllBeneficiaries = () => {
   });
 
   const deletePopupModalFunc = useCallback((deleteId = null) => {
-    setInfo((prev) => ({ ...prev, deleteId, deleteInput: '' })
-    )
+    setInfo((prev) => ({ ...prev, deleteId, deleteInput: '' }));
   }, []);
 
   const changeInputDeleteHandlerFunction = useCallback((e) => {
@@ -86,8 +100,14 @@ const AllBeneficiaries = () => {
 
     if (response[0] === true) {
       toast.success('Payee deleted successfully');
+      let updateAllPayee = allPayee?.docs.filter(
+        (item) => item?._id !== info?.deleteId?.original?._id
+      );
+      dispatch({
+        type: PAYEES_LIST.update,
+        payload: { ...allPayee, totalDocs: allPayee.totalDocs - 1, docs: updateAllPayee },
+      });
 
-      dispatch(getAllPayeeAction(`limit=${info?.limit}&page=${info?.page}`));
       setInfo((prev) => ({ ...prev, deleteId: null, deleteInput: '', deleteLoading: false }));
     } else {
       toast.error(response[1]?.message || 'Failed to delete payee');
@@ -96,16 +116,20 @@ const AllBeneficiaries = () => {
   }, [dispatch, info?.deleteId, info?.deleteLoading, info?.limit, info?.page]);
 
   const UpdateBeneficiary = (row) => {
-    navigate(`/admin/expenses/payee/${row?.original?._id}`, { state: { payee: row?.original } });
-
+    navigate(`/admin/expenses/payee/${row?.original?._id}`);
+    dispatch({ type: SINGLE_PAYEE_DETAIL.success, payload: row?.original });
   };
-
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
-      <div className="w-full flex justify-end">      
-            <Button variant="outline" onClick={() => navigate('/admin/expenses/payee/create-new-payee')} >Add New Beneficiary</Button>
-        </div>
+      <div className="w-full flex justify-end">
+        <Button
+          variant="outline"
+          onClick={() => navigate('/admin/expenses/payee/create-new-payee')}
+        >
+          Add New Beneficiary
+        </Button>
+      </div>
       <CustomTable1
         headers={headers}
         docs={mappedDocs}
@@ -113,7 +137,9 @@ const AllBeneficiaries = () => {
         totalPages={allPayee?.totalPages}
         currentPage={allPayee?.currentPage}
         onPageChange={(page) => setInfo((prev) => ({ ...prev, page }))}
-        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={UpdateBeneficiary}/>}
+        actions={(row) => (
+          <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={UpdateBeneficiary} />
+        )}
       />
 
       {/* Delete Confirmation Modal */}
@@ -143,9 +169,7 @@ const AllBeneficiaries = () => {
             <Button
               variant="destructive"
               onClick={deletePayeeSubmitHandler}
-              disabled={
-                info?.deleteInput !== info?.deleteId?.payeeName || info?.deleteLoading
-              }
+              disabled={info?.deleteInput !== info?.deleteId?.payeeName || info?.deleteLoading}
             >
               Delete
             </Button>

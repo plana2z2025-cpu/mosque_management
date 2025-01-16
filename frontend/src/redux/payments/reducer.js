@@ -1,8 +1,9 @@
 import {
   CLEAR_PAYEE_ERRORS,
   RESET_PAYEE_STATE,
-  PAYEE,
+  PAYEES_LIST,
   UPDATE_PAYEE,
+  SINGLE_PAYEE_DETAIL,
 } from './constant';
 
 const initialState = {
@@ -10,45 +11,49 @@ const initialState = {
   error: null,
   statusCode: null,
   allPayee: null,
+  payeeDetail: null,
 };
 
 export const PayementsReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [PAYEE.request]: () => ({
+    [PAYEES_LIST.request || SINGLE_PAYEE_DETAIL.request || UPDATE_PAYEE.request]: () => ({
       ...state,
       loading: true,
     }),
-    [PAYEE.success]: () => ({
+
+    [PAYEES_LIST.success]: () => ({
       ...state,
       loading: false,
       allPayee: action.payload,
     }),
-    [PAYEE.fail]: () => ({
+
+    [SINGLE_PAYEE_DETAIL.success]: () => ({
       ...state,
       loading: false,
-      error: action?.payload?.message,
-      statusCode: action?.payload?.statusCode || 500,
+      payeeDetail: action.payload,
     }),
-    [UPDATE_PAYEE.request]: () => ({
+
+    [PAYEES_LIST.update]: () => ({
       ...state,
-      loading: true,
+      allPayee: action.payload,
     }),
+
     [UPDATE_PAYEE.success]: () => ({
       ...state,
       loading: false,
       allPayee: state.allPayee
         ? {
-          ...state.allPayee,
-          data: Array.isArray(state.allPayee.data)
-            ? state.allPayee.data.map((payee) =>
-              payee.id === action.payload.id ? action.payload : payee
-            )
-            : state.allPayee.data,
-        }
+            ...state.allPayee,
+            data: Array.isArray(state.allPayee.data)
+              ? state.allPayee.data.map((payee) =>
+                  payee.id === action.payload.id ? action.payload : payee
+                )
+              : state.allPayee.data,
+          }
         : null,
     }),
 
-    [UPDATE_PAYEE.fail]: () => ({
+    [PAYEES_LIST.fail || SINGLE_PAYEE_DETAIL.fail || UPDATE_PAYEE.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,

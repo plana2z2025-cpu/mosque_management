@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { payeeActions } from '@/redux/combineActions';
 import toast from 'react-hot-toast';
 import isEmail from 'validator/lib/isEmail';
@@ -10,11 +10,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 const breadCumbs = [{ label: 'Create Beneficiary', href: null }];
 
 export function CreatePayeeForm() {
-  // State to manage form data and errors
-  const { id } = useParams();
+  const { payeeId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { addNewPayeeAction, updatePayeeAction } = payeeActions;
+  const { payeeDetail } = useSelector((state) => state?.payeeState);
+  const { addNewPayeeAction, updatePayeeAction, getPayeeDetailsAction } = payeeActions;
 
   const [formData, setFormData] = useState({
     payeeName: '',
@@ -28,28 +28,13 @@ export function CreatePayeeForm() {
     upiPhoneNumber: '',
   });
 
-  const payeeFromState = location.state?.payee;
-
   useEffect(() => {
-    const fetchPayeeDetails = async () => {
-      if (id && !payeeFromState) {
-        try {
-          const response = await payeeActions.getPayeeDetailsAction(id);
-          if (response[0]) {
-            setFormData(response[1].data); // Update formData with the fetched payee details
-          } else {
-            toast.error('Failed to load payee details');
-          }
-        } catch (error) {
-          toast.error('An error occurred while fetching payee details');
-        }
-      } else if (payeeFromState) {
-        setFormData(payeeFromState); // Set form data from passed state
-      }
-    };
-    fetchPayeeDetails();
-
-  }, [id, payeeFromState]);
+    if (payeeId && payeeDetail?._id !== payeeId) {
+      fetchPayeeDetails();
+    } else if (payeeDetail?._id === payeeId) {
+      setFormData(payeeDetail);
+    }
+  }, [payeeId, payeeDetail?._id]);
 
   // State to manage form errors
   const [errors, setErrors] = useState({});
@@ -101,7 +86,6 @@ export function CreatePayeeForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -117,21 +101,21 @@ export function CreatePayeeForm() {
       delete json.createdBy;
       delete json.__v;
 
-      // Check if there is an `id` (i.e., update action) or create a new payee
-      if (id) {
-        const response = await dispatch(updatePayeeAction(id, json));
+      // Check if there is an `payeeId` (i.e., update action) or create a new payee
+      if (payeeId) {
+        const response = await dispatch(updatePayeeAction(payeeId, json));
         if (response[0] === 200) {
           toast.success('Payee updated successfully');
-          navigate("/admin/expenses/payees");
+          navigate('/admin/expenses/payees');
         } else {
           toast.error(response[1]?.message);
         }
       } else {
-        // If `id` is not present, create a new payee
+        // If `payeeId` is not present, create a new payee
         const response = await addNewPayeeAction(json);
         if (response[0] === 201) {
           toast.success('Payee created successfully');
-          navigate("/admin/expenses/payees");
+          navigate('/admin/expenses/payees');
         } else {
           toast.error(response[1]?.message || 'Failed to create payee');
         }
@@ -139,6 +123,9 @@ export function CreatePayeeForm() {
     }
   };
 
+  const fetchPayeeDetails = useCallback(async () => {
+    dispatch(getPayeeDetailsAction(payeeId));
+  }, [payeeId, payeeDetail?._id]);
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -151,9 +138,9 @@ export function CreatePayeeForm() {
             value={formData?.payeeName}
             onChange={handleChange}
             placeholder="Enter payee name"
-            className={errors.payeeName ? 'border-red-500' : ''}
+            className={errors?.payeeName ? 'border-red-500' : ''}
           />
-          {errors.payeeName && <p className="text-red-500 text-xs mt-1">{errors.payeeName}</p>}
+          {errors?.payeeName && <p className="text-red-500 text-xs mt-1">{errors.payeeName}</p>}
         </div>
 
         {/* Email Input */}
@@ -166,7 +153,9 @@ export function CreatePayeeForm() {
             placeholder="Enter payee email"
             className={errors?.emailAddress ? 'border-red-500' : ''}
           />
-          {errors.emailAddress && <p className="text-red-500 text-xs mt-1">{errors.emailAddress}</p>}
+          {errors?.emailAddress && (
+            <p className="text-red-500 text-xs mt-1">{errors.emailAddress}</p>
+          )}
         </div>
 
         {/* Contact Number Input */}
@@ -174,19 +163,20 @@ export function CreatePayeeForm() {
           <label className="block text-sm font-medium mb-2">Contact Number</label>
           <Input
             name="contactNumber"
-            value={formData.contactNumber}
+            value={formData?.contactNumber}
             onChange={handleChange}
             placeholder="Provide contact number of the Payee"
-            className={errors.contactNumber ? 'border-red-500' : ''}
+            className={errors?.contactNumber ? 'border-red-500' : ''}
           />
-          {errors.contactNumber && <p className="text-red-500 text-xs mt-1">{errors.contactNumber}</p>}
+          {errors?.contactNumber && (
+            <p className="text-red-500 text-xs mt-1">{errors.contactNumber}</p>
+          )}
         </div>
 
         {/* Bank Information */}
         <div>
           <label className="block text-sm font-medium mb-2">Bank Details</label>
           <div className="grid md:grid-cols-3 gap-4">
-
             <div>
               <Input
                 name="accountNumber"
@@ -239,12 +229,14 @@ export function CreatePayeeForm() {
             placeholder="Enter upi Phone Number of the Pyee"
             className={errors?.upiPhoneNumber ? 'border-red-500' : ''}
           />
-          {errors?.upiPhoneNumber && <p className="text-red-500 text-xs mt-1">{errors?.upiPhoneNumber}</p>}
+          {errors?.upiPhoneNumber && (
+            <p className="text-red-500 text-xs mt-1">{errors?.upiPhoneNumber}</p>
+          )}
         </div>
 
         {/* Submit Button */}
         <Button type="submit" className="w-full">
-          {id ? 'Update Beneficiary' : 'Create Beneficiary'}
+          {payeeId ? 'Update Beneficiary' : 'Create Beneficiary'}
         </Button>
       </form>
     </Mainwrapper>

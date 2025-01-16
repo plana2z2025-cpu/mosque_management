@@ -14,7 +14,7 @@ import CommunityTimings from './views/features/admin/timings/Timings';
 import ExpenseCategories from './views/features/admin/expenses/Categories';
 import AllExpenses from './views/features/admin/expenses/AllExpenses';
 import AllBeneficiaries from './views/features/admin/payments/AllBeneficiaries';
-import CreatePayeeForm from './views/features/admin/payments/createPayee'
+import CreatePayeeForm from './views/features/admin/payments/createPayee';
 import Analytics from './views/features/admin/dashboard/Analytics';
 const allRoutesMapper = [
   {
@@ -97,15 +97,15 @@ const allRoutesMapper = [
     path: '/admin/expenses/payee/create-new-payee',
     component: (
       <AuthWrapper>
-        <CreatePayeeForm/>
+        <CreatePayeeForm />
       </AuthWrapper>
     ),
   },
   {
-    path: '/admin/expenses/payee/:id',
+    path: '/admin/expenses/payee/:payeeId',
     component: (
       <AuthWrapper>
-        <CreatePayeeForm/>
+        <CreatePayeeForm />
       </AuthWrapper>
     ),
   },
