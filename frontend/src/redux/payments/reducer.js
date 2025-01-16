@@ -16,28 +16,37 @@ const initialState = {
 
 export const PayementsReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [PAYEES_LIST.request || SINGLE_PAYEE_DETAIL.request || UPDATE_PAYEE.request]: () => ({
+    // Loading states
+    [PAYEES_LIST.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [SINGLE_PAYEE_DETAIL.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [UPDATE_PAYEE.request]: () => ({
       ...state,
       loading: true,
     }),
 
+    // Success states
     [PAYEES_LIST.success]: () => ({
       ...state,
       loading: false,
       allPayee: action.payload,
     }),
-
     [SINGLE_PAYEE_DETAIL.success]: () => ({
       ...state,
       loading: false,
       payeeDetail: action.payload,
     }),
 
+    // Update payee
     [PAYEES_LIST.update]: () => ({
       ...state,
       allPayee: action.payload,
     }),
-
     [UPDATE_PAYEE.success]: () => ({
       ...state,
       loading: false,
@@ -53,7 +62,20 @@ export const PayementsReducer = (state = initialState, action) => {
         : null,
     }),
 
-    [PAYEES_LIST.fail || SINGLE_PAYEE_DETAIL.fail || UPDATE_PAYEE.fail]: () => ({
+    // Failure states
+    [PAYEES_LIST.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [SINGLE_PAYEE_DETAIL.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [UPDATE_PAYEE.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,

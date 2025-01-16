@@ -13,8 +13,9 @@ export function CreatePayeeForm() {
   const { payeeId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { payeeDetail } = useSelector((state) => state?.payeeState);
-  const { addNewPayeeAction, updatePayeeAction, getPayeeDetailsAction } = payeeActions;
+  const { payeeDetail, error } = useSelector((state) => state?.payeeState);
+  const { addNewPayeeAction, updatePayeeAction, getPayeeDetailsAction, clearPayeeAction } =
+    payeeActions;
 
   const [formData, setFormData] = useState({
     payeeName: '',
@@ -34,7 +35,13 @@ export function CreatePayeeForm() {
     } else if (payeeDetail?._id === payeeId) {
       setFormData(payeeDetail);
     }
-  }, [payeeId, payeeDetail?._id]);
+
+    if (error) {
+      toast.error(error);
+      navigate('/admin/expenses/payees');
+      clearPaymentErrors();
+    }
+  }, [payeeId, payeeDetail?._id, error]);
 
   // State to manage form errors
   const [errors, setErrors] = useState({});
@@ -126,6 +133,10 @@ export function CreatePayeeForm() {
   const fetchPayeeDetails = useCallback(async () => {
     dispatch(getPayeeDetailsAction(payeeId));
   }, [payeeId, payeeDetail?._id]);
+
+  const clearPaymentErrors = useCallback(() => {
+    dispatch(clearPayeeAction());
+  }, [error]);
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>

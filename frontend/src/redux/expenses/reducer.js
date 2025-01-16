@@ -21,13 +21,25 @@ const initialState = {
 
 export const ExpenseReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [EXPENSES.request ||
-    EXPENSE_CATEGORIES.request ||
-    EXPENSE_CATEGORIES_NAMES.request ||
-    EXPENSE_DASHBOARD_GRAPH.request]: () => ({
+    // Loading states
+    [EXPENSES.request]: () => ({
       ...state,
       loading: true,
     }),
+    [EXPENSE_CATEGORIES.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [EXPENSE_CATEGORIES_NAMES.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [EXPENSE_DASHBOARD_GRAPH.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+
+    // Success states
     [EXPENSES.success]: () => ({
       ...state,
       loading: false,
@@ -50,22 +62,40 @@ export const ExpenseReducer = (state = initialState, action) => {
       expenseStatusGraph: action.payload?.expenseStatusGraph || [],
       expensePaymentGraph: action.payload?.expensePaymentGraph || [],
     }),
-    [EXPENSES.fail ||
-    EXPENSE_CATEGORIES.fail ||
-    EXPENSE_CATEGORIES_NAMES.fail ||
-    EXPENSE_DASHBOARD_GRAPH.fail]: () => ({
+
+    // Failure states
+    [EXPENSES.fail]: () => ({
       ...state,
       loading: false,
-      error: action?.payload?.message,
+      error: action?.payload?.message || 'An error occurred',
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [EXPENSE_CATEGORIES.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message || 'An error occurred',
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [EXPENSE_CATEGORIES_NAMES.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message || 'An error occurred',
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [EXPENSE_DASHBOARD_GRAPH.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message || 'An error occurred',
       statusCode: action?.payload?.statusCode || 500,
     }),
 
-    // errors, reset, default
+    // Errors, Reset, Default
     [CLEAR_EXPENSE_ERRORS]: () => ({
       ...state,
       statusCode: null,
       error: null,
     }),
+
     [RESET_EXPENSE_STATE]: () => initialState,
   };
 

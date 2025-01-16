@@ -16,12 +16,21 @@ const initialState = {
 };
 export const MosqueReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [SUPPER_ADMIN_MOSQUES.request ||
-    SUPPER_ADMIN_SINGLE_MOSQUE.request ||
-    COMMUNITY_MOSQUE_DETAILS.request]: () => ({
+    // Loading states
+    [SUPPER_ADMIN_MOSQUES.request]: () => ({
       ...state,
       loading: true,
     }),
+    [SUPPER_ADMIN_SINGLE_MOSQUE.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [COMMUNITY_MOSQUE_DETAILS.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+
+    // Success states
     [SUPPER_ADMIN_MOSQUES.success]: () => ({
       ...state,
       loading: false,
@@ -38,20 +47,33 @@ export const MosqueReducer = (state = initialState, action) => {
       communityMosqueDetail: action.payload,
     }),
 
-    [SUPPER_ADMIN_MOSQUES.fail || SUPPER_ADMIN_SINGLE_MOSQUE.fail || COMMUNITY_MOSQUE_DETAILS.fail]:
-      () => ({
-        ...state,
-        loading: false,
-        error: action?.payload?.message,
-        statusCode: action?.payload?.statusCode || 500,
-      }),
+    // Failure states
+    [SUPPER_ADMIN_MOSQUES.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message || 'An error occurred',
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [SUPPER_ADMIN_SINGLE_MOSQUE.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message || 'An error occurred',
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [COMMUNITY_MOSQUE_DETAILS.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message || 'An error occurred',
+      statusCode: action?.payload?.statusCode || 500,
+    }),
 
-    // errors,reset,default
+    // Errors, Reset, Default
     [CLEAR_MOSQUE_ERRORS]: () => ({
       ...state,
       statusCode: null,
       error: null,
     }),
+
     [RESET_MOSQUE_STATE]: () => initialState,
   };
 

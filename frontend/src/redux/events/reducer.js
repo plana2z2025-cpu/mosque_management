@@ -20,13 +20,25 @@ const initialState = {
 
 export const EventReducer = (state = initialState, action) => {
   const actionHandlers = {
-    [COMMUNITY_EVENTS.request ||
-    EVENT_CATEGORIES.request ||
-    EVENT_CATEGORIES_NAMES.request ||
-    EVENT_DASHBOARD_GRAPH.request]: () => ({
+    // Loading states
+    [COMMUNITY_EVENTS.request]: () => ({
       ...state,
       loading: true,
     }),
+    [EVENT_CATEGORIES.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [EVENT_CATEGORIES_NAMES.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [EVENT_DASHBOARD_GRAPH.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+
+    // Success states
     [COMMUNITY_EVENTS.success]: () => ({
       ...state,
       loading: false,
@@ -48,17 +60,34 @@ export const EventReducer = (state = initialState, action) => {
       eventTypeBasedCount: action.payload?.eventTypeBasedCount || [],
       eventStatusBasedCount: action.payload?.eventStatusBasedCount || [],
     }),
-    [COMMUNITY_EVENTS.fail ||
-    EVENT_CATEGORIES.fail ||
-    EVENT_CATEGORIES_NAMES.fail ||
-    EVENT_DASHBOARD_GRAPH.fail]: () => ({
+
+    // Failure states using a utility function
+    [COMMUNITY_EVENTS.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [EVENT_CATEGORIES.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [EVENT_CATEGORIES_NAMES.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [EVENT_DASHBOARD_GRAPH.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,
       statusCode: action?.payload?.statusCode || 500,
     }),
 
-    // errors, reset, default
+    // Errors, Reset, Default
     [CLEAR_EVENT_ERRORS]: () => ({
       ...state,
       statusCode: null,
