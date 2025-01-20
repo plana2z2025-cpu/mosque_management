@@ -5,6 +5,7 @@ import {
   EVENT_CATEGORIES,
   EVENT_CATEGORIES_NAMES,
   EVENT_DASHBOARD_GRAPH,
+  SINGLE_EVENT_DETAIL
 } from './constant';
 
 const initialState = {
@@ -16,6 +17,7 @@ const initialState = {
   eventCategoryNames: null,
   eventTypeBasedCount: null,
   eventStatusBasedCount: null,
+  eventDetail: null,
 };
 
 export const EventReducer = (state = initialState, action) => {
@@ -44,6 +46,11 @@ export const EventReducer = (state = initialState, action) => {
       loading: false,
       allEvents: action.payload,
     }),
+    [SINGLE_EVENT_DETAIL.success]: () => ({
+      ...state,
+      loading: false,
+      eventDetail: action.payload,
+}),
     [EVENT_CATEGORIES.success]: () => ({
       ...state,
       loading: false,

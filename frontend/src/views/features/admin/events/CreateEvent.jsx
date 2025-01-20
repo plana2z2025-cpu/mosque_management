@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
 import validator from 'validator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,7 @@ import { eventActions } from '@/redux/combineActions';
 import moment from 'moment';
 import { Badge } from '@/components/ui/badge';
 import toast from 'react-hot-toast';
+import { useParams,useNavigate } from 'react-router-dom';
 
 const breadCumbs = [{ label: 'Categories', href: null }];
 const targetAudienceOptions = [
@@ -35,10 +36,12 @@ const targetAudienceOptions = [
 
 export function CreateEventForm() {
   // State to manage form data and errors
+  const {eventId} =useParams();
   const dispatch = useDispatch();
-  const { eventCategoryNames } = useSelector((state) => state.eventState);
+  const navigate = useNavigate();
+  const { eventCategoryNames,eventDetail } = useSelector((state) => state.eventState);
   const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
-  const { addNewEventAction, getEventAllCategoriesNamesAction } = eventActions;
+  const { addNewEventAction, getEventAllCategoriesNamesAction, getCommunityEventsAction } = eventActions;
 
   const [formData, setFormData] = useState({
     title: '',
@@ -48,7 +51,7 @@ export function CreateEventForm() {
     endDate: new Date(),
     time: moment().format(),
     location: '',
-    speakers: [{ name: '', bio: '' }],
+    speakers: [{ name: '', title: '', bio: '' }],
     targetAudience: ['men'],
     contactInfo: {
       name: '',
@@ -62,6 +65,21 @@ export function CreateEventForm() {
 
   // State to manage form errors
   const [errors, setErrors] = useState({});
+  useEffect(() => {
+    if (eventId && eventDetail?._id !== eventId) {
+      fetchEventDetails();
+    } else if (eventDetail?._id === eventId) {
+      setFormData(eventDetail);
+    }
+    else{
+      setFormData(formData)
+    }
+
+  }, [eventId, eventDetail?._id]);
+
+  const fetchEventDetails = useCallback(async () => {
+      dispatch(getCommunityEventsAction(eventId));
+    }, [eventId, eventCategoryNames?._id]);
 
   useEffect(() => {
     if (!eventCategoryNames) {
@@ -158,11 +176,16 @@ export function CreateEventForm() {
 
   // Add speaker
   const addSpeaker = () => {
-    setFormData((prev) => ({
-      ...prev,
-      speakers: [...prev.speakers, { name: '', title: '', bio: '' }],
-    }));
+    setFormData((prev) => {
+      return {
+        ...prev,
+        speakers: Array.isArray(prev.speakers)
+          ? [...prev.speakers, { name: '', title: '', bio: '' }]
+          : [{ name: '', title: '', bio: '' }],
+      };
+    });
   };
+  
 
   // Remove speaker
   const removeSpeaker = (index) => {
@@ -221,42 +244,56 @@ export function CreateEventForm() {
 
   // Handle change for target Audience
   const changeTargetAudience = (value, add = true) => {
-    let targets = [...formData?.targetAudience];
+    // Ensure `targetAudience` is always an array
+    let targets = Array.isArray(formData?.targetAudience) ? [...formData.targetAudience] : [];
+  
     if (add) {
+      // Add a value to the target audience, ensuring uniqueness
       targets.push(value);
       targets = [...new Set(targets)];
     } else {
-      if (targets.length === 1) return;
-      let index = value;
+      // Remove a value from the target audience by index
+      if (targets.length === 1) return; // Prevent removing the last item
+      let index = value; // Assuming `value` is the index to remove
       targets.splice(index, 1);
     }
-    setFormData((prev) => ({ ...prev, targetAudience: targets }));
+  
+    // Update the formData state
+    setFormData((prev) => ({
+      ...prev,
+      targetAudience: targets,
+    }));
   };
+  
 
   // add new tag
   const addRemoveTagFunction = (index = null) => {
-    let update = [...formData.tags];
-    if (index) {
-      update.splice(index - 1, 1);
+    // Ensure `tags` is an array
+    let update = Array.isArray(formData?.tags) ? [...formData.tags] : [];
+  
+    if (index !== null) {
+      update.splice(index - 1, 1); // Remove the tag at the given index
     } else {
-      update.push(' ');
+      update.push(''); // Add a new empty tag
     }
-
+  
     setFormData((prev) => ({
       ...prev,
-      tags: [...update],
+      tags: update,
     }));
   };
+  
 
   const changeTagHandler = (e, index) => {
-    let update = [...formData.tags];
+    let update = Array.isArray(formData?.tags) ? [...formData.tags] : [];
     update[index] = e.target.value;
+  
     setFormData((prev) => ({
       ...prev,
-      tags: [...update],
+      tags: update,
     }));
   };
-
+  
   const validateFormFunction = () => {
     let newErrors = {};
     let updateFormData = {};
@@ -334,7 +371,7 @@ export function CreateEventForm() {
           <label className="block text-sm font-medium mb-2">Event Title</label>
           <Input
             name="title"
-            value={formData.title}
+            value={formData?.title}
             onChange={handleChange}
             placeholder="Enter event title"
             className={errors.title ? 'border-red-500' : ''}
@@ -347,25 +384,25 @@ export function CreateEventForm() {
           <label className="block text-sm font-medium mb-2">Description</label>
           <Textarea
             name="description"
-            value={formData.description}
+            value={formData?.description}
             onChange={handleChange}
             placeholder="Provide a detailed description of the event"
             className={errors.description ? 'border-red-500' : ''}
           />
-          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+          {errors.description && <p className="text-red-500 text-xs mt-1">{errors?.description}</p>}
         </div>
 
         {/* Event Type */}
         <div>
           <label className="block text-sm font-medium mb-2">Event Type</label>
-          <Select name="type" value={formData.type} onValueChange={handleTypeEventChange}>
-            <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
+          <Select name="type" value={formData?.type} onValueChange={handleTypeEventChange}>
+            <SelectTrigger className={errors?.type ? 'border-red-500' : ''}>
               <SelectValue placeholder="Select event type" />
             </SelectTrigger>
             <SelectContent>
               {eventCategoryNames &&
                 eventCategoryNames?.map((singleCategory) => (
-                  <SelectItem value={singleCategory?._id}>{singleCategory?.name}</SelectItem>
+                  <SelectItem key={singleCategory?._id} value={singleCategory?._id}>{singleCategory?.name}</SelectItem>
                 ))}
             </SelectContent>
           </Select>
@@ -379,7 +416,7 @@ export function CreateEventForm() {
             <Calendar
               mode="single"
               name="startDate"
-              selected={formData.startDate}
+              selected={formData?.startDate}
               onSelect={(date) => changeDateHandler(date, 'startDate')}
               disabled={(date) => date < new Date()}
               // initialFocus
@@ -391,7 +428,7 @@ export function CreateEventForm() {
             <Calendar
               mode="single"
               name="endDate"
-              selected={formData.endDate}
+              selected={formData?.endDate}
               onSelect={(date) => changeDateHandler(date, 'endDate')}
               disabled={(date) => date < formData?.startDate}
               // initialFocus
@@ -401,10 +438,10 @@ export function CreateEventForm() {
 
         {/* Event Time */}
         <div>
-          <label className="block text-sm font-medium mb-2">Event Title</label>
+          <label className="block text-sm font-medium mb-2">Event Time</label>
           <Input
             name="time"
-            value={moment(formData.time).format('HH:mm')}
+            value={moment(formData?.time).format('HH:mm')}
             onChange={handleChange}
             placeholder="Enter event title"
             type="time"
@@ -416,7 +453,7 @@ export function CreateEventForm() {
           <label className="block text-sm font-medium mb-2">Event Location</label>
           <Input
             name="location"
-            value={formData.location}
+            value={formData?.location}
             onChange={handleChange}
             placeholder="Enter event location"
             className={errors?.location ? 'border-red-500' : ''}
@@ -427,12 +464,12 @@ export function CreateEventForm() {
         {/* Speakers Section */}
         <div>
           <label className="block text-sm font-medium mb-2">Speakers</label>
-          {formData.speakers.map((speaker, index) => (
+          { Array.isArray(formData?.speakers) && formData?.speakers?.map((speaker, index) => (
             <div key={index} className=" flex gap-4 mb-4">
               <div>
                 <Input
                   placeholder="Speaker Name"
-                  value={speaker.name}
+                  value={speaker?.name}
                   onChange={(e) => handleSpeakerChange(index, 'name', e.target.value)}
                 />
                 {errors?.speakers?.[index] && (
@@ -441,10 +478,10 @@ export function CreateEventForm() {
               </div>
               <Input
                 placeholder="Speaker Description"
-                value={speaker.bio}
+                value={speaker?.bio}
                 onChange={(e) => handleSpeakerChange(index, 'bio', e.target.value)}
               />
-              {formData?.speakers.length !== 1 && (
+              {formData?.speakers?.length !== 1 && (
                 <Button
                   type="button"
                   variant="destructive"
@@ -466,7 +503,7 @@ export function CreateEventForm() {
         <div>
           <label className="block text-sm font-medium mb-2">Target Audience</label>
           <div className="mb-3 flex gap-4 flex-wrap">
-            {formData.targetAudience.map((singleTarget, index) => (
+            {Array.isArray(formData?.targetAudience) && formData?.targetAudience?.map((singleTarget, index) => (
               <Badge className={'p-2 capitalize'} key={singleTarget + index}>
                 {singleTarget}{' '}
                 {formData?.targetAudience?.length !== 1 && (
@@ -483,7 +520,7 @@ export function CreateEventForm() {
             // value={formData.}
             onValueChange={changeTargetAudience}
           >
-            <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
+            <SelectTrigger>
               <SelectValue placeholder="Select event type" />
             </SelectTrigger>
             <SelectContent>
@@ -492,14 +529,13 @@ export function CreateEventForm() {
               ))}
             </SelectContent>
           </Select>
-          {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
         </div>
 
         {/* Tags Section */}
         <div>
           <label className="block text-sm font-medium mb-2">Tags</label>
           <div className="flex justify-between flex-wrap">
-            {formData.tags.map((singleTag, index) => (
+          {Array.isArray(formData?.tags) && formData?.tags?.map((singleTag, index) => (
               <div key={index} className="flex gap-4 mb-4">
                 <div>
                   <Input
@@ -536,7 +572,7 @@ export function CreateEventForm() {
             <div>
               <Input
                 name="name"
-                value={formData.contactInfo.name}
+                value={formData?.contactInfo?.name}
                 onChange={handleContactChange}
                 placeholder="Contact Name"
                 className={errors?.contactInfo?.name ? 'border-red-500' : ''}
@@ -549,7 +585,7 @@ export function CreateEventForm() {
             <div>
               <Input
                 name="email"
-                value={formData.contactInfo.email}
+                value={formData?.contactInfo?.email}
                 onChange={handleContactChange}
                 placeholder="Contact Email"
                 className={errors?.contactInfo?.email ? 'border-red-500' : ''}
@@ -563,7 +599,7 @@ export function CreateEventForm() {
             <div>
               <Input
                 name="phone"
-                value={formData.contactInfo.phone}
+                value={formData?.contactInfo?.phone}
                 onChange={handleContactChange}
                 placeholder="Contact Phone"
                 className={errors?.contactInfo?.phone ? 'border-red-500' : ''}

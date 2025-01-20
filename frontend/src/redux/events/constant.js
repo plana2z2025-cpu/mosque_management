@@ -1,7 +1,13 @@
 export const COMMUNITY_EVENTS = {
   request: 'COMMUNITY_EVENTs.request',
   success: 'COMMUNITY_EVENTS.success',
+  update: 'COMMUNITY_EVENTS.update',
   fail: 'COMMUNITY_EVENTS.fail',
+};
+export const SINGLE_EVENT_DETAIL = {
+  request: 'SINGLE_EVENT_DETAIL.request',
+  success: 'SINGLE_EVENT_DETAIL.success',
+  fail: 'SINGLE_EVENT_DETAIL.fail',
 };
 
 export const EVENT_CATEGORIES = {

@@ -83,7 +83,7 @@ const data = {
         },
         {
           title: 'Create Event',
-          url: '/admin/events/create',
+          url: '/admin/events/event/create',
         },
         {
           title: 'Events',

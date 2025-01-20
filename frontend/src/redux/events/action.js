@@ -41,6 +41,12 @@ const getCommunityEventsAction =
     }
   };
 
+  const deleteEventAction = async (eventId) => {
+    const token = getAccessToken();
+    const response = await Service.fetchDelete(`${API.BASE_TYPE}/${eventId}`, token);
+    return response;
+  };
+
 // ----------------------------------------------------------------
 // CATEGORIES
 // ----------------------------------------------------------------
@@ -142,6 +148,7 @@ export default {
   // EVENTS
   addNewEventAction,
   getCommunityEventsAction,
+  deleteEventAction,
 
   // CATEGORIES
   getEventCategoriesAction,
