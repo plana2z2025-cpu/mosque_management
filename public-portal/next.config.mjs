@@ -9,6 +9,14 @@ const nextConfig = {
 
     return config;
   },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: "/(.*)",
+  //       destination: "/",
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;
