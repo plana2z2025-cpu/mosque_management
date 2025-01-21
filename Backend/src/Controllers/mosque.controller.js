@@ -98,6 +98,7 @@ const createNewMosqueController = async (req, res, next) => {
       mosqueId: newMosque._id,
       createdBy: userExist._id,
       createdRef: "user",
+      default: true,
     }));
 
     await eventCategoryModel.insertMany(eventsData);
@@ -339,6 +340,82 @@ const updateCommunityMosqueTimingsController = async (req, res, next) => {
   }
 };
 
+// -----------------------------------------------------------------------------
+// __TYPE__ : PUBLIC
+// -----------------------------------------------------------------------------
+
+const getPublicAllMosqueController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller-mosque.controller-getPublicAllMosqueController-Start"
+    );
+    let { limit = 15, page = 1, sort = "-createdAt" } = req.query;
+    const {
+      name = null,
+      city = null,
+      state = null,
+      country = null,
+      postalCode = null,
+      facilities = null,
+      active = null,
+    } = req.query;
+
+    limit = Number(limit);
+    page = Number(page);
+
+    const skip_docs = (page - 1) * limit;
+
+    const totalDocs = await mosqueModel.countDocuments();
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    const query = {};
+    if (name) query.name = name;
+    if (city) query["address.city"] = city;
+    if (state) query["address.state"] = state;
+    if (country) query["address.country"] = country;
+    if (postalCode) query["address.postalCode"] = postalCode;
+    if (facilities) query.facilities = facilities;
+    if (active) query.active = active;
+
+    const docs = await mosqueModel
+      .find(query)
+      .skip(skip_docs)
+      .limit(limit)
+      .sort(sortConstants[sort] || sortConstants["-createdAt"])
+      .select("name slug timings address")
+      .lean();
+
+    const hasNext = totalDocs > skip_docs + limit;
+    const hasPrev = page > 1;
+
+    const data = {
+      totalDocs,
+      totalPages,
+      docs,
+      currentPage: page,
+      hasNext,
+      hasPrev,
+      limit,
+    };
+
+    logger.info(
+      "Controller-mosque.controller-getPublicAllMosqueController-End"
+    );
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      data,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-getPublicAllMosqueController-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
 module.exports = {
   createNewMosqueController,
   getMosquesListController,
@@ -348,4 +425,5 @@ module.exports = {
   getCommunityMosqueDetailsController,
   updateCommunityMosqueDetailsController,
   updateCommunityMosqueTimingsController,
+  getPublicAllMosqueController,
 };
