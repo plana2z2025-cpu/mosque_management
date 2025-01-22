@@ -18,6 +18,7 @@ const {
   getCommunityMosqueDetailsController,
   updateCommunityMosqueDetailsController,
   updateCommunityMosqueTimingsController,
+  getPublicAllMosqueController,
 } = require("../Controllers/mosque.controller");
 const ValidateObjectId = require("../Middlewares/validateObjectid.middleware");
 const mosqueValidations = require("../validators/mosque.joi");
@@ -38,8 +39,8 @@ MosqueRoutes.route("/create-new/slug-verify/available").post(
 );
 
 MosqueRoutes.route("/mosques").get(
-  // Authentication,
-  // Authorization(SUPPER_ADMIN),
+  Authentication,
+  Authorization(SUPPER_ADMIN),
   getMosquesListController
 );
 MosqueRoutes.route("/mosques/:slug").get(
@@ -74,5 +75,11 @@ MosqueRoutes.route("/community/mosque-timings").put(
   mosqueValidations.updateMosqueTimingsValidation,
   updateCommunityMosqueTimingsController
 );
+
+//
+// -----------------------------------------------------------------------------
+// __TYPE__ : PUBLIC ROUTES
+// -----------------------------------------------------------------------------
+MosqueRoutes.route("/public/all").get(getPublicAllMosqueController);
 
 module.exports = MosqueRoutes;

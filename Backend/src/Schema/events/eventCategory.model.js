@@ -47,6 +47,10 @@ const ModelSchema = new mongoose.Schema(
       ref: mosque,
       required: true,
     },
+    default: {
+      type: Boolean,
+      default: false,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
