@@ -27,5 +27,17 @@ export const EVENT_DASHBOARD_GRAPH = {
   fail: 'EVENT_DASHBOARD_GRAPH.fail',
 };
 
+export const UPDATE_CATEGORY = {
+  request: 'UPDATE_CATEGORY_REQUEST',
+  success: 'UPDATE_CATEGORY_SUCCESS',
+  fail: 'UPDATE_CATEGORY_FAIL',
+};
+
+export const UPDATE_EVENT = {
+  request: 'UPDATE_EVENT_REQUEST',
+  success: 'UPDATE_EVENT_SUCCESS',
+  fail: 'UPDATE_EVENT_FAIL',
+};
+
 export const CLEAR_EVENT_ERRORS = 'CLEAR_EVENT_ERRORS';
 export const RESET_EVENT_STATE = 'RESET_EVENT_STATE';

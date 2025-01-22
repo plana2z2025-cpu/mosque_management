@@ -4,6 +4,7 @@ import {
   EXPENSES,
   EXPENSE_CATEGORIES,
   EXPENSE_CATEGORIES_NAMES,
+  UPDATE_CATEGORY,
   EXPENSE_DASHBOARD_GRAPH,
 } from './constant';
 
@@ -38,6 +39,10 @@ export const ExpenseReducer = (state = initialState, action) => {
       ...state,
       loading: true,
     }),
+    [UPDATE_CATEGORY.request]: () => ({
+      ...state,
+      loading: true,
+    }),
 
     // Success states
     [EXPENSES.success]: () => ({
@@ -61,6 +66,11 @@ export const ExpenseReducer = (state = initialState, action) => {
       expenseTypeGraph: action.payload?.expenseTypeGraph || [],
       expenseStatusGraph: action.payload?.expenseStatusGraph || [],
       expensePaymentGraph: action.payload?.expensePaymentGraph || [],
+    }),
+    [UPDATE_CATEGORY.success]: () => ({
+      ...state,
+      loading: false,
+      expenseCategories: action.payload,
     }),
 
     // Failure states
@@ -86,6 +96,12 @@ export const ExpenseReducer = (state = initialState, action) => {
       ...state,
       loading: false,
       error: action?.payload?.message || 'An error occurred',
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [UPDATE_CATEGORY.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
       statusCode: action?.payload?.statusCode || 500,
     }),
 

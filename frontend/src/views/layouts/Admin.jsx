@@ -82,10 +82,6 @@ const data = {
           url: '/admin/events/categories',
         },
         {
-          title: 'Create Event',
-          url: '/admin/events/event/create',
-        },
-        {
           title: 'Events',
           url: '/admin/events',
         },

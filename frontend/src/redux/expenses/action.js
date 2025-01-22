@@ -94,6 +94,16 @@ const getAllExpenseCategoryNamesAction = () => async (dispatch) => {
   }
 };
 
+const updateExpenseCategoryAction = async (categoryId, json) => {
+  const token = getAccessToken();
+  const response = await Service.fetchPut(
+    `${API.BASE_TYPE_CATEGORY}/${categoryId}`,
+    json,
+    token
+  );
+  return response;
+};
+
 const deleteExpenseCategoryAction = async (categoryId) => {
   const token = getAccessToken();
   const response = await Service.fetchDelete(`${API.BASE_TYPE_CATEGORY}/${categoryId}`, token);
@@ -148,6 +158,7 @@ export default {
   addNewExpenseCategoryAction,
   getAllExpenseCategoryNamesAction,
   deleteExpenseCategoryAction,
+  updateExpenseCategoryAction,
 
   // GRAPHS
   expenseDashboardGraphAction,

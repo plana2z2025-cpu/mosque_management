@@ -6,7 +6,7 @@ import moment from 'moment';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
 import { Trash } from 'lucide-react';
 
-const breadCumbs = [{ label: 'Events', href: null }];
+const breadCumbs = [{ label: 'Expenses', href: null }];
 
 const headers = [
   { title: 'Type', key: 'category' },
@@ -49,7 +49,7 @@ const AllExpenses = () => {
           category: item?.category?.name || '',
           date: moment(item?.date).format('LL'),
         }))}
-        cardTitle="Events"
+        cardTitle="Expenses"
         totalPages={allExpenses?.totalPages}
         currentPage={allExpenses?.currentPage}
         onPageChange={(page) => setInfo((prev) => ({ ...prev, page }))}

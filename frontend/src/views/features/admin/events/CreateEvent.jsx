@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import validator from 'validator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,16 +11,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-// import { format } from 'date-fns';
-import { CalendarIcon, Trash2, Plus, CookingPot } from 'lucide-react';
+import { CalendarIcon, Trash2, Plus } from 'lucide-react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useSelector, useDispatch } from 'react-redux';
 import { eventActions } from '@/redux/combineActions';
 import moment from 'moment';
 import { Badge } from '@/components/ui/badge';
 import toast from 'react-hot-toast';
-import { useParams,useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { COMMUNITY_EVENTS, SINGLE_EVENT_DETAIL } from '@/redux/events/constant';
 
 const breadCumbs = [{ label: 'Categories', href: null }];
 const targetAudienceOptions = [
@@ -35,18 +34,18 @@ const targetAudienceOptions = [
 ];
 
 export function CreateEventForm() {
-  // State to manage form data and errors
-  const {eventId} =useParams();
+  const { eventId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { eventCategoryNames,eventDetail } = useSelector((state) => state.eventState);
+  const { eventCategoryNames, eventDetail } = useSelector((state) => state.eventState);
+  const { allEvents } = useSelector((state) => state.eventState || {});
   const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
-  const { addNewEventAction, getEventAllCategoriesNamesAction, getCommunityEventsAction } = eventActions;
+  const { addNewEventAction, getEventAllCategoriesNamesAction, getEventDetailsAction, updateEventAction } = eventActions;
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: '',
+    type: eventCategoryNames?.[0]?._id || '',
     startDate: new Date(),
     endDate: new Date(),
     time: moment().format(),
@@ -63,34 +62,53 @@ export function CreateEventForm() {
     status: 'published',
   });
 
-  // State to manage form errors
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true); // Loading state
+
   useEffect(() => {
-    if (eventId && eventDetail?._id !== eventId) {
-      fetchEventDetails();
-    } else if (eventDetail?._id === eventId) {
-      setFormData(eventDetail);
-    }
-    else{
-      setFormData(formData)
-    }
+    const fetchEventDetails = async () => {
+      if (eventId) {
+        await dispatch(getEventDetailsAction(eventId));
+      }
+      setLoading(false); // Set loading to false after fetching
+    };
 
-  }, [eventId, eventDetail?._id]);
+    fetchEventDetails();
+  }, [eventId, dispatch]);
 
-  const fetchEventDetails = useCallback(async () => {
-      dispatch(getCommunityEventsAction(eventId));
-    }, [eventId, eventCategoryNames?._id]);
+  useEffect(() => {
+    if (eventDetail && eventDetail._id === eventId) {
+      setFormData((prev) => ({
+        ...prev,
+        ...eventDetail,
+        startDate: new Date(eventDetail.startDate),
+        endDate: new Date(eventDetail.endDate),
+        time: moment(eventDetail.time).format(),
+      }));
+    }
+  }, [eventDetail, eventId]);
 
   useEffect(() => {
     if (!eventCategoryNames) {
-      fetchAllCategoriesNames();
+      dispatch(getEventAllCategoriesNamesAction());
     }
     if (communityMosqueDetail) {
-      let { street, city, state, country, postalCode } = communityMosqueDetail?.address;
-      let location = `${street}, ${city}, ${state}, ${country}, ${postalCode}`;
+      const { street, city, state, country, postalCode } = communityMosqueDetail?.address;
+      const location = `${street}, ${city}, ${state}, ${country}, ${postalCode}`;
       setFormData((prev) => ({ ...prev, location }));
     }
-  }, [eventCategoryNames, communityMosqueDetail]);
+  }, [eventCategoryNames, communityMosqueDetail, dispatch]);
+
+  useEffect(() => {
+    // Run validation after formData.type changes
+    if (formData?.type) {
+      let typeError = validateFieldFunc('type', formData.type);
+      setErrors((prev) => ({
+        ...prev,
+        type: typeError,
+      }));
+    }
+  }, [formData?.type]);
 
   const fetchAllCategoriesNames = () => {
     dispatch(getEventAllCategoriesNamesAction());
@@ -106,7 +124,12 @@ export function CreateEventForm() {
             ? 'Title must be max characters'
             : null,
       description: () => (value.trim() === '' ? 'Description is required' : null),
-      type: () => (value.trim() === '' ? 'Event Type is required' : null),
+      type: () => {
+        if (!value || (typeof value === 'string' && value.trim() === '') || (typeof value === 'object' && !value._id)) {
+          return 'Event Type is required';
+        }
+        return null;
+      },
       location: () => (value.trim() === '' ? 'Location is required' : null),
       contactInfo: {
         name: () => (value.trim() === '' ? 'Name is required' : null),
@@ -170,7 +193,7 @@ export function CreateEventForm() {
     let newError = validateFieldFunc('type', value);
     setErrors((prev) => ({
       ...prev,
-      type: newError,
+      type: newError || null,
     }));
   };
 
@@ -185,7 +208,7 @@ export function CreateEventForm() {
       };
     });
   };
-  
+
 
   // Remove speaker
   const removeSpeaker = (index) => {
@@ -220,22 +243,21 @@ export function CreateEventForm() {
   // Handle Date change
   const changeDateHandler = (date, name) => {
     let options = {};
-    console.log(date.getFullYear(), name);
     name === 'startDate'
       ? (options = {
-          startDate: date,
-          endDate: date,
-          time: moment(formData.time)
-            .set({
-              year: date.getUTCFullYear(),
-              month: date.getUTCMonth(),
-              day: date.getUTCDate(),
-            })
-            .format(),
-        })
+        startDate: date,
+        endDate: date,
+        time: moment(formData.time)
+          .set({
+            year: date.getUTCFullYear(),
+            month: date.getUTCMonth(),
+            day: date.getUTCDate(),
+          })
+          .format(),
+      })
       : (options = {
-          endDate: date,
-        });
+        endDate: date,
+      });
     setFormData((prev) => ({
       ...prev,
       ...options,
@@ -244,56 +266,52 @@ export function CreateEventForm() {
 
   // Handle change for target Audience
   const changeTargetAudience = (value, add = true) => {
-    // Ensure `targetAudience` is always an array
+
     let targets = Array.isArray(formData?.targetAudience) ? [...formData.targetAudience] : [];
-  
+
     if (add) {
-      // Add a value to the target audience, ensuring uniqueness
       targets.push(value);
       targets = [...new Set(targets)];
     } else {
-      // Remove a value from the target audience by index
-      if (targets.length === 1) return; // Prevent removing the last item
-      let index = value; // Assuming `value` is the index to remove
+      if (targets.length === 1) return;
+      let index = value;
       targets.splice(index, 1);
     }
-  
-    // Update the formData state
     setFormData((prev) => ({
       ...prev,
       targetAudience: targets,
     }));
   };
-  
+
 
   // add new tag
   const addRemoveTagFunction = (index = null) => {
     // Ensure `tags` is an array
     let update = Array.isArray(formData?.tags) ? [...formData.tags] : [];
-  
+
     if (index !== null) {
       update.splice(index - 1, 1); // Remove the tag at the given index
     } else {
       update.push(''); // Add a new empty tag
     }
-  
+
     setFormData((prev) => ({
       ...prev,
       tags: update,
     }));
   };
-  
+
 
   const changeTagHandler = (e, index) => {
     let update = Array.isArray(formData?.tags) ? [...formData.tags] : [];
     update[index] = e.target.value;
-  
+
     setFormData((prev) => ({
       ...prev,
       tags: update,
     }));
   };
-  
+
   const validateFormFunction = () => {
     let newErrors = {};
     let updateFormData = {};
@@ -348,20 +366,61 @@ export function CreateEventForm() {
     if (validateFormFunction()) {
       const json = {
         ...formData,
+        startDate: moment(formData.startDate).utc().format(),
+        endDate: moment(formData.endDate).utc().format(),
+        time: moment(formData.time).utc().format(),
       };
 
-      json.startDate = moment(json.startDate).utc().format();
-      json.endDate = moment(json.endDate).utc().format();
-      json.time = moment(json.time).utc().format();
+      if (eventId) {
+        // Update event
+        const response = await updateEventAction(eventId, json);
+        if (response[2] === 200) {
+          toast.success('Event updated successfully');
+          const updatedDocs = allEvents.docs.map((event) =>
+            event._id === eventId
+              ? { ...response[1]?.data }
+              : { ...event }
+          );
 
-      const response = await addNewEventAction(json);
-      if (response[0] === 201) {
-        toast.success('event is created successfully');
+          const updatedPayload = {
+            ...allEvents,
+            docs: updatedDocs,
+          };
+
+          await dispatch({
+            type: COMMUNITY_EVENTS.success,
+            payload: updatedPayload,
+          });
+
+          navigate('/admin/events');
+        } else {
+          toast.error(response[1]?.message);
+        }
       } else {
-        toast.error(response[1]?.message);
+        // Create event
+        const response = await addNewEventAction(json);
+        if (response[0] === 201) {
+          toast.success('Event created successfully');
+          const newEvent = response[1]?.data || json;
+
+          const updatedPayload = {
+            ...allEvents,
+            docs: [...allEvents.docs, newEvent],
+          };
+
+          await dispatch({
+            type: COMMUNITY_EVENTS.success,
+            payload: updatedPayload,
+          });
+
+          navigate('/admin/events');
+        } else {
+          toast.error(response[1]?.message);
+        }
       }
     }
   };
+
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -419,7 +478,7 @@ export function CreateEventForm() {
               selected={formData?.startDate}
               onSelect={(date) => changeDateHandler(date, 'startDate')}
               disabled={(date) => date < new Date()}
-              // initialFocus
+            // initialFocus
             />
           </div>
 
@@ -431,7 +490,7 @@ export function CreateEventForm() {
               selected={formData?.endDate}
               onSelect={(date) => changeDateHandler(date, 'endDate')}
               disabled={(date) => date < formData?.startDate}
-              // initialFocus
+            // initialFocus
             />
           </div>
         </div>
@@ -464,7 +523,7 @@ export function CreateEventForm() {
         {/* Speakers Section */}
         <div>
           <label className="block text-sm font-medium mb-2">Speakers</label>
-          { Array.isArray(formData?.speakers) && formData?.speakers?.map((speaker, index) => (
+          {Array.isArray(formData?.speakers) && formData?.speakers?.map((speaker, index) => (
             <div key={index} className=" flex gap-4 mb-4">
               <div>
                 <Input
@@ -535,7 +594,7 @@ export function CreateEventForm() {
         <div>
           <label className="block text-sm font-medium mb-2">Tags</label>
           <div className="flex justify-between flex-wrap">
-          {Array.isArray(formData?.tags) && formData?.tags?.map((singleTag, index) => (
+            {Array.isArray(formData?.tags) && formData?.tags?.map((singleTag, index) => (
               <div key={index} className="flex gap-4 mb-4">
                 <div>
                   <Input
@@ -613,7 +672,7 @@ export function CreateEventForm() {
 
         {/* Submit Button */}
         <Button type="submit" className="w-full">
-          Create Event
+          {eventId ? 'Update Event' : 'Create Event'}
         </Button>
       </form>
     </Mainwrapper>

@@ -17,8 +17,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import toast from 'react-hot-toast';
-import { EXPENSE_CATEGORIES } from '@/redux/expenses/constant';
-import { Trash, AlertCircle } from 'lucide-react';
+import { EXPENSE_CATEGORIES, UPDATE_CATEGORY} from '@/redux/expenses/constant';
+import { Trash, AlertCircle, Pencil } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ModalV1 from '@/views/components2/modal/ModalV1';
 
@@ -44,12 +44,15 @@ const headers = [
 ];
 
 // Memoized row component
-const TableRow = memo(({ row, onDelete }) => (
+const TableRow = memo(({ row, onDelete, onUpdate }) => (
+  <>
   <Trash color="red" className="cursor-pointer size-5" onClick={() => onDelete(row)} />
+  <Pencil color="black" className="cursor-pointer size-5" onClick={() => onUpdate(row)} />
+  </>
 ));
 
 const ExpenseCategories = () => {
-  const { getExpenseCategoriesAction, addNewExpenseCategoryAction, deleteExpenseCategoryAction } =
+  const { getExpenseCategoriesAction, addNewExpenseCategoryAction, deleteExpenseCategoryAction, updateExpenseCategoryAction } =
     expenseActions;
   const dispatch = useDispatch();
 
@@ -158,6 +161,32 @@ const ExpenseCategories = () => {
 
     const json = { name: info?.name };
 
+    if (info?.editId) {
+      const response = await updateExpenseCategoryAction(info?.editId, json);
+      if (response[2] === 200) {
+        toast.success("Expense Category Updated Successfully");
+        const updatedCategory = response[1]?.data;
+        const updatedExpenseCategories = {
+          ...expenseCategories,
+          docs: expenseCategories.docs.map((category) =>
+            category._id === updatedCategory._id ? updatedCategory : category
+          ),
+        };
+        dispatch({
+          type: UPDATE_CATEGORY.success,
+          payload: updatedExpenseCategories,
+        });
+
+        setInfo((prev) => ({
+          ...prev,
+          name: '',
+          editId: null,
+          isOpen: false,
+        }));
+      } else {
+        toast.error(response[1]?.message);
+      }
+    } else {
     const response = await addNewExpenseCategoryAction(json);
     if (response[0] === 201) {
       toast.success(response[1]?.message);
@@ -185,6 +214,7 @@ const ExpenseCategories = () => {
     } else {
       toast.error(response[1].message);
     }
+  }
   }, [validateAllErrors, info.name, profileDetails._id]);
 
   const deletePopupModalFunc = useCallback((deleteId = null) => {
@@ -223,6 +253,16 @@ const ExpenseCategories = () => {
 
     setInfo((prev) => ({ ...prev, ...updateState }));
   }, [info?.deleteId]);
+
+  const updateCateogory = (row) => {
+    setInfo((prev) => ({
+      ...prev,
+      name: row?.name,
+      editId: row?._id,
+      isOpen: true,
+      row: expenseCategories?.docs?.find(eventCategory => eventCategory._id === row?._id)
+    }));
+  };
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -269,7 +309,7 @@ const ExpenseCategories = () => {
         totalPages={expenseCategories?.totalPages}
         currentPage={expenseCategories?.currentPage}
         onPageChange={onPageChange}
-        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} />}
+        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={updateCateogory} />}
       />
 
       <ModalV1

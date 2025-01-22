@@ -17,8 +17,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import toast from 'react-hot-toast';
-import { EVENT_CATEGORIES } from '@/redux/events/constant';
-import { Trash, AlertCircle } from 'lucide-react';
+import { EVENT_CATEGORIES, UPDATE_CATEGORY } from '@/redux/events/constant';
+import { Trash, AlertCircle, Pencil } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ModalV1 from '@/views/components2/modal/ModalV1';
 
@@ -44,12 +44,15 @@ const headers = [
 ];
 
 // Memoized row component
-const TableRow = memo(({ row, onDelete }) => (
-  <Trash color="red" className="cursor-pointer size-5" onClick={() => onDelete(row)} />
+const TableRow = memo(({ row, onDelete, onUpdate }) => (
+  <>
+    <Trash color="red" className="cursor-pointer size-5" onClick={() => onDelete(row)} />
+    <Pencil color="black" className="cursor-pointer size-5" onClick={() => onUpdate(row)} />
+  </>
 ));
 
 const Categories = () => {
-  const { getEventCategoriesAction, addNewEventCategoryAction, deleteCategoryAction } =
+  const { getEventCategoriesAction, addNewEventCategoryAction, deleteCategoryAction, updateEventCategoryAction, } =
     eventActions;
   const dispatch = useDispatch();
 
@@ -67,7 +70,9 @@ const Categories = () => {
         ...item,
         createdBy: item?.createdBy?.name,
         updatedBy: item?.updatedBy?.name,
-        createdAt: moment(item.createdAt).format('DD/MM/yyyy'),
+        createdAt: item.createdAt
+          ? moment(item.createdAt).format('DD/MM/yyyy')
+          : 'N/A',
       })),
     [eventCategories?.docs]
   );
@@ -79,8 +84,8 @@ const Categories = () => {
         value.trim() === ''
           ? 'Name is required'
           : eventCategories?.docs?.find(
-                (item) => item?.name?.toLowerCase() === value?.toLowerCase()
-              )
+            (item) => item?.name?.toLowerCase() === value?.toLowerCase()
+          )
             ? 'category with this name already exists'
             : null,
     }),
@@ -152,43 +157,92 @@ const Categories = () => {
     const havingErrors = validateAllErrors();
     if (!havingErrors) return;
 
-    const json = { name: info?.name };
+    const json = { ...info?.row, createdBy: info?.row?.createdBy?._id, name: info?.name };
+    let response;
 
-    const response = await addNewEventCategoryAction(json);
-    if (response[0] === 201) {
-      toast.success(response[1]?.message);
-      const newResponse = {
-        ...response[1].data,
-        createdBy: {
-          _id: profileDetails._id,
-          name: profileDetails.name,
-        },
-      };
+    try {
+      if (info?.editId) {
+        response = await updateEventCategoryAction(info?.editId, json);
+        if (response[2] === 200) {
+          toast.success("Event Category Updated Successfully");
+          const updatedCategory = response[1]?.data;
+          const updatedEventCategories = {
+            ...eventCategories,
+            docs: eventCategories.docs.map((category) =>
+              category._id === updatedCategory._id ? updatedCategory : category
+            ),
+          };
+          dispatch({
+            type: UPDATE_CATEGORY.success,
+            payload: updatedEventCategories,
+          });
 
-      dispatch({
-        type: EVENT_CATEGORIES.success,
-        payload: {
-          ...eventCategories,
-          docs: [newResponse, ...eventCategories.docs],
-        },
-      });
+          setInfo((prev) => ({
+            ...prev,
+            name: '',
+            editId: null,
+            isOpen: false,
+          }));
+        } else {
+          toast.error(response[1]?.message);
+        }
+      } else {
+        delete json._id;
+        delete json.mosqueId;
+        delete json.createdBy;
+        delete json.createdRef;
+        delete json.createdAt;
+        delete json.updatedAt;
+        delete json.__v;
+        delete json.updatedBy;
+        delete json.updatedRef;
+        response = await addNewEventCategoryAction(json);
 
-      setInfo((prev) => ({
-        ...prev,
-        name: '',
-        isOpen: false,
-      }));
-    } else {
-      toast.error(response[1].message);
+        if (response[0] === 201) {
+          toast.success(response[1]?.message);
+          const newResponse = {
+            ...response[1]?.data,
+
+            createdBy: {
+              _id: profileDetails._id,
+              name: profileDetails.name,
+            },
+          };
+
+          dispatch({
+            type: EVENT_CATEGORIES.success,
+            payload: {
+              ...eventCategories,
+              docs: [newResponse, ...eventCategories.docs],
+            },
+          });
+
+          setInfo((prev) => ({
+            ...prev,
+            name: '',
+            isOpen: false,
+          }));
+        } else {
+          toast.error(response[1]?.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error in submitNewCategoryHandler:", error);
+      toast.error("Something went wrong. Please try again later.");
     }
   }, [
     validateAllErrors,
-    info.name,
+    info?.name,
+    info?.editId,
     addNewEventCategoryAction,
+    updateEventCategoryAction,
     profileDetails,
     eventCategories,
     dispatch,
   ]);
+
+
+
 
   const deletePopupModalFunc = useCallback((deleteId = null) => {
     setInfo((prev) => ({ ...prev, deleteId, deleteInput: '' }));
@@ -201,8 +255,6 @@ const Categories = () => {
   const deleteCategorySubmitHandler = useCallback(async () => {
     if (!info?.deleteId?._id || info?.deleteLoading) return;
     const response = await deleteCategoryAction(info?.deleteId?._id);
-    console.log(response);
-    debugger;
     let updateState = {};
     if (response[0] === true) {
       let newResponse = { ...eventCategories };
@@ -228,6 +280,16 @@ const Categories = () => {
 
     setInfo((prev) => ({ ...prev, ...updateState }));
   }, [info?.deleteId]);
+
+  const updateCateogory = (row) => {
+    setInfo((prev) => ({
+      ...prev,
+      name: row?.name,
+      editId: row?._id,
+      isOpen: true,
+      row: eventCategories?.docs?.find(eventCategory => eventCategory._id === row?._id)
+    }));
+  };
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -274,7 +336,7 @@ const Categories = () => {
         totalPages={eventCategories?.totalPages}
         currentPage={eventCategories?.currentPage}
         onPageChange={onPageChange}
-        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} />}
+        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={updateCateogory} />}
       />
 
       <ModalV1
@@ -298,11 +360,7 @@ const Categories = () => {
             value={info?.deleteInput}
             onChange={changeInputDeleteHandlerFunction}
             placeholder="Enter category name"
-            // className={error ? 'border-red-500' : ''}
           />
-          {/* {error && (
-            <p className="text-sm text-red-500">Category name doesn't match. Please try again.</p>
-          )} */}
         </div>
 
         <div className="flex gap-3 justify-end mt-6">

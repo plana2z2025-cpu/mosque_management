@@ -52,13 +52,13 @@ export const PayementsReducer = (state = initialState, action) => {
       loading: false,
       allPayee: state.allPayee
         ? {
-            ...state.allPayee,
-            data: Array.isArray(state.allPayee.data)
-              ? state.allPayee.data.map((payee) =>
-                  payee.id === action.payload.id ? action.payload : payee
-                )
-              : state.allPayee.data,
-          }
+          ...state.allPayee,
+          data: Array.isArray(state.allPayee.data)
+            ? state.allPayee.data.map((payee) =>
+              payee.id === action.payload.id ? action.payload : payee
+            )
+            : state.allPayee.data,
+        }
         : null,
     }),
 
