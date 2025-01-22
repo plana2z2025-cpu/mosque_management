@@ -78,7 +78,7 @@ const data = {
       isActive: true,
       items: [
         {
-          title: 'Categories',
+          title: 'Event Types',
           url: '/admin/events/categories',
         },
         {
@@ -108,7 +108,6 @@ const data = {
         },
       ],
     },
-    
 
     {
       title: 'Administrators',

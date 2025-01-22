@@ -17,9 +17,9 @@ export const EXPENSE_CATEGORIES_NAMES = {
 };
 
 export const UPDATE_CATEGORY = {
-  request: 'UPDATE_CATEGORY_REQUEST',
-  success: 'UPDATE_CATEGORY_SUCCESS',
-  fail: 'UPDATE_CATEGORY_FAIL',
+  request: 'UPDATE_CATEGORY.request',
+  success: 'UPDATE_CATEGORY.success',
+  fail: 'UPDATE_CATEGORY.fail',
 };
 
 export const EXPENSE_DASHBOARD_GRAPH = {

@@ -21,7 +21,8 @@ import toast from 'react-hot-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { COMMUNITY_EVENTS, SINGLE_EVENT_DETAIL } from '@/redux/events/constant';
 
-const breadCumbs = [{ label: 'Categories', href: null }];
+const breadCumbs = [{ label: 'Event', href: '/admin/events' }];
+
 const targetAudienceOptions = [
   { label: 'men', value: 'men' },
   { label: 'women', value: 'women' },
@@ -40,7 +41,12 @@ export function CreateEventForm() {
   const { eventCategoryNames, eventDetail } = useSelector((state) => state.eventState);
   const { allEvents } = useSelector((state) => state.eventState || {});
   const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
-  const { addNewEventAction, getEventAllCategoriesNamesAction, getEventDetailsAction, updateEventAction } = eventActions;
+  const {
+    addNewEventAction,
+    getEventAllCategoriesNamesAction,
+    getEventDetailsAction,
+    updateEventAction,
+  } = eventActions;
 
   const [formData, setFormData] = useState({
     title: '',
@@ -63,21 +69,21 @@ export function CreateEventForm() {
   });
 
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
-    const fetchEventDetails = async () => {
-      if (eventId) {
-        await dispatch(getEventDetailsAction(eventId));
-      }
-      setLoading(false); // Set loading to false after fetching
-    };
+    if (!eventCategoryNames) {
+      fetchAllCategoriesNames();
+    }
 
-    fetchEventDetails();
-  }, [eventId, dispatch]);
+    if (communityMosqueDetail) {
+      const { street, city, state, country, postalCode } = communityMosqueDetail?.address;
+      const location = `${street}, ${city}, ${state}, ${country}, ${postalCode}`;
+      setFormData((prev) => ({ ...prev, location }));
+    }
+  }, []);
 
   useEffect(() => {
-    if (eventDetail && eventDetail._id === eventId) {
+    if (eventId && eventDetail?._id === eventId) {
       setFormData((prev) => ({
         ...prev,
         ...eventDetail,
@@ -85,19 +91,10 @@ export function CreateEventForm() {
         endDate: new Date(eventDetail.endDate),
         time: moment(eventDetail.time).format(),
       }));
+    } else {
+      fetchEventDetails();
     }
-  }, [eventDetail, eventId]);
-
-  useEffect(() => {
-    if (!eventCategoryNames) {
-      dispatch(getEventAllCategoriesNamesAction());
-    }
-    if (communityMosqueDetail) {
-      const { street, city, state, country, postalCode } = communityMosqueDetail?.address;
-      const location = `${street}, ${city}, ${state}, ${country}, ${postalCode}`;
-      setFormData((prev) => ({ ...prev, location }));
-    }
-  }, [eventCategoryNames, communityMosqueDetail, dispatch]);
+  }, [eventDetail?._id, eventId]);
 
   useEffect(() => {
     // Run validation after formData.type changes
@@ -110,9 +107,15 @@ export function CreateEventForm() {
     }
   }, [formData?.type]);
 
-  const fetchAllCategoriesNames = () => {
+  const fetchEventDetails = useCallback(() => {
+    if (eventId) {
+      dispatch(getEventDetailsAction(eventId));
+    }
+  }, [eventId]);
+
+  const fetchAllCategoriesNames = useCallback(() => {
     dispatch(getEventAllCategoriesNamesAction());
-  };
+  }, []);
 
   // Validate form fields
   const validateFieldFunc = (key, value, contactInfo = false) => {
@@ -125,7 +128,11 @@ export function CreateEventForm() {
             : null,
       description: () => (value.trim() === '' ? 'Description is required' : null),
       type: () => {
-        if (!value || (typeof value === 'string' && value.trim() === '') || (typeof value === 'object' && !value._id)) {
+        if (
+          !value ||
+          (typeof value === 'string' && value.trim() === '') ||
+          (typeof value === 'object' && !value._id)
+        ) {
           return 'Event Type is required';
         }
         return null;
@@ -209,7 +216,6 @@ export function CreateEventForm() {
     });
   };
 
-
   // Remove speaker
   const removeSpeaker = (index) => {
     const newSpeakers = [...formData.speakers];
@@ -245,19 +251,19 @@ export function CreateEventForm() {
     let options = {};
     name === 'startDate'
       ? (options = {
-        startDate: date,
-        endDate: date,
-        time: moment(formData.time)
-          .set({
-            year: date.getUTCFullYear(),
-            month: date.getUTCMonth(),
-            day: date.getUTCDate(),
-          })
-          .format(),
-      })
+          startDate: date,
+          endDate: date,
+          time: moment(formData.time)
+            .set({
+              year: date.getUTCFullYear(),
+              month: date.getUTCMonth(),
+              day: date.getUTCDate(),
+            })
+            .format(),
+        })
       : (options = {
-        endDate: date,
-      });
+          endDate: date,
+        });
     setFormData((prev) => ({
       ...prev,
       ...options,
@@ -266,7 +272,6 @@ export function CreateEventForm() {
 
   // Handle change for target Audience
   const changeTargetAudience = (value, add = true) => {
-
     let targets = Array.isArray(formData?.targetAudience) ? [...formData.targetAudience] : [];
 
     if (add) {
@@ -282,7 +287,6 @@ export function CreateEventForm() {
       targetAudience: targets,
     }));
   };
-
 
   // add new tag
   const addRemoveTagFunction = (index = null) => {
@@ -300,7 +304,6 @@ export function CreateEventForm() {
       tags: update,
     }));
   };
-
 
   const changeTagHandler = (e, index) => {
     let update = Array.isArray(formData?.tags) ? [...formData.tags] : [];
@@ -377,9 +380,7 @@ export function CreateEventForm() {
         if (response[2] === 200) {
           toast.success('Event updated successfully');
           const updatedDocs = allEvents.docs.map((event) =>
-            event._id === eventId
-              ? { ...response[1]?.data }
-              : { ...event }
+            event._id === eventId ? { ...response[1]?.data } : { ...event }
           );
 
           const updatedPayload = {
@@ -421,9 +422,14 @@ export function CreateEventForm() {
     }
   };
 
-
   return (
-    <Mainwrapper breadCumbs={breadCumbs}>
+    <Mainwrapper
+      breadCumbs={
+        eventId
+          ? [...breadCumbs, { label: eventId, href: null }]
+          : [...breadCumbs, { label: 'Create Event', href: null }]
+      }
+    >
       <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
         {/* Title Input */}
         <div>
@@ -461,7 +467,9 @@ export function CreateEventForm() {
             <SelectContent>
               {eventCategoryNames &&
                 eventCategoryNames?.map((singleCategory) => (
-                  <SelectItem key={singleCategory?._id} value={singleCategory?._id}>{singleCategory?.name}</SelectItem>
+                  <SelectItem key={singleCategory?._id} value={singleCategory?._id}>
+                    {singleCategory?.name}
+                  </SelectItem>
                 ))}
             </SelectContent>
           </Select>
@@ -478,7 +486,7 @@ export function CreateEventForm() {
               selected={formData?.startDate}
               onSelect={(date) => changeDateHandler(date, 'startDate')}
               disabled={(date) => date < new Date()}
-            // initialFocus
+              // initialFocus
             />
           </div>
 
@@ -490,7 +498,7 @@ export function CreateEventForm() {
               selected={formData?.endDate}
               onSelect={(date) => changeDateHandler(date, 'endDate')}
               disabled={(date) => date < formData?.startDate}
-            // initialFocus
+              // initialFocus
             />
           </div>
         </div>
@@ -523,36 +531,37 @@ export function CreateEventForm() {
         {/* Speakers Section */}
         <div>
           <label className="block text-sm font-medium mb-2">Speakers</label>
-          {Array.isArray(formData?.speakers) && formData?.speakers?.map((speaker, index) => (
-            <div key={index} className=" flex gap-4 mb-4">
-              <div>
+          {Array.isArray(formData?.speakers) &&
+            formData?.speakers?.map((speaker, index) => (
+              <div key={index} className=" flex gap-4 mb-4">
+                <div>
+                  <Input
+                    placeholder="Speaker Name"
+                    value={speaker?.name}
+                    onChange={(e) => handleSpeakerChange(index, 'name', e.target.value)}
+                  />
+                  {errors?.speakers?.[index] && (
+                    <p className="text-red-500 text-xs mt-1">{errors?.speakers?.[index]}</p>
+                  )}
+                </div>
                 <Input
-                  placeholder="Speaker Name"
-                  value={speaker?.name}
-                  onChange={(e) => handleSpeakerChange(index, 'name', e.target.value)}
+                  placeholder="Speaker Description"
+                  value={speaker?.bio}
+                  onChange={(e) => handleSpeakerChange(index, 'bio', e.target.value)}
                 />
-                {errors?.speakers?.[index] && (
-                  <p className="text-red-500 text-xs mt-1">{errors?.speakers?.[index]}</p>
+                {formData?.speakers?.length !== 1 && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="px-8"
+                    onClick={() => removeSpeaker(index)}
+                  >
+                    <Trash2 className="h-4" />
+                  </Button>
                 )}
               </div>
-              <Input
-                placeholder="Speaker Description"
-                value={speaker?.bio}
-                onChange={(e) => handleSpeakerChange(index, 'bio', e.target.value)}
-              />
-              {formData?.speakers?.length !== 1 && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="px-8"
-                  onClick={() => removeSpeaker(index)}
-                >
-                  <Trash2 className="h-4" />
-                </Button>
-              )}
-            </div>
-          ))}
+            ))}
           <Button type="button" variant="outline" onClick={addSpeaker}>
             <Plus className="mr-2 h-4 w-4" /> Add Speaker
           </Button>
@@ -562,17 +571,18 @@ export function CreateEventForm() {
         <div>
           <label className="block text-sm font-medium mb-2">Target Audience</label>
           <div className="mb-3 flex gap-4 flex-wrap">
-            {Array.isArray(formData?.targetAudience) && formData?.targetAudience?.map((singleTarget, index) => (
-              <Badge className={'p-2 capitalize'} key={singleTarget + index}>
-                {singleTarget}{' '}
-                {formData?.targetAudience?.length !== 1 && (
-                  <Trash2
-                    className="h-3 hover:text-red-400 cursor-pointer"
-                    onClick={() => changeTargetAudience(index, false)}
-                  />
-                )}
-              </Badge>
-            ))}
+            {Array.isArray(formData?.targetAudience) &&
+              formData?.targetAudience?.map((singleTarget, index) => (
+                <Badge className={'p-2 capitalize'} key={singleTarget + index}>
+                  {singleTarget}{' '}
+                  {formData?.targetAudience?.length !== 1 && (
+                    <Trash2
+                      className="h-3 hover:text-red-400 cursor-pointer"
+                      onClick={() => changeTargetAudience(index, false)}
+                    />
+                  )}
+                </Badge>
+              ))}
           </div>
           <Select
             name="targetAudience"
@@ -594,30 +604,31 @@ export function CreateEventForm() {
         <div>
           <label className="block text-sm font-medium mb-2">Tags</label>
           <div className="flex justify-between flex-wrap">
-            {Array.isArray(formData?.tags) && formData?.tags?.map((singleTag, index) => (
-              <div key={index} className="flex gap-4 mb-4">
-                <div>
-                  <Input
-                    placeholder="Speaker Name"
-                    value={singleTag}
-                    onChange={(e) => changeTagHandler(e, index)}
-                    className={errors?.tags?.[index] ? 'border-red-500' : ''}
-                  />
-                  {errors?.tags?.[index] && (
-                    <p className="text-red-500 text-xs mt-1">{errors?.tags?.[index]}</p>
-                  )}
+            {Array.isArray(formData?.tags) &&
+              formData?.tags?.map((singleTag, index) => (
+                <div key={index} className="flex gap-4 mb-4">
+                  <div>
+                    <Input
+                      placeholder="Speaker Name"
+                      value={singleTag}
+                      onChange={(e) => changeTagHandler(e, index)}
+                      className={errors?.tags?.[index] ? 'border-red-500' : ''}
+                    />
+                    {errors?.tags?.[index] && (
+                      <p className="text-red-500 text-xs mt-1">{errors?.tags?.[index]}</p>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="px-8"
+                    onClick={() => addRemoveTagFunction(index + 1)}
+                  >
+                    <Trash2 className="h-4" />
+                  </Button>
                 </div>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="px-8"
-                  onClick={() => addRemoveTagFunction(index + 1)}
-                >
-                  <Trash2 className="h-4" />
-                </Button>
-              </div>
-            ))}
+              ))}
           </div>
           <Button type="button" variant="outline" onClick={() => addRemoveTagFunction(null)}>
             <Plus className="mr-2 h-4 w-4" /> Add New Tag

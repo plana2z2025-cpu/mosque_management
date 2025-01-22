@@ -33,7 +33,7 @@ const INITIAL_STATE = {
   deleteLoading: false,
 };
 
-const breadCumbs = [{ label: 'Categories', href: null }];
+const breadCumbs = [{ label: 'Event Types', href: null }];
 
 const headers = [
   { title: 'ID', key: '_id' },
@@ -52,8 +52,12 @@ const TableRow = memo(({ row, onDelete, onUpdate }) => (
 ));
 
 const Categories = () => {
-  const { getEventCategoriesAction, addNewEventCategoryAction, deleteCategoryAction, updateEventCategoryAction, } =
-    eventActions;
+  const {
+    getEventCategoriesAction,
+    addNewEventCategoryAction,
+    deleteCategoryAction,
+    updateEventCategoryAction,
+  } = eventActions;
   const dispatch = useDispatch();
 
   // Optimize selectors to select only needed fields
@@ -70,9 +74,7 @@ const Categories = () => {
         ...item,
         createdBy: item?.createdBy?.name,
         updatedBy: item?.updatedBy?.name,
-        createdAt: item.createdAt
-          ? moment(item.createdAt).format('DD/MM/yyyy')
-          : 'N/A',
+        createdAt: item.createdAt ? moment(item.createdAt).format('DD/MM/yyyy') : 'N/A',
       })),
     [eventCategories?.docs]
   );
@@ -84,8 +86,8 @@ const Categories = () => {
         value.trim() === ''
           ? 'Name is required'
           : eventCategories?.docs?.find(
-            (item) => item?.name?.toLowerCase() === value?.toLowerCase()
-          )
+                (item) => item?.name?.toLowerCase() === value?.toLowerCase()
+              )
             ? 'category with this name already exists'
             : null,
     }),
@@ -164,7 +166,7 @@ const Categories = () => {
       if (info?.editId) {
         response = await updateEventCategoryAction(info?.editId, json);
         if (response[2] === 200) {
-          toast.success("Event Category Updated Successfully");
+          toast.success('Event Category Updated Successfully');
           const updatedCategory = response[1]?.data;
           const updatedEventCategories = {
             ...eventCategories,
@@ -227,8 +229,8 @@ const Categories = () => {
         }
       }
     } catch (error) {
-      console.error("Error in submitNewCategoryHandler:", error);
-      toast.error("Something went wrong. Please try again later.");
+      console.error('Error in submitNewCategoryHandler:', error);
+      toast.error('Something went wrong. Please try again later.');
     }
   }, [
     validateAllErrors,
@@ -240,9 +242,6 @@ const Categories = () => {
     eventCategories,
     dispatch,
   ]);
-
-
-
 
   const deletePopupModalFunc = useCallback((deleteId = null) => {
     setInfo((prev) => ({ ...prev, deleteId, deleteInput: '' }));
@@ -287,7 +286,7 @@ const Categories = () => {
       name: row?.name,
       editId: row?._id,
       isOpen: true,
-      row: eventCategories?.docs?.find(eventCategory => eventCategory._id === row?._id)
+      row: eventCategories?.docs?.find((eventCategory) => eventCategory._id === row?._id),
     }));
   };
 
@@ -332,11 +331,13 @@ const Categories = () => {
       <CustomTable1
         headers={headers}
         docs={tableData}
-        cardTitle="Categories"
+        cardTitle="Event Types"
         totalPages={eventCategories?.totalPages}
         currentPage={eventCategories?.currentPage}
         onPageChange={onPageChange}
-        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={updateCateogory} />}
+        actions={(row) => (
+          <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={updateCateogory} />
+        )}
       />
 
       <ModalV1

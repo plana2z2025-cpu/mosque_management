@@ -28,15 +28,15 @@ export const EVENT_DASHBOARD_GRAPH = {
 };
 
 export const UPDATE_CATEGORY = {
-  request: 'UPDATE_CATEGORY_REQUEST',
-  success: 'UPDATE_CATEGORY_SUCCESS',
-  fail: 'UPDATE_CATEGORY_FAIL',
+  request: 'UPDATE_CATEGORY.request',
+  success: 'UPDATE_CATEGORY.success',
+  fail: 'UPDATE_CATEGORY.fail',
 };
 
 export const UPDATE_EVENT = {
-  request: 'UPDATE_EVENT_REQUEST',
-  success: 'UPDATE_EVENT_SUCCESS',
-  fail: 'UPDATE_EVENT_FAIL',
+  request: 'UPDATE_EVENT.request',
+  success: 'UPDATE_EVENT.success',
+  fail: 'UPDATE_EVENT.fail',
 };
 
 export const CLEAR_EVENT_ERRORS = 'CLEAR_EVENT_ERRORS';
