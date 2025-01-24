@@ -1,10 +1,13 @@
 const httpErrors = require("http-errors");
 const UserServiceClass = require("../../Services/user.service");
 const USER_CONSTANTS = require("../../Constants/user.constants");
+const SUB_USER_CONSTANTS = require("../../Constants/user_mosque.constant");
 const logger = require("../../Config/logger.config");
 const { VerifyPasswordMethod } = require("../../Utils/verify.password");
 const { CreateAccessToken } = require("../../Utils/jwt.token");
 const userModel = require("../../Schema/users/user.model");
+const userMosqueModel = require("../../Schema/users/user_mosque.model");
+const { SUB_USER } = require("../../Constants/roles.constants");
 
 const LoginUserController = async (req, res, next) => {
   try {
@@ -71,9 +74,16 @@ const RegisterController = async (req, res, next) => {
 
 const MyProfileController = async (req, res, next) => {
   try {
-    const data = await userModel
-      .findById(req.user._id)
-      .populate("mosque_admin", "name");
+    let data = null;
+
+    if (req.__type__ === "ROOT") {
+      data = await userModel
+        .findById(req.user._id)
+        .populate("mosque_admin", "name");
+    } else {
+      data = await userMosqueModel.findById(req.user._id).lean();
+    }
+
     res.status(200).json({
       success: true,
       statusCode: 200,
@@ -85,8 +95,49 @@ const MyProfileController = async (req, res, next) => {
   }
 };
 
+// SUB - USER LOGIN
+const LoginSubUserController = async (req, res, next) => {
+  try {
+    logger.info("Controller-user.controller-LoginSubUserController-Start");
+    const { mosqueUniqueId, name, password } = req.body;
+    const userExist = await userMosqueModel
+      .findOne({ mosqueUniqueId, name })
+      .select("+password")
+      .lean();
+
+    if (!userExist) {
+      return next(httpErrors.NotFound(SUB_USER_CONSTANTS.SUB_USER_NOT_FOUND));
+    }
+
+    const isPasswordMatch = await VerifyPasswordMethod(
+      password,
+      userExist.password
+    );
+
+    if (!isPasswordMatch)
+      return next(httpErrors.BadRequest(USER_CONSTANTS.INVALID_EMAIL_PASSWORD));
+
+    delete userExist.password;
+    const token = await CreateAccessToken(userExist._id, SUB_USER);
+    res.status(200).send({
+      success: true,
+      statusCode: 200,
+      message: USER_CONSTANTS.SUCCESSFULLY_USER_LOGIN,
+      accessToken: token,
+      data: userExist,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-user.controller-LoginSubUserController-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
 module.exports = {
   LoginUserController,
   RegisterController,
   MyProfileController,
+  LoginSubUserController,
 };

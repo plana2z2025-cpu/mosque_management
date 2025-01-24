@@ -14,6 +14,7 @@ const {
   SUB_USER,
 } = require("../Constants/roles.constants");
 const mosqueModel = require("../Schema/mosque.model");
+const userMosqueModel = require("../Schema/users/user_mosque.model");
 const { MOSQUE_NOT_FOUND } = require("../Constants/mosque.constants");
 
 // for authentication
@@ -33,15 +34,25 @@ module.exports.Authentication = async (req, res, next) => {
       return next(httpErrors.Unauthorized(decode.error.message));
     }
 
-    const UserServiceMethods = new UserServiceClass();
-    let userExist = await UserServiceMethods.getUserById(decode.id);
+    let userExist = null;
+    if (decode.__type__ === "ROOT") {
+      const UserServiceMethods = new UserServiceClass();
+      userExist = await UserServiceMethods.getUserById(decode.id);
+    } else {
+      userExist = await userMosqueModel.findById(decode.id).lean();
+      userExist.role = SUB_USER;
+    }
 
     if (!userExist) {
       return next(httpErrors.NotFound(USER_NOT_FOUND));
     }
     req.user = userExist;
     req.__type__ = decode.__type__;
-    logger.warn(`req Email : ${userExist.email} role:${userExist.role}`);
+    logger.warn(
+      `req Email : ${userExist?.email || userExist?.name} role:${
+        userExist.role
+      }`
+    );
     next();
   } catch (error) {
     next(httpErrors.InternalServerError(error.message));

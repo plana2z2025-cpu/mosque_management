@@ -17,6 +17,13 @@ const LoginUserValidation = celebrate({
     password: passwordComplexity().required().label("password"),
   }),
 });
+const LoginSubUserValidation = celebrate({
+  body: Joi.object({
+    name: Joi.string().required().label("name"),
+    password: passwordComplexity().required().label("password"),
+    mosqueUniqueId: Joi.string().required().label("Mosque Unique ID"),
+  }),
+});
 
 // Update password schema
 const UpdatePasswordValidation = celebrate({
@@ -30,4 +37,5 @@ module.exports = {
   RegisterUserValidation,
   LoginUserValidation,
   UpdatePasswordValidation,
+  LoginSubUserValidation,
 };
