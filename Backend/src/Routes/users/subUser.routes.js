@@ -4,6 +4,7 @@ const {
   Authentication,
   Authorization,
   CheckMosqueAccess,
+  CheckMosqueAuthorization,
 } = require("../../Middlewares/Auth.middleware");
 const { ADMIN, SUB_USER } = require("../../Constants/roles.constants");
 const {
@@ -24,7 +25,7 @@ SubUserRoutes.route("/create-sub-user").post(
 
 SubUserRoutes.route("/users").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
   getAllSubUsersController
 );
@@ -40,6 +41,7 @@ SubUserRoutes.route("/:subUserId")
     Authentication,
     Authorization(ADMIN),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN),
     deleteSubUserByIdController
   );
 

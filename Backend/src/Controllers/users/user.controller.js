@@ -7,7 +7,11 @@ const { VerifyPasswordMethod } = require("../../Utils/verify.password");
 const { CreateAccessToken } = require("../../Utils/jwt.token");
 const userModel = require("../../Schema/users/user.model");
 const userMosqueModel = require("../../Schema/users/user_mosque.model");
-const { SUB_USER } = require("../../Constants/roles.constants");
+const {
+  SUB_USER,
+  SUPPER_ADMIN,
+  ADMIN,
+} = require("../../Constants/roles.constants");
 
 const LoginUserController = async (req, res, next) => {
   try {
@@ -31,7 +35,7 @@ const LoginUserController = async (req, res, next) => {
       return next(httpErrors.BadRequest(USER_CONSTANTS.INVALID_EMAIL_PASSWORD));
 
     delete userExist.password;
-    const token = await CreateAccessToken(userExist._id, "ROOT");
+    const token = await CreateAccessToken(userExist._id, userExist.role);
 
     res.status(200).send({
       success: true,
@@ -76,11 +80,11 @@ const MyProfileController = async (req, res, next) => {
   try {
     let data = null;
 
-    if (req.__type__ === "ROOT") {
+    if (req.__type__ === SUPPER_ADMIN || req.__type__ === ADMIN) {
       data = await userModel
         .findById(req.user._id)
         .populate("mosque_admin", "name");
-    } else {
+    } else if (req.__type__ === SUB_USER) {
       data = await userMosqueModel.findById(req.user._id).lean();
     }
 

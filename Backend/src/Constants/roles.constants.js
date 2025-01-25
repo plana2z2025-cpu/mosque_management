@@ -3,8 +3,5 @@ module.exports = {
   ADMIN: "admin",
   USER: "user",
   MEMBER: "member",
-  ROOT: "ROOT",
-
-  //
   SUB_USER: "sub_user",
 };

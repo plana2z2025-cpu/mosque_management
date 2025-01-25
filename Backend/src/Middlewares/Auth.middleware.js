@@ -27,22 +27,20 @@ module.exports.Authentication = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-
     const decode = await VerifyAccessToken(token);
-
     if (!decode.success) {
       return next(httpErrors.Unauthorized(decode.error.message));
     }
 
     let userExist = null;
-    if (decode.__type__ === "ROOT") {
+
+    if (decode.__type__ === SUPPER_ADMIN || decode.__type__ === ADMIN) {
       const UserServiceMethods = new UserServiceClass();
       userExist = await UserServiceMethods.getUserById(decode.id);
-    } else {
+    } else if (decode.__type__ === SUB_USER) {
       userExist = await userMosqueModel.findById(decode.id).lean();
       userExist.role = SUB_USER;
     }
-
     if (!userExist) {
       return next(httpErrors.NotFound(USER_NOT_FOUND));
     }
@@ -62,15 +60,10 @@ module.exports.Authentication = async (req, res, next) => {
 // authorization depending  upon a role
 module.exports.Authorization = (...roles) => {
   return (req, res, next) => {
-    const userRole = req.user.role;
-    const userType = req.__type__;
-    if (!roles.includes(userRole) && userType === "ROOT") {
+    const userRole = req.__type__;
+    if (!roles.includes(userRole)) {
       return next(httpErrors.Unauthorized(AUTHORIZATION_REQUIRED));
     }
-    if (!roles.includes(userType) && userType === SUB_USER) {
-      return next(httpErrors.Forbidden(MOSQUE_ACCESS_DENIED));
-    }
-
     next();
   };
 };
@@ -78,29 +71,47 @@ module.exports.Authorization = (...roles) => {
 module.exports.CheckMosqueAccess = async (req, res, next) => {
   try {
     logger.info("CheckMosqueAccess - MiddleWare");
-    // const userId = req.user._id;
-    const __type__ = req.__type__ || null;
-    const role = req.user?.role || null;
+
+    const role = req.__type__;
     const mosqueId = req.user?.mosque_admin || req.user?.mosqueId || null;
 
-    if (__type__ === "ROOT" && role === SUPPER_ADMIN) {
-      return next();
-    }
     const mosqueExist = await mosqueModel.findById(mosqueId).lean();
 
     if (!mosqueExist) {
       return next(httpErrors.NotFound(MOSQUE_NOT_FOUND));
     }
 
-    if (__type__ === "ROOT" && role === ADMIN) {
+    if (role === SUPPER_ADMIN) {
+      return next();
+    } else if (
+      role === ADMIN &&
+      req.user.mosque_admin.toString() === mosqueExist._id.toString()
+    ) {
       req.mosqueId = mosqueExist._id;
       logger.warn(`req mosqueId : ${req.mosqueId}`);
       return next();
+    } else if (
+      role === SUB_USER &&
+      req.user.mosqueId.toString() === mosqueExist._id.toString()
+    ) {
+      req.mosqueId = mosqueExist._id;
+      logger.warn(`req mosqueId : ${req.mosqueId}`);
+      return next();
+    } else {
+      return next(httpErrors.Forbidden(MOSQUE_ACCESS_DENIED));
     }
-
-    // console.log("testing");
-    // next();
   } catch (error) {
     next(httpErrors.InternalServerError(error.message));
   }
+};
+
+module.exports.CheckMosqueAuthorization = (...roles) => {
+  return (req, res, next) => {
+    const userRole = req.__type__;
+    if (!roles.includes(userRole)) {
+      return next(httpErrors.Forbidden(MOSQUE_ACCESS_DENIED));
+    }
+
+    next();
+  };
 };
