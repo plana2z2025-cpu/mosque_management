@@ -4,6 +4,7 @@ const {
   Authentication,
   Authorization,
   CheckMosqueAccess,
+  CheckMosqueAuthorization,
 } = require("../../Middlewares/Auth.middleware");
 const { ADMIN, SUB_USER } = require("../../Constants/roles.constants");
 const categoryValidations = require("../../validators/events/eventCategory.joi");
@@ -18,16 +19,18 @@ const {
 
 EventCategoryRoutes.route("/create-new-category").post(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
   categoryValidations.createEventCategory,
   createEventCategoryController
 );
 
 EventCategoryRoutes.route("/categories").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
   categoryValidations.getAllEventCategories,
   getAllEventCategoriesController
 );
@@ -35,26 +38,29 @@ EventCategoryRoutes.route("/categories").get(
 EventCategoryRoutes.route("/:categoryId")
   .get(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
     getEventCategoryByIdController
   )
   .put(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
     updateEventCategoryController
   )
   .delete(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN),
     deleteEventCategoryController
   );
 
 EventCategoryRoutes.route("/categories/all/names").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
   getAllEventsCategoryNamesController
 );

@@ -19,6 +19,7 @@ SubUserRoutes.route("/create-sub-user").post(
   Authentication,
   Authorization(ADMIN),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN),
   subUserValidation.createSubUserValidation,
   createSubUserController
 );
