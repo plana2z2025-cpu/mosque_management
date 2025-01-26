@@ -30,6 +30,24 @@ const ModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    permissions: {
+      read: {
+        type: Boolean,
+        default: true,
+      },
+      write: {
+        type: Boolean,
+        default: true,
+      },
+      update: {
+        type: Boolean,
+        default: false,
+      },
+      delete: {
+        type: Boolean,
+        default: false,
+      },
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: user,

@@ -115,3 +115,16 @@ module.exports.CheckMosqueAuthorization = (...roles) => {
     next();
   };
 };
+
+module.exports.CheckMosquePermissions = (requiredPermission) => {
+  return (req, res, next) => {
+    const user = req.user;
+    const role = req.__type__;
+
+    if (role === SUB_USER && user?.permissions[requiredPermission] !== true) {
+      // return res.status(403).json({ message: `Access denied. You do not have ${requiredPermission} permission.` });
+      return next(httpErrors.Forbidden(MOSQUE_ACCESS_DENIED));
+    }
+    next();
+  };
+};

@@ -4,4 +4,10 @@ module.exports = {
   USER: "user",
   MEMBER: "member",
   SUB_USER: "sub_user",
+
+  // Permissions
+  READ: "read",
+  WRITE: "write",
+  DELETE: "delete",
+  UPDATE: "update",
 };
