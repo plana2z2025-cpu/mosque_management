@@ -7,7 +7,8 @@ import { payeeActions } from '@/redux/combineActions';
 import toast from 'react-hot-toast';
 import isEmail from 'validator/lib/isEmail';
 import { useNavigate, useParams } from 'react-router-dom';
-const breadCumbs = [{ label: 'Create Beneficiary', href: null }];
+
+const breadCumbs = [{ label: 'Beneficiaries', href: '/admin/expenses/payees' }];
 
 export function CreatePayeeForm() {
   const { payeeId } = useParams();
@@ -139,7 +140,13 @@ export function CreatePayeeForm() {
   }, [error]);
 
   return (
-    <Mainwrapper breadCumbs={breadCumbs}>
+    <Mainwrapper
+      breadCumbs={
+        payeeId
+          ? [...breadCumbs, { label: payeeId, href: null }]
+          : [...breadCumbs, { label: 'Create Beneficiary', href: null }]
+      }
+    >
       <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
         {/* Payee Name Input */}
         <div>

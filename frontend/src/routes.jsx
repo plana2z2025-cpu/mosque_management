@@ -46,7 +46,15 @@ const allRoutesMapper = [
     ),
   },
   {
-    path: '/admin/events/create',
+    path: '/admin/events/event/create',
+    component: (
+      <AuthWrapper>
+        <CreateEventForm />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/events/event/:eventId',
     component: (
       <AuthWrapper>
         <CreateEventForm />
@@ -61,6 +69,7 @@ const allRoutesMapper = [
       </AuthWrapper>
     ),
   },
+
   {
     path: '/profile',
     component: (

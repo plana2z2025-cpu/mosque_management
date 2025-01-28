@@ -16,6 +16,12 @@ export const EXPENSE_CATEGORIES_NAMES = {
   fail: 'EXPENSE_CATEGORIES_NAMES.fail',
 };
 
+export const UPDATE_CATEGORY = {
+  request: 'UPDATE_CATEGORY.request',
+  success: 'UPDATE_CATEGORY.success',
+  fail: 'UPDATE_CATEGORY.fail',
+};
+
 export const EXPENSE_DASHBOARD_GRAPH = {
   request: 'EXPENSE_DASHBOARD_GRAPH.request',
   success: 'EXPENSE_DASHBOARD_GRAPH.success',

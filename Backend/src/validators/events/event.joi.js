@@ -15,7 +15,7 @@ const createEventValidation = celebrate({
         Joi.object({
           name: Joi.string().trim().optional(),
           bio: Joi.string().allow("").optional(),
-          title: Joi.string().optional(),
+          title: Joi.string().allow("").optional(),
         })
       )
       .min(1),

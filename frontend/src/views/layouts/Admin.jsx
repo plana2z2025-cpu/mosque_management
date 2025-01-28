@@ -78,12 +78,8 @@ const data = {
       isActive: true,
       items: [
         {
-          title: 'Categories',
+          title: 'Event Types',
           url: '/admin/events/categories',
-        },
-        {
-          title: 'Create Event',
-          url: '/admin/events/create',
         },
         {
           title: 'Events',
@@ -112,7 +108,6 @@ const data = {
         },
       ],
     },
-    
 
     {
       title: 'Administrators',

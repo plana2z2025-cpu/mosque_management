@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import validator from 'validator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,17 +11,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-// import { format } from 'date-fns';
-import { CalendarIcon, Trash2, Plus, CookingPot } from 'lucide-react';
+import { CalendarIcon, Trash2, Plus } from 'lucide-react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useSelector, useDispatch } from 'react-redux';
 import { eventActions } from '@/redux/combineActions';
 import moment from 'moment';
 import { Badge } from '@/components/ui/badge';
 import toast from 'react-hot-toast';
+import { useParams, useNavigate } from 'react-router-dom';
+import { COMMUNITY_EVENTS, SINGLE_EVENT_DETAIL } from '@/redux/events/constant';
 
-const breadCumbs = [{ label: 'Categories', href: null }];
+const breadCumbs = [{ label: 'Event', href: '/admin/events' }];
+
 const targetAudienceOptions = [
   { label: 'men', value: 'men' },
   { label: 'women', value: 'women' },
@@ -34,21 +35,28 @@ const targetAudienceOptions = [
 ];
 
 export function CreateEventForm() {
-  // State to manage form data and errors
+  const { eventId } = useParams();
   const dispatch = useDispatch();
-  const { eventCategoryNames } = useSelector((state) => state.eventState);
+  const navigate = useNavigate();
+  const { eventCategoryNames, eventDetail } = useSelector((state) => state.eventState);
+  const { allEvents } = useSelector((state) => state.eventState || {});
   const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
-  const { addNewEventAction, getEventAllCategoriesNamesAction } = eventActions;
+  const {
+    addNewEventAction,
+    getEventAllCategoriesNamesAction,
+    getEventDetailsAction,
+    updateEventAction,
+  } = eventActions;
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: '',
+    type: eventCategoryNames?.[0]?._id || '',
     startDate: new Date(),
     endDate: new Date(),
     time: moment().format(),
     location: '',
-    speakers: [{ name: '', bio: '' }],
+    speakers: [{ name: '', title: '', bio: '' }],
     targetAudience: ['men'],
     contactInfo: {
       name: '',
@@ -60,23 +68,54 @@ export function CreateEventForm() {
     status: 'published',
   });
 
-  // State to manage form errors
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (!eventCategoryNames) {
       fetchAllCategoriesNames();
     }
+
     if (communityMosqueDetail) {
-      let { street, city, state, country, postalCode } = communityMosqueDetail?.address;
-      let location = `${street}, ${city}, ${state}, ${country}, ${postalCode}`;
+      const { street, city, state, country, postalCode } = communityMosqueDetail?.address;
+      const location = `${street}, ${city}, ${state}, ${country}, ${postalCode}`;
       setFormData((prev) => ({ ...prev, location }));
     }
-  }, [eventCategoryNames, communityMosqueDetail]);
+  }, []);
 
-  const fetchAllCategoriesNames = () => {
+  useEffect(() => {
+    if (eventId && eventDetail?._id === eventId) {
+      setFormData((prev) => ({
+        ...prev,
+        ...eventDetail,
+        startDate: new Date(eventDetail.startDate),
+        endDate: new Date(eventDetail.endDate),
+        time: moment(eventDetail.time).format(),
+      }));
+    } else {
+      fetchEventDetails();
+    }
+  }, [eventDetail?._id, eventId]);
+
+  useEffect(() => {
+    // Run validation after formData.type changes
+    if (formData?.type) {
+      let typeError = validateFieldFunc('type', formData.type);
+      setErrors((prev) => ({
+        ...prev,
+        type: typeError,
+      }));
+    }
+  }, [formData?.type]);
+
+  const fetchEventDetails = useCallback(() => {
+    if (eventId) {
+      dispatch(getEventDetailsAction(eventId));
+    }
+  }, [eventId]);
+
+  const fetchAllCategoriesNames = useCallback(() => {
     dispatch(getEventAllCategoriesNamesAction());
-  };
+  }, []);
 
   // Validate form fields
   const validateFieldFunc = (key, value, contactInfo = false) => {
@@ -88,7 +127,16 @@ export function CreateEventForm() {
             ? 'Title must be max characters'
             : null,
       description: () => (value.trim() === '' ? 'Description is required' : null),
-      type: () => (value.trim() === '' ? 'Event Type is required' : null),
+      type: () => {
+        if (
+          !value ||
+          (typeof value === 'string' && value.trim() === '') ||
+          (typeof value === 'object' && !value._id)
+        ) {
+          return 'Event Type is required';
+        }
+        return null;
+      },
       location: () => (value.trim() === '' ? 'Location is required' : null),
       contactInfo: {
         name: () => (value.trim() === '' ? 'Name is required' : null),
@@ -152,16 +200,20 @@ export function CreateEventForm() {
     let newError = validateFieldFunc('type', value);
     setErrors((prev) => ({
       ...prev,
-      type: newError,
+      type: newError || null,
     }));
   };
 
   // Add speaker
   const addSpeaker = () => {
-    setFormData((prev) => ({
-      ...prev,
-      speakers: [...prev.speakers, { name: '', title: '', bio: '' }],
-    }));
+    setFormData((prev) => {
+      return {
+        ...prev,
+        speakers: Array.isArray(prev.speakers)
+          ? [...prev.speakers, { name: '', title: '', bio: '' }]
+          : [{ name: '', title: '', bio: '' }],
+      };
+    });
   };
 
   // Remove speaker
@@ -197,7 +249,6 @@ export function CreateEventForm() {
   // Handle Date change
   const changeDateHandler = (date, name) => {
     let options = {};
-    console.log(date.getFullYear(), name);
     name === 'startDate'
       ? (options = {
           startDate: date,
@@ -221,7 +272,8 @@ export function CreateEventForm() {
 
   // Handle change for target Audience
   const changeTargetAudience = (value, add = true) => {
-    let targets = [...formData?.targetAudience];
+    let targets = Array.isArray(formData?.targetAudience) ? [...formData.targetAudience] : [];
+
     if (add) {
       targets.push(value);
       targets = [...new Set(targets)];
@@ -230,30 +282,36 @@ export function CreateEventForm() {
       let index = value;
       targets.splice(index, 1);
     }
-    setFormData((prev) => ({ ...prev, targetAudience: targets }));
+    setFormData((prev) => ({
+      ...prev,
+      targetAudience: targets,
+    }));
   };
 
   // add new tag
   const addRemoveTagFunction = (index = null) => {
-    let update = [...formData.tags];
-    if (index) {
-      update.splice(index - 1, 1);
+    // Ensure `tags` is an array
+    let update = Array.isArray(formData?.tags) ? [...formData.tags] : [];
+
+    if (index !== null) {
+      update.splice(index - 1, 1); // Remove the tag at the given index
     } else {
-      update.push(' ');
+      update.push(''); // Add a new empty tag
     }
 
     setFormData((prev) => ({
       ...prev,
-      tags: [...update],
+      tags: update,
     }));
   };
 
   const changeTagHandler = (e, index) => {
-    let update = [...formData.tags];
+    let update = Array.isArray(formData?.tags) ? [...formData.tags] : [];
     update[index] = e.target.value;
+
     setFormData((prev) => ({
       ...prev,
-      tags: [...update],
+      tags: update,
     }));
   };
 
@@ -311,30 +369,74 @@ export function CreateEventForm() {
     if (validateFormFunction()) {
       const json = {
         ...formData,
+        startDate: moment(formData.startDate).utc().format(),
+        endDate: moment(formData.endDate).utc().format(),
+        time: moment(formData.time).utc().format(),
       };
 
-      json.startDate = moment(json.startDate).utc().format();
-      json.endDate = moment(json.endDate).utc().format();
-      json.time = moment(json.time).utc().format();
+      if (eventId) {
+        // Update event
+        const response = await updateEventAction(eventId, json);
+        if (response[2] === 200) {
+          toast.success('Event updated successfully');
+          const updatedDocs = allEvents.docs.map((event) =>
+            event._id === eventId ? { ...response[1]?.data } : { ...event }
+          );
 
-      const response = await addNewEventAction(json);
-      if (response[0] === 201) {
-        toast.success('event is created successfully');
+          const updatedPayload = {
+            ...allEvents,
+            docs: updatedDocs,
+          };
+
+          await dispatch({
+            type: COMMUNITY_EVENTS.success,
+            payload: updatedPayload,
+          });
+
+          navigate('/admin/events');
+        } else {
+          toast.error(response[1]?.message);
+        }
       } else {
-        toast.error(response[1]?.message);
+        // Create event
+        const response = await addNewEventAction(json);
+        if (response[0] === 201) {
+          toast.success('Event created successfully');
+          const newEvent = response[1]?.data || json;
+
+          const updatedPayload = {
+            ...allEvents,
+            docs: [...allEvents.docs, newEvent],
+          };
+
+          await dispatch({
+            type: COMMUNITY_EVENTS.success,
+            payload: updatedPayload,
+          });
+
+          navigate('/admin/events');
+        } else {
+          toast.error(response[1]?.message);
+        }
       }
     }
   };
 
   return (
-    <Mainwrapper breadCumbs={breadCumbs}>
+    <Mainwrapper
+      breadCumbs={
+        eventId
+          ? [...breadCumbs, { label: eventId, href: null }]
+          : [...breadCumbs, { label: 'Create Event', href: null }]
+      }
+    >
       <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
         {/* Title Input */}
         <div>
           <label className="block text-sm font-medium mb-2">Event Title</label>
           <Input
             name="title"
-            value={formData.title}
+            value={formData?.title}
             onChange={handleChange}
             placeholder="Enter event title"
             className={errors.title ? 'border-red-500' : ''}
@@ -347,25 +449,27 @@ export function CreateEventForm() {
           <label className="block text-sm font-medium mb-2">Description</label>
           <Textarea
             name="description"
-            value={formData.description}
+            value={formData?.description}
             onChange={handleChange}
             placeholder="Provide a detailed description of the event"
             className={errors.description ? 'border-red-500' : ''}
           />
-          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+          {errors.description && <p className="text-red-500 text-xs mt-1">{errors?.description}</p>}
         </div>
 
         {/* Event Type */}
         <div>
           <label className="block text-sm font-medium mb-2">Event Type</label>
-          <Select name="type" value={formData.type} onValueChange={handleTypeEventChange}>
-            <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
+          <Select name="type" value={formData?.type} onValueChange={handleTypeEventChange}>
+            <SelectTrigger className={errors?.type ? 'border-red-500' : ''}>
               <SelectValue placeholder="Select event type" />
             </SelectTrigger>
             <SelectContent>
               {eventCategoryNames &&
                 eventCategoryNames?.map((singleCategory) => (
-                  <SelectItem value={singleCategory?._id}>{singleCategory?.name}</SelectItem>
+                  <SelectItem key={singleCategory?._id} value={singleCategory?._id}>
+                    {singleCategory?.name}
+                  </SelectItem>
                 ))}
             </SelectContent>
           </Select>
@@ -379,7 +483,7 @@ export function CreateEventForm() {
             <Calendar
               mode="single"
               name="startDate"
-              selected={formData.startDate}
+              selected={formData?.startDate}
               onSelect={(date) => changeDateHandler(date, 'startDate')}
               disabled={(date) => date < new Date()}
               // initialFocus
@@ -391,7 +495,7 @@ export function CreateEventForm() {
             <Calendar
               mode="single"
               name="endDate"
-              selected={formData.endDate}
+              selected={formData?.endDate}
               onSelect={(date) => changeDateHandler(date, 'endDate')}
               disabled={(date) => date < formData?.startDate}
               // initialFocus
@@ -401,10 +505,10 @@ export function CreateEventForm() {
 
         {/* Event Time */}
         <div>
-          <label className="block text-sm font-medium mb-2">Event Title</label>
+          <label className="block text-sm font-medium mb-2">Event Time</label>
           <Input
             name="time"
-            value={moment(formData.time).format('HH:mm')}
+            value={moment(formData?.time).format('HH:mm')}
             onChange={handleChange}
             placeholder="Enter event title"
             type="time"
@@ -416,7 +520,7 @@ export function CreateEventForm() {
           <label className="block text-sm font-medium mb-2">Event Location</label>
           <Input
             name="location"
-            value={formData.location}
+            value={formData?.location}
             onChange={handleChange}
             placeholder="Enter event location"
             className={errors?.location ? 'border-red-500' : ''}
@@ -427,36 +531,37 @@ export function CreateEventForm() {
         {/* Speakers Section */}
         <div>
           <label className="block text-sm font-medium mb-2">Speakers</label>
-          {formData.speakers.map((speaker, index) => (
-            <div key={index} className=" flex gap-4 mb-4">
-              <div>
+          {Array.isArray(formData?.speakers) &&
+            formData?.speakers?.map((speaker, index) => (
+              <div key={index} className=" flex gap-4 mb-4">
+                <div>
+                  <Input
+                    placeholder="Speaker Name"
+                    value={speaker?.name}
+                    onChange={(e) => handleSpeakerChange(index, 'name', e.target.value)}
+                  />
+                  {errors?.speakers?.[index] && (
+                    <p className="text-red-500 text-xs mt-1">{errors?.speakers?.[index]}</p>
+                  )}
+                </div>
                 <Input
-                  placeholder="Speaker Name"
-                  value={speaker.name}
-                  onChange={(e) => handleSpeakerChange(index, 'name', e.target.value)}
+                  placeholder="Speaker Description"
+                  value={speaker?.bio}
+                  onChange={(e) => handleSpeakerChange(index, 'bio', e.target.value)}
                 />
-                {errors?.speakers?.[index] && (
-                  <p className="text-red-500 text-xs mt-1">{errors?.speakers?.[index]}</p>
+                {formData?.speakers?.length !== 1 && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="px-8"
+                    onClick={() => removeSpeaker(index)}
+                  >
+                    <Trash2 className="h-4" />
+                  </Button>
                 )}
               </div>
-              <Input
-                placeholder="Speaker Description"
-                value={speaker.bio}
-                onChange={(e) => handleSpeakerChange(index, 'bio', e.target.value)}
-              />
-              {formData?.speakers.length !== 1 && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="px-8"
-                  onClick={() => removeSpeaker(index)}
-                >
-                  <Trash2 className="h-4" />
-                </Button>
-              )}
-            </div>
-          ))}
+            ))}
           <Button type="button" variant="outline" onClick={addSpeaker}>
             <Plus className="mr-2 h-4 w-4" /> Add Speaker
           </Button>
@@ -466,24 +571,25 @@ export function CreateEventForm() {
         <div>
           <label className="block text-sm font-medium mb-2">Target Audience</label>
           <div className="mb-3 flex gap-4 flex-wrap">
-            {formData.targetAudience.map((singleTarget, index) => (
-              <Badge className={'p-2 capitalize'} key={singleTarget + index}>
-                {singleTarget}{' '}
-                {formData?.targetAudience?.length !== 1 && (
-                  <Trash2
-                    className="h-3 hover:text-red-400 cursor-pointer"
-                    onClick={() => changeTargetAudience(index, false)}
-                  />
-                )}
-              </Badge>
-            ))}
+            {Array.isArray(formData?.targetAudience) &&
+              formData?.targetAudience?.map((singleTarget, index) => (
+                <Badge className={'p-2 capitalize'} key={singleTarget + index}>
+                  {singleTarget}{' '}
+                  {formData?.targetAudience?.length !== 1 && (
+                    <Trash2
+                      className="h-3 hover:text-red-400 cursor-pointer"
+                      onClick={() => changeTargetAudience(index, false)}
+                    />
+                  )}
+                </Badge>
+              ))}
           </div>
           <Select
             name="targetAudience"
             // value={formData.}
             onValueChange={changeTargetAudience}
           >
-            <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
+            <SelectTrigger>
               <SelectValue placeholder="Select event type" />
             </SelectTrigger>
             <SelectContent>
@@ -492,37 +598,37 @@ export function CreateEventForm() {
               ))}
             </SelectContent>
           </Select>
-          {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
         </div>
 
         {/* Tags Section */}
         <div>
           <label className="block text-sm font-medium mb-2">Tags</label>
           <div className="flex justify-between flex-wrap">
-            {formData.tags.map((singleTag, index) => (
-              <div key={index} className="flex gap-4 mb-4">
-                <div>
-                  <Input
-                    placeholder="Speaker Name"
-                    value={singleTag}
-                    onChange={(e) => changeTagHandler(e, index)}
-                    className={errors?.tags?.[index] ? 'border-red-500' : ''}
-                  />
-                  {errors?.tags?.[index] && (
-                    <p className="text-red-500 text-xs mt-1">{errors?.tags?.[index]}</p>
-                  )}
+            {Array.isArray(formData?.tags) &&
+              formData?.tags?.map((singleTag, index) => (
+                <div key={index} className="flex gap-4 mb-4">
+                  <div>
+                    <Input
+                      placeholder="Speaker Name"
+                      value={singleTag}
+                      onChange={(e) => changeTagHandler(e, index)}
+                      className={errors?.tags?.[index] ? 'border-red-500' : ''}
+                    />
+                    {errors?.tags?.[index] && (
+                      <p className="text-red-500 text-xs mt-1">{errors?.tags?.[index]}</p>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="px-8"
+                    onClick={() => addRemoveTagFunction(index + 1)}
+                  >
+                    <Trash2 className="h-4" />
+                  </Button>
                 </div>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="px-8"
-                  onClick={() => addRemoveTagFunction(index + 1)}
-                >
-                  <Trash2 className="h-4" />
-                </Button>
-              </div>
-            ))}
+              ))}
           </div>
           <Button type="button" variant="outline" onClick={() => addRemoveTagFunction(null)}>
             <Plus className="mr-2 h-4 w-4" /> Add New Tag
@@ -536,7 +642,7 @@ export function CreateEventForm() {
             <div>
               <Input
                 name="name"
-                value={formData.contactInfo.name}
+                value={formData?.contactInfo?.name}
                 onChange={handleContactChange}
                 placeholder="Contact Name"
                 className={errors?.contactInfo?.name ? 'border-red-500' : ''}
@@ -549,7 +655,7 @@ export function CreateEventForm() {
             <div>
               <Input
                 name="email"
-                value={formData.contactInfo.email}
+                value={formData?.contactInfo?.email}
                 onChange={handleContactChange}
                 placeholder="Contact Email"
                 className={errors?.contactInfo?.email ? 'border-red-500' : ''}
@@ -563,7 +669,7 @@ export function CreateEventForm() {
             <div>
               <Input
                 name="phone"
-                value={formData.contactInfo.phone}
+                value={formData?.contactInfo?.phone}
                 onChange={handleContactChange}
                 placeholder="Contact Phone"
                 className={errors?.contactInfo?.phone ? 'border-red-500' : ''}
@@ -577,7 +683,7 @@ export function CreateEventForm() {
 
         {/* Submit Button */}
         <Button type="submit" className="w-full">
-          Create Event
+          {eventId ? 'Update Event' : 'Create Event'}
         </Button>
       </form>
     </Mainwrapper>
