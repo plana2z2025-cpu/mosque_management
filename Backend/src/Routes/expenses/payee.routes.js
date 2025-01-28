@@ -4,8 +4,18 @@ const {
   Authentication,
   Authorization,
   CheckMosqueAccess,
+  CheckMosqueAuthorization,
+  CheckMosquePermissions,
 } = require("../../Middlewares/Auth.middleware");
-const { ADMIN, SUB_USER } = require("../../Constants/roles.constants");
+const {
+  SUPPER_ADMIN,
+  ADMIN,
+  SUB_USER,
+  READ,
+  CREATE,
+  DELETE,
+  UPDATE,
+} = require("../../Constants/roles.constants");
 const payeeValidations = require("../../validators/expenses/payee.joi");
 const {
   createPayeeController,
@@ -19,14 +29,18 @@ PayeeRoutes.route("/create-new-payee").post(
   Authentication,
   Authorization(ADMIN),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(CREATE),
   payeeValidations.createPayeeValidation,
   createPayeeController
 );
 
 PayeeRoutes.route("/payees").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   payeeValidations.allPayeesValidation,
   getAllPayeesController
 );
@@ -34,21 +48,27 @@ PayeeRoutes.route("/payees").get(
 PayeeRoutes.route("/:payeeId")
   .get(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
     getPayeeByIdController
   )
   .put(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
     payeeValidations.updatePayeeValidation,
     updatePayeeController
   )
   .delete(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(DELETE),
     deletePayeeController
   );
 

@@ -4,8 +4,18 @@ const {
   Authentication,
   Authorization,
   CheckMosqueAccess,
+  CheckMosqueAuthorization,
+  CheckMosquePermissions,
 } = require("../../Middlewares/Auth.middleware");
-const { ADMIN, SUB_USER } = require("../../Constants/roles.constants");
+const {
+  SUPPER_ADMIN,
+  ADMIN,
+  SUB_USER,
+  READ,
+  CREATE,
+  DELETE,
+  UPDATE,
+} = require("../../Constants/roles.constants");
 const categoryValidations = require("../../validators/events/eventCategory.joi");
 const {
   createEventCategoryController,
@@ -18,16 +28,20 @@ const {
 
 EventCategoryRoutes.route("/create-new-category").post(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(CREATE),
   categoryValidations.createEventCategory,
   createEventCategoryController
 );
 
 EventCategoryRoutes.route("/categories").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   categoryValidations.getAllEventCategories,
   getAllEventCategoriesController
 );
@@ -35,27 +49,35 @@ EventCategoryRoutes.route("/categories").get(
 EventCategoryRoutes.route("/:categoryId")
   .get(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
     getEventCategoryByIdController
   )
   .put(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
     updateEventCategoryController
   )
   .delete(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(DELETE),
     deleteEventCategoryController
   );
 
 EventCategoryRoutes.route("/categories/all/names").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   getAllEventsCategoryNamesController
 );
 

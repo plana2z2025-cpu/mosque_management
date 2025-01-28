@@ -12,7 +12,8 @@ const createSubUserController = async (req, res, next) => {
     logger.info(
       "Controller - users - UserMosqueController - createSubUserController - Start"
     );
-    const { name, password } = req.body;
+    let { name, password } = req.body;
+    name = name.replace(/\s+/g, "");
     const isUserExist = await userMosqueModel.findOne({ name });
 
     if (isUserExist) {

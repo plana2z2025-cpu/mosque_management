@@ -3,7 +3,11 @@ module.exports = {
   ADMIN: "admin",
   USER: "user",
   MEMBER: "member",
-
-  //
   SUB_USER: "sub_user",
+
+  // Permissions
+  READ: "read",
+  CREATE: "create",
+  DELETE: "delete",
+  UPDATE: "update",
 };

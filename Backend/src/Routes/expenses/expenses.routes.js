@@ -4,8 +4,18 @@ const {
   Authentication,
   Authorization,
   CheckMosqueAccess,
+  CheckMosqueAuthorization,
+  CheckMosquePermissions,
 } = require("../../Middlewares/Auth.middleware");
-const { ADMIN, SUB_USER } = require("../../Constants/roles.constants");
+const {
+  SUPPER_ADMIN,
+  ADMIN,
+  SUB_USER,
+  READ,
+  CREATE,
+  DELETE,
+  UPDATE,
+} = require("../../Constants/roles.constants");
 const expenseValidations = require("../../validators/expenses/expense.joi");
 const {
   createExpenseController,
@@ -17,16 +27,20 @@ const {
 
 ExpenseRoutes.route("/create-new").post(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(CREATE),
   expenseValidations.createExpenseValidation,
   createExpenseController
 );
 
 ExpenseRoutes.route("/all").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   expenseValidations.getAllExpensesValidation,
   getAllExpensesController
 );
@@ -34,21 +48,27 @@ ExpenseRoutes.route("/all").get(
 ExpenseRoutes.route("/:expenseId")
   .get(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
     getExpenseByIdController
   )
   .put(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
     expenseValidations.updateExpenseValidation,
     updateExpenseController
   )
   .delete(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(DELETE),
     deleteExpenseController
   );
 

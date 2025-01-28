@@ -7,10 +7,14 @@ const ModelSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      lowercase: true,
+      trim: true,
+      minlength: 3,
     },
     password: {
       type: String,
       select: false,
+      required: true,
     },
     rootUserId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -19,11 +23,30 @@ const ModelSchema = new mongoose.Schema(
     },
     mosqueId: {
       type: mongoose.Schema.Types.ObjectId,
+      required: true,
       ref: mosque,
     },
     mosqueUniqueId: {
       type: String,
       required: true,
+    },
+    permissions: {
+      read: {
+        type: Boolean,
+        default: true,
+      },
+      write: {
+        type: Boolean,
+        default: true,
+      },
+      update: {
+        type: Boolean,
+        default: false,
+      },
+      delete: {
+        type: Boolean,
+        default: false,
+      },
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
