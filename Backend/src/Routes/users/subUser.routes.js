@@ -7,7 +7,14 @@ const {
   CheckMosqueAuthorization,
   CheckMosquePermissions,
 } = require("../../Middlewares/Auth.middleware");
-const { ADMIN, SUB_USER, READ } = require("../../Constants/roles.constants");
+const {
+  ADMIN,
+  SUB_USER,
+  READ,
+  DELETE,
+  UPDATE,
+  CREATE,
+} = require("../../Constants/roles.constants");
 const {
   createSubUserController,
   getAllSubUsersController,
@@ -37,15 +44,18 @@ SubUserRoutes.route("/users").get(
 SubUserRoutes.route("/:subUserId")
   .get(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
     getSubUserByIdController
   )
   .delete(
     Authentication,
     Authorization(ADMIN),
     CheckMosqueAccess,
-    CheckMosqueAuthorization(ADMIN),
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(DELETE),
     deleteSubUserByIdController
   );
 

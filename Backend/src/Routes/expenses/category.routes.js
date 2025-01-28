@@ -4,8 +4,18 @@ const {
   Authentication,
   Authorization,
   CheckMosqueAccess,
+  CheckMosqueAuthorization,
+  CheckMosquePermissions,
 } = require("../../Middlewares/Auth.middleware");
-const { ADMIN, SUB_USER } = require("../../Constants/roles.constants");
+const {
+  SUPPER_ADMIN,
+  ADMIN,
+  SUB_USER,
+  READ,
+  CREATE,
+  DELETE,
+  UPDATE,
+} = require("../../Constants/roles.constants");
 const categoryValidations = require("../../validators/expenses/expenseCategory.joi");
 const {
   createExpenseCategoryController,
@@ -18,16 +28,20 @@ const {
 
 ExpenseCategoryRoutes.route("/create-new-category").post(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(CREATE),
   categoryValidations.createExpenseCategoryValidation,
   createExpenseCategoryController
 );
 
 ExpenseCategoryRoutes.route("/categories").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   categoryValidations.getAllExpenseCategoriesValidation,
   getAllExpenseCategoriesController
 );
@@ -35,28 +49,36 @@ ExpenseCategoryRoutes.route("/categories").get(
 ExpenseCategoryRoutes.route("/:categoryId")
   .get(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
     getExpenseCategoryByIdController
   )
   .put(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
     categoryValidations.updateExpenseCategoryValidation,
     updateExpenseCategoryController
   )
   .delete(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(DELETE),
     deleteExpenseCategoryController
   );
 
 ExpenseCategoryRoutes.route("/categories/all/names").get(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   getAllExpenseCategoryNamesController
 );
 

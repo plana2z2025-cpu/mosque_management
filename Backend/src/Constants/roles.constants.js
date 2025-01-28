@@ -7,7 +7,7 @@ module.exports = {
 
   // Permissions
   READ: "read",
-  WRITE: "write",
+  CREATE: "create",
   DELETE: "delete",
   UPDATE: "update",
 };

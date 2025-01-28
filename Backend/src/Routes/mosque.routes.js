@@ -3,11 +3,17 @@ const {
   Authentication,
   Authorization,
   CheckMosqueAccess,
+  CheckMosqueAuthorization,
+  CheckMosquePermissions,
 } = require("../Middlewares/Auth.middleware");
 const {
   SUPPER_ADMIN,
   ADMIN,
   SUB_USER,
+  READ,
+  CREATE,
+  DELETE,
+  UPDATE,
 } = require("../Constants/roles.constants");
 const {
   createNewMosqueController,
@@ -56,22 +62,28 @@ MosqueRoutes.route("/mosques/:slug").get(
 MosqueRoutes.route("/community/mosque-detail")
   .get(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
     getCommunityMosqueDetailsController
   )
   .put(
     Authentication,
-    Authorization(ADMIN),
+    Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
     mosqueValidations.updateMosqueDetailsValidation,
     updateCommunityMosqueDetailsController
   );
 
 MosqueRoutes.route("/community/mosque-timings").put(
   Authentication,
-  Authorization(ADMIN),
+  Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(UPDATE),
   mosqueValidations.updateMosqueTimingsValidation,
   updateCommunityMosqueTimingsController
 );

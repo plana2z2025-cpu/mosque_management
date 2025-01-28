@@ -5,8 +5,17 @@ const {
   Authorization,
   CheckMosqueAccess,
   CheckMosqueAuthorization,
+  CheckMosquePermissions,
 } = require("../../Middlewares/Auth.middleware");
-const { ADMIN, SUB_USER } = require("../../Constants/roles.constants");
+const {
+  SUPPER_ADMIN,
+  ADMIN,
+  SUB_USER,
+  READ,
+  CREATE,
+  DELETE,
+  UPDATE,
+} = require("../../Constants/roles.constants");
 const categoryValidations = require("../../validators/events/eventCategory.joi");
 const {
   createEventCategoryController,
@@ -22,6 +31,7 @@ EventCategoryRoutes.route("/create-new-category").post(
   Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
   CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(CREATE),
   categoryValidations.createEventCategory,
   createEventCategoryController
 );
@@ -31,6 +41,7 @@ EventCategoryRoutes.route("/categories").get(
   Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
   CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   categoryValidations.getAllEventCategories,
   getAllEventCategoriesController
 );
@@ -41,6 +52,7 @@ EventCategoryRoutes.route("/:categoryId")
     Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
     CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
     getEventCategoryByIdController
   )
   .put(
@@ -48,13 +60,15 @@ EventCategoryRoutes.route("/:categoryId")
     Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
     CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
     updateEventCategoryController
   )
   .delete(
     Authentication,
     Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
-    CheckMosqueAuthorization(ADMIN),
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(DELETE),
     deleteEventCategoryController
   );
 
@@ -62,6 +76,8 @@ EventCategoryRoutes.route("/categories/all/names").get(
   Authentication,
   Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   getAllEventsCategoryNamesController
 );
 

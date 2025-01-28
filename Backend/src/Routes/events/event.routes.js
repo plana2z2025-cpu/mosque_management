@@ -5,11 +5,16 @@ const {
   Authorization,
   CheckMosqueAccess,
   CheckMosqueAuthorization,
+  CheckMosquePermissions,
 } = require("../../Middlewares/Auth.middleware");
 const {
   SUPPER_ADMIN,
   ADMIN,
   SUB_USER,
+  READ,
+  CREATE,
+  DELETE,
+  UPDATE,
 } = require("../../Constants/roles.constants");
 const eventValidations = require("../../validators/events/event.joi");
 const {
@@ -25,6 +30,7 @@ EventRoutes.route("/new-event").post(
   Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
   CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(CREATE),
   eventValidations.createEventValidation,
   createEventController
 );
@@ -34,6 +40,7 @@ EventRoutes.route("/events").get(
   Authorization(ADMIN, SUB_USER),
   CheckMosqueAccess,
   CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
   getAllEventController
 );
 
@@ -43,6 +50,7 @@ EventRoutes.route("/:eventId")
     Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
     CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
     getEventByIdController
   )
   .put(
@@ -50,13 +58,15 @@ EventRoutes.route("/:eventId")
     Authorization(ADMIN),
     CheckMosqueAccess,
     CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
     updateEventController
   )
   .delete(
     Authentication,
     Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
-    CheckMosqueAuthorization(ADMIN),
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(DELETE),
     deleteEventController
   );
 

@@ -68,6 +68,7 @@ module.exports.Authorization = (...roles) => {
   };
 };
 
+// checking for the user is to that particular mosque or not
 module.exports.CheckMosqueAccess = async (req, res, next) => {
   try {
     logger.info("CheckMosqueAccess - MiddleWare");
@@ -105,6 +106,7 @@ module.exports.CheckMosqueAccess = async (req, res, next) => {
   }
 };
 
+// to whom the mosque access is having
 module.exports.CheckMosqueAuthorization = (...roles) => {
   return (req, res, next) => {
     const userRole = req.__type__;
@@ -116,6 +118,7 @@ module.exports.CheckMosqueAuthorization = (...roles) => {
   };
 };
 
+// checking the sub user role based permissions
 module.exports.CheckMosquePermissions = (requiredPermission) => {
   return (req, res, next) => {
     const user = req.user;
