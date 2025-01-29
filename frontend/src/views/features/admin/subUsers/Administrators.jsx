@@ -18,12 +18,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import toast from 'react-hot-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const breadCumbs = [{ label: 'Administrators', href: null }];
 
 const headers = [
-  { title: 'ID', key: '_id' },
   { title: 'Name', key: 'name' },
+  { title: 'Read', key: 'read' },
+  { title: 'Create', key: 'create' },
+  { title: 'Update', key: 'update' },
+  { title: 'Delete', key: 'delete' },
   { title: 'Created On', key: 'createdAt' },
 ];
 
@@ -38,6 +42,12 @@ const Administrators = () => {
     name: '',
     password: '',
     isOpen: false,
+    permissions: {
+      read: true,
+      create: true,
+      update: false,
+      delete: false,
+    },
   });
 
   const [error, setError] = useState({});
@@ -56,6 +66,16 @@ const Administrators = () => {
     setError((prev) => ({
       ...prev,
       [name]: newError,
+    }));
+  };
+
+  const checkboxChangeHandler = (check, permission) => {
+    setInfo((prev) => ({
+      ...prev,
+      permissions: {
+        ...prev.permissions,
+        [permission]: check,
+      },
     }));
   };
 
@@ -106,6 +126,7 @@ const Administrators = () => {
     const json = {
       name: info?.name,
       password: info?.password,
+      permissions: info?.permissions,
     };
 
     const response = await addNewSubUserAction(json);
@@ -117,6 +138,12 @@ const Administrators = () => {
         name: '',
         password: '',
         isOpen: false,
+        permissions: {
+          read: true,
+          create: true,
+          update: false,
+          delete: false,
+        },
       }));
     } else {
       toast.error(response[1].message);
@@ -138,12 +165,13 @@ const Administrators = () => {
               Create a new sub-user account with a name and password.
             </DialogDescription>
           </DialogHeader>
+
           <div className="grid gap-4">
+            {/* Name Input */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 Name
               </Label>
-
               <div className="col-span-3">
                 <Input
                   id="name"
@@ -155,25 +183,48 @@ const Administrators = () => {
                 {error?.name && <span className="text-red-600 text-[10px]">{error?.name}</span>}
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              password
-            </Label>
-            <div className="col-span-3">
-              <Input
-                id="username"
-                placeHolder={'Enter the password'}
-                value={info?.password}
-                name={'password'}
-                onChange={changeHandlerFunction}
-              />
-              {error?.password && (
-                <span className="text-red-600 text-[10px]">{error?.password}</span>
-              )}
+            {/* Password Input */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="password" className="text-right">
+                Password
+              </Label>
+              <div className="col-span-3">
+                <Input
+                  id="password"
+                  placeHolder={'Enter the password'}
+                  value={info?.password}
+                  name={'password'}
+                  onChange={changeHandlerFunction}
+                />
+                {error?.password && (
+                  <span className="text-red-600 text-[10px]">{error?.password}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Permissions Section */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="password" className="text-right">
+                Permissions
+              </Label>
+              <div className="grid grid-cols-2 gap-2 col-span-3">
+                {['read', 'create', 'update', 'delete'].map((permission) => (
+                  <label key={permission} className="flex items-center capitalize">
+                    <Checkbox
+                      name={permission}
+                      checked={info?.permissions?.[permission]}
+                      onCheckedChange={(checked) => checkboxChangeHandler(checked, permission)}
+                      className="mr-2"
+                    />
+                    {permission}
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
+
+          {/* Footer with Save Button */}
           <DialogFooter>
             <Button type="button" onClick={submitNewUserHandler}>
               Save changes
@@ -186,6 +237,10 @@ const Administrators = () => {
         headers={headers}
         docs={administrators?.map((item) => ({
           ...item,
+          read: item?.permissions?.read ? 'Yes' : 'X',
+          create: item?.permissions?.create ? 'Yes' : 'X',
+          update: item?.permissions?.update ? 'Yes' : 'X',
+          delete: item?.permissions?.delete ? 'Yes' : 'X',
           createdAt: moment(item.createdAt).format('DD/MM/yyyy'),
         }))}
         cardTitle="Sub - Users"
