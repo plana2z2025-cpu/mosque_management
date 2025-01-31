@@ -13,6 +13,7 @@ const { MEMBER, ADMIN } = require("../Constants/roles.constants");
 const {
   newRegistrationMosqueWebhook,
 } = require("../hooks/registration.webhook");
+const mosqueConstants = require("../Constants/mosque.constants");
 
 const createNewMosqueController = async (req, res, next) => {
   try {
@@ -416,6 +417,27 @@ const getPublicAllMosqueController = async (req, res, next) => {
   }
 };
 
+const getPublicSingleMosqueController = async (req, res, next) => {
+  try {
+    const { slug } = req.params;
+    const data = await mosqueModel.findOne({ slug });
+    if (!data) {
+      return next(httpErrors.NotFound(mosqueConstants.MOSQUE_NOT_FOUND));
+    }
+    res.status(200).json({
+      success: true,
+      status: 200,
+      data,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-getPublicSingleMosqueController-Error",
+      error
+    );
+    next(httpErrors.InternalServerError(error.message));
+  }
+};
+
 module.exports = {
   createNewMosqueController,
   getMosquesListController,
@@ -426,4 +448,5 @@ module.exports = {
   updateCommunityMosqueDetailsController,
   updateCommunityMosqueTimingsController,
   getPublicAllMosqueController,
+  getPublicSingleMosqueController,
 };

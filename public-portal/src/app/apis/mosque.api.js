@@ -6,3 +6,8 @@ export const getMosquesApi = async (queryParams) => {
   const response = await Service.fetchGet(`/mosque/public/all${query}`);
   return response;
 };
+
+export const getSingleMosqueApi = async (slug) => {
+  const response = await Service.fetchGet(`/mosque/public/${slug}`);
+  return response;
+};

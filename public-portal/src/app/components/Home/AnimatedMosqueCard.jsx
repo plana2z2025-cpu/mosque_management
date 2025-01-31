@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import { gsap } from "gsap";
 import Calendar from "../../assets/svgs/calendar.svg";
 import MapPin from "../../assets/svgs/mappin.svg";
+import Eye from "../../assets/svgs/eye.svg";
 import ChevronDown from "../../assets/svgs/chevrondown.svg";
 import ChevronUp from "../../assets/svgs/chevronup.svg";
 import { useGSAP } from "@gsap/react";
@@ -141,6 +142,38 @@ function MosqueCardWrapper({ mosque }) {
                 </>
               )}
             </div>
+          </div>
+
+          <div className="flex space-x-4 p-4 w-full">
+            <a
+              href="https://www.google.com/maps?q=37.7749,-122.4194"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center 
+                  border-2 border-blue-500 text-blue-500 
+                  px-4 py-2 rounded-md 
+                  hover:bg-blue-500 hover:text-white 
+                  transition-all duration-300 
+                  transform hover:scale-105 
+                  hover:shadow-md w-1/2"
+            >
+              <MapPin />
+              Open in Google Maps
+            </a>
+
+            <a
+              href={`/${mosque?.slug}`}
+              className="flex items-center justify-center 
+                  border-2 border-green-500 text-green-500 
+                  px-4 py-2 rounded-md 
+                  hover:bg-green-500 hover:text-white 
+                  transition-all duration-300 
+                  transform hover:scale-105 
+                  hover:shadow-md w-1/2"
+            >
+              <Eye />
+              View Details
+            </a>
           </div>
         </div>
       </div>
