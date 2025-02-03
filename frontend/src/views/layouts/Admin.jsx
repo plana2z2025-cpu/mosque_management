@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import {
-  UserCheck,
+  Hourglass,
   School,
   Calendar,
   Users,
@@ -105,6 +105,19 @@ const data = {
         {
           title: 'Beneficiaries',
           url: '/admin/expenses/payees',
+        },
+      ],
+    },
+
+    {
+      title: 'Ramadan',
+      url: '#',
+      icon: Hourglass,
+      isActive: true,
+      items: [
+        {
+          title: 'Ramadan Timings',
+          url: '/admin/ramadan/timings',
         },
       ],
     },
