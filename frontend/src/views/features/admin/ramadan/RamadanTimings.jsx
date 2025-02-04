@@ -22,10 +22,15 @@ import { SUBMIT_BULK_TIMINGS } from '@/redux/ramadan/constant';
 import templateExcelFile from '../../../../assets/excels/ramadan_timings_demo.xlsx';
 
 const breadCumbs = [{ label: 'Ramadan Timings', href: null }];
-
+const INITIAL_INFO = {
+  fileName: null,
+  days: null,
+  showPopup: false,
+  isEdit: false,
+};
 const RamadanTimings = () => {
   const fileInputRef = useRef(null);
-  const [info, setInfo] = useState({ fileName: null, days: null, showPopup: false, isEdit: false });
+  const [info, setInfo] = useState({ ...INITIAL_INFO });
 
   const { ramadanTimings, bulkUpload, error } = useSelector((state) => state.ramadanState);
   const dispatch = useDispatch();

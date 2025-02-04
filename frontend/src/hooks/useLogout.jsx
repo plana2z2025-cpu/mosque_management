@@ -9,6 +9,7 @@ import {
   administratorActions,
   eventActions,
   payeeActions,
+  ramadanActions,
 } from '@/redux/combineActions';
 
 const useLogout = () => {
@@ -24,6 +25,7 @@ const useLogout = () => {
     dispatch(administratorActions.resetAdministratorsAction());
     dispatch(eventActions.resetEventAction());
     dispatch(payeeActions.resetPayeeAction());
+    dispatch(ramadanActions.resetRamadanAction());
     navigate('/');
     clearAll();
   }, []);
