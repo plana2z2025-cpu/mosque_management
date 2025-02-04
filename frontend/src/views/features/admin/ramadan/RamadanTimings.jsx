@@ -12,13 +12,14 @@ import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { ramadanActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Upload, Download, FilePenLine } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
 import ModalV1 from '@/views/components2/modal/ModalV1';
 import toast from 'react-hot-toast';
 import { SUBMIT_BULK_TIMINGS } from '@/redux/ramadan/constant';
-import { Input } from '@/components/ui/input';
+import templateExcelFile from '../../../../assets/excels/ramadan_timings_demo.xlsx';
 
 const breadCumbs = [{ label: 'Ramadan Timings', href: null }];
 
@@ -130,6 +131,18 @@ const RamadanTimings = () => {
     setInfo(update);
   }, [info?.isEdit]);
 
+  const downloadExcelHandlerFunction = useCallback(() => {
+    const link = document.createElement('a');
+    link.href = templateExcelFile;
+    link.download = 'ramadan_timings_template.xlsx';
+
+    // Append to body, click and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('successfully excel sheet is download');
+  }, []);
+
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
       <div className="flex justify-end  space-x-4">
@@ -141,7 +154,7 @@ const RamadanTimings = () => {
           Upload Excel Sheet
         </Button>
 
-        <Button>
+        <Button onClick={downloadExcelHandlerFunction}>
           <Download className="mr-2" />
           Download Sample
         </Button>
