@@ -21,7 +21,7 @@ const bulkUploadRamadanTimingsController = async (req, res, next) => {
       return {
         ...singleDay,
         uuid: uuidv4(),
-        date: moment(singleDay?.date, "yyyy-mm-dd").format(),
+        date: moment(singleDay?.date, "YYYY-MM-DD").format(),
       };
     });
     let details = {

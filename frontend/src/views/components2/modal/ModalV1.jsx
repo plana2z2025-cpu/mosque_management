@@ -7,8 +7,9 @@ const ModalV1 = ({
   isOpen,
   onClose,
   children,
-  size = 'medium', // 'small', 'medium', 'full'
+  size = 'medium',
   title = '',
+  maxHeight = '80vh',
 }) => {
   const modalRef = useRef(null);
 
@@ -69,6 +70,7 @@ const ModalV1 = ({
       <div
         ref={modalRef}
         className={`relative w-full ${sizeClasses[size]} bg-white rounded-lg shadow-xl z-50`}
+        style={{ maxHeight, height: maxHeight }}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
@@ -78,8 +80,19 @@ const ModalV1 = ({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6">{children}</div>
+        {/* Content with scrollable area */}
+        <div
+          className="overflow-y-auto"
+          style={{
+            maxHeight: 'calc(100% - 64px)', // Subtracting header height
+            height: 'calc(100% - 64px)',
+            paddingRight: '1rem',
+            paddingLeft: '1rem',
+            paddingBottom: '1rem',
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
