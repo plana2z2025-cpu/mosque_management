@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CustomPagination from '@/views/components2/pagination/CustomPagination';
+import DotsLoader from '@/views/components2/loaders/DotLoader';
+import PropTypes from 'prop-types';
 
 const CustomTable1 = ({
   headers,
@@ -21,6 +23,7 @@ const CustomTable1 = ({
   currentPage = 1,
   totalPages = 1,
   onPageChange,
+  loading = false,
 }) => {
   // Check if data is empty
   const isEmptyData = !docs || docs?.length === 0;
@@ -43,34 +46,44 @@ const CustomTable1 = ({
               {actions && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {isEmptyData ? (
+          {loading ? (
+            <TableBody>
               <TableRow>
-                <TableCell
-                  colSpan={headers.length + (actions ? 1 : 0) + (index ? 1 : 0)}
-                  className="h-24 text-center"
-                >
-                  No data available
+                <TableCell colSpan={headers.length + (actions ? 1 : 0) + (index ? 1 : 0)}>
+                  <DotsLoader parentClass={'my-3 py-4'} />
                 </TableCell>
               </TableRow>
-            ) : (
-              docs?.map((item, rowIndex) => (
-                <TableRow key={rowIndex}>
-                  {index && <TableCell>{rowIndex + 1}.</TableCell>}
-                  {headers.map((header, colIndex) => (
-                    <TableCell key={colIndex}>
-                      <div className="text-sm">{item[header.key] || 'N/A'}</div>
-                    </TableCell>
-                  ))}
-                  {actions && (
-                    <TableCell>
-                      <div className="flex gap-2">{actions(item)}</div>
-                    </TableCell>
-                  )}
+            </TableBody>
+          ) : (
+            <TableBody>
+              {isEmptyData ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={headers.length + (actions ? 1 : 0) + (index ? 1 : 0)}
+                    className="h-24 text-center"
+                  >
+                    No data available
+                  </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
+              ) : (
+                docs?.map((item, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                    {index && <TableCell>{rowIndex + 1}.</TableCell>}
+                    {headers.map((header, colIndex) => (
+                      <TableCell key={colIndex}>
+                        <div className="text-sm">{item[header.key] || 'N/A'}</div>
+                      </TableCell>
+                    ))}
+                    {actions && (
+                      <TableCell>
+                        <div className="flex gap-2">{actions(item)}</div>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          )}
         </Table>
 
         {pagination && totalPages !== 1 && (
@@ -87,6 +100,19 @@ const CustomTable1 = ({
       </CardContent>
     </Card>
   );
+};
+
+CustomTable1.prototype = {
+  index: PropTypes.bool,
+  headers: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  actions: PropTypes.func,
+  pagination: PropTypes.bool,
+  onPageChange: PropTypes.func,
+  cardTitle: PropTypes.string,
 };
 
 export default CustomTable1;

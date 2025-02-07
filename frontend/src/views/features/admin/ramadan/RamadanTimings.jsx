@@ -21,6 +21,7 @@ import toast from 'react-hot-toast';
 import { SUBMIT_BULK_TIMINGS } from '@/redux/ramadan/constant';
 import templateExcelFile from '../../../../assets/excels/ramadan_timings_demo.xlsx';
 import { Plus, Trash2 } from 'lucide-react';
+import DotsLoader from '@/views/components2/loaders/DotLoader';
 
 const breadCumbs = [{ label: 'Ramadan Timings', href: null }];
 const INITIAL_INFO = {
@@ -34,7 +35,7 @@ const RamadanTimings = () => {
   const fileInputRef = useRef(null);
   const [info, setInfo] = useState({ ...INITIAL_INFO });
 
-  const { ramadanTimings, bulkUpload, error } = useSelector((state) => state.ramadanState);
+  const { ramadanTimings, bulkUpload, error, loading } = useSelector((state) => state.ramadanState);
   const dispatch = useDispatch();
   const {
     getMosqueRamadanTimingsAction,
@@ -224,85 +225,89 @@ const RamadanTimings = () => {
           <CardTitle>Ramadan Schedule {moment().year()}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-center">Day</TableHead>
-                <TableHead className="text-center">Day of Ramadan</TableHead>
-                <TableHead className="text-center">Sehri Start</TableHead>
-                <TableHead className="text-center">Sehri End</TableHead>
-                <TableHead className="text-center">Iftar</TableHead>
-              </TableRow>
-            </TableHeader>
+          {loading ? (
+            <DotsLoader />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-center">Day</TableHead>
+                  <TableHead className="text-center">Day of Ramadan</TableHead>
+                  <TableHead className="text-center">Sehri Start</TableHead>
+                  <TableHead className="text-center">Sehri End</TableHead>
+                  <TableHead className="text-center">Iftar</TableHead>
+                </TableRow>
+              </TableHeader>
 
-            <TableBody>
-              {info?.isEdit
-                ? info?.editableTimings?.map((day, index) => (
-                    <TableRow key={day?.uuid || 'uuid' + index}>
-                      <TableCell className="font-medium">
-                        <Input
-                          type="date"
-                          value={moment(day.date).format('YYYY-MM-DD')}
-                          className="w-40"
-                        />
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {moment(day.date).format('ddd')}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Input
-                          type="number"
-                          value={day.dayOfRamadan}
-                          className="w-20 mx-auto text-center"
-                          disabled={true}
-                        />
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Input
-                          type="time"
-                          value={moment(day.sehri_start, 'hh:mm A').format('hh:mm')}
-                          className="w-32 mx-auto text-center"
-                        />
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Input
-                          type="time"
-                          value={moment(day.sehri_end, 'hh:mm A').format('hh:mm')}
-                          className="w-32 mx-auto text-center"
-                        />
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Input
-                          type="time"
-                          value={moment(day.iftar, 'hh:mm A').format('hh:mm')}
-                          className="w-32 mx-auto text-center"
-                        />
-                      </TableCell>
-                      <TableCell
-                        className="text-center"
-                        onClick={() => deleteSingleTimingFunction(index)}
-                      >
-                        <Trash2 className="text-red-400 hover:text-red-600 cursor-pointer transition-colors" />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                : ramadanTimings?.days?.map((day) => (
-                    <TableRow key={day.uuid}>
-                      <TableCell className="font-medium">
-                        {moment(day.date).format('YYYY-MM-DD')}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {moment(day.date).format('ddd')}
-                      </TableCell>
-                      <TableCell className="text-center">{day.dayOfRamadan}</TableCell>
-                      <TableCell className="text-center">{day.sehri_start}</TableCell>
-                      <TableCell className="text-center">{day.sehri_end}</TableCell>
-                      <TableCell className="text-center">{day.iftar}</TableCell>
-                    </TableRow>
-                  ))}
-            </TableBody>
-          </Table>
+              <TableBody>
+                {info?.isEdit
+                  ? info?.editableTimings?.map((day, index) => (
+                      <TableRow key={day?.uuid || 'uuid' + index}>
+                        <TableCell className="font-medium">
+                          <Input
+                            type="date"
+                            value={moment(day.date).format('YYYY-MM-DD')}
+                            className="w-40"
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {moment(day.date).format('ddd')}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Input
+                            type="number"
+                            value={day.dayOfRamadan}
+                            className="w-20 mx-auto text-center"
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Input
+                            type="time"
+                            value={moment(day.sehri_start, 'hh:mm A').format('hh:mm')}
+                            className="w-32 mx-auto text-center"
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Input
+                            type="time"
+                            value={moment(day.sehri_end, 'hh:mm A').format('hh:mm')}
+                            className="w-32 mx-auto text-center"
+                          />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Input
+                            type="time"
+                            value={moment(day.iftar, 'hh:mm A').format('hh:mm')}
+                            className="w-32 mx-auto text-center"
+                          />
+                        </TableCell>
+                        <TableCell
+                          className="text-center"
+                          onClick={() => deleteSingleTimingFunction(index)}
+                        >
+                          <Trash2 className="text-red-400 hover:text-red-600 cursor-pointer transition-colors" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : ramadanTimings?.days?.map((day) => (
+                      <TableRow key={day.uuid}>
+                        <TableCell className="font-medium">
+                          {moment(day.date).format('YYYY-MM-DD')}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {moment(day.date).format('ddd')}
+                        </TableCell>
+                        <TableCell className="text-center">{day.dayOfRamadan}</TableCell>
+                        <TableCell className="text-center">{day.sehri_start}</TableCell>
+                        <TableCell className="text-center">{day.sehri_end}</TableCell>
+                        <TableCell className="text-center">{day.iftar}</TableCell>
+                      </TableRow>
+                    ))}
+              </TableBody>
+            </Table>
+          )}
 
           {info?.isEdit && (
             <div className="flex gap-6 mt-4 mb-3 float-end">
