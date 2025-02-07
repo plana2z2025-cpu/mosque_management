@@ -30,7 +30,11 @@ const ModelSchema = new mongoose.Schema(
           min: 1,
           max: 31,
         },
-        sehri: {
+        sehri_start: {
+          type: String,
+          required: true,
+        },
+        sehri_end: {
           type: String,
           required: true,
         },

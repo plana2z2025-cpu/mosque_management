@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState, useEffect, useCallback } from 'react';
+import React, { memo, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -20,6 +20,7 @@ import ModalV1 from '@/views/components2/modal/ModalV1';
 import toast from 'react-hot-toast';
 import { SUBMIT_BULK_TIMINGS } from '@/redux/ramadan/constant';
 import templateExcelFile from '../../../../assets/excels/ramadan_timings_demo.xlsx';
+import { Plus, Trash2 } from 'lucide-react';
 
 const breadCumbs = [{ label: 'Ramadan Timings', href: null }];
 const INITIAL_INFO = {
@@ -27,6 +28,7 @@ const INITIAL_INFO = {
   days: null,
   showPopup: false,
   isEdit: false,
+  editableTimings: null,
 };
 const RamadanTimings = () => {
   const fileInputRef = useRef(null);
@@ -80,12 +82,15 @@ const RamadanTimings = () => {
           const worksheet = workbook.Sheets[sheetName];
           let days = XLSX.utils.sheet_to_json(worksheet);
           days = days?.map((singleDay) => ({
-            ...singleDay,
             date: moment('1899-12-30').add(singleDay.date, 'days').format('YYYY-MM-DD'),
             dayOfRamadan: singleDay.dayOfRamadan,
-            sehri: moment()
-              .hours(Math.floor(singleDay.sehri * 24))
-              .minutes(Math.round(((singleDay.sehri * 24) % 1) * 60))
+            sehri_start: moment()
+              .hours(Math.floor(singleDay.sehriStartTime * 24))
+              .minutes(Math.round(((singleDay.sehriStartTime * 24) % 1) * 60))
+              .format('hh:mm A'),
+            sehri_end: moment()
+              .hours(Math.floor(singleDay.sehriEndTime * 24))
+              .minutes(Math.round(((singleDay.sehriEndTime * 24) % 1) * 60))
               .format('hh:mm A'),
             iftar: moment()
               .hours(Math.floor(singleDay.iftar * 24))
@@ -110,7 +115,7 @@ const RamadanTimings = () => {
       days: info?.days,
     };
     dispatch(submitBulkRamadanTimingsAction(json));
-  }, []);
+  }, [info?.days]);
 
   const bulkUploadClearResetFunction = useCallback(
     (error = false, reset = false) => {
@@ -129,12 +134,14 @@ const RamadanTimings = () => {
     let update = { ...info };
     if (update.isEdit) {
       update.isEdit = false;
+      update.editableTimings = [];
     } else {
       update.isEdit = true;
+      update.editableTimings = ramadanTimings?.days || [];
     }
 
     setInfo(update);
-  }, [info?.isEdit]);
+  }, [info?.isEdit, info?.editableTimings, ramadanTimings?.days]);
 
   const downloadExcelHandlerFunction = useCallback(() => {
     const link = document.createElement('a');
@@ -147,6 +154,37 @@ const RamadanTimings = () => {
     document.body.removeChild(link);
     toast.success('successfully excel sheet is download');
   }, []);
+
+  const addNewSingleTimingFunction = useCallback(() => {
+    if (ramadanTimings?.days?.length === 0 || !ramadanTimings?.days) {
+      return;
+    }
+    let updateTimings = [...info?.editableTimings];
+    let lastTimings = updateTimings[updateTimings?.length - 1];
+    let newTimings = {
+      ...lastTimings,
+      date: moment(lastTimings?.date).add(1, 'day'),
+      dayOfRamadan: lastTimings?.dayOfRamadan + 1,
+    };
+    delete newTimings.uuid;
+    delete newTimings._id;
+
+    updateTimings.push(newTimings);
+    setInfo((prev) => ({ ...prev, editableTimings: updateTimings }));
+  }, [info?.editableTimings]);
+
+  const deleteSingleTimingFunction = useCallback(
+    (index) => {
+      if ((info?.editableTimings?.length === 0) | !info?.editableTimings) {
+        return;
+      }
+
+      let updateTimings = [...info?.editableTimings];
+      updateTimings.splice(index, 1);
+      setInfo((prev) => ({ ...prev, editableTimings: updateTimings }));
+    },
+    [info?.editableTimings]
+  );
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -190,15 +228,18 @@ const RamadanTimings = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
+                <TableHead className="text-center">Day</TableHead>
                 <TableHead className="text-center">Day of Ramadan</TableHead>
-                <TableHead className="text-center">Sehri</TableHead>
+                <TableHead className="text-center">Sehri Start</TableHead>
+                <TableHead className="text-center">Sehri End</TableHead>
                 <TableHead className="text-center">Iftar</TableHead>
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {info?.isEdit
-                ? ramadanTimings?.days?.map((day) => (
-                    <TableRow key={day.uuid}>
+                ? info?.editableTimings?.map((day, index) => (
+                    <TableRow key={day?.uuid || 'uuid' + index}>
                       <TableCell className="font-medium">
                         <Input
                           type="date"
@@ -207,16 +248,27 @@ const RamadanTimings = () => {
                         />
                       </TableCell>
                       <TableCell className="text-center">
+                        {moment(day.date).format('ddd')}
+                      </TableCell>
+                      <TableCell className="text-center">
                         <Input
                           type="number"
                           value={day.dayOfRamadan}
                           className="w-20 mx-auto text-center"
+                          disabled={true}
                         />
                       </TableCell>
                       <TableCell className="text-center">
                         <Input
                           type="time"
-                          value={moment(day.sehri, 'hh:mm A').format('hh:mm')}
+                          value={moment(day.sehri_start, 'hh:mm A').format('hh:mm')}
+                          className="w-32 mx-auto text-center"
+                        />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Input
+                          type="time"
+                          value={moment(day.sehri_end, 'hh:mm A').format('hh:mm')}
                           className="w-32 mx-auto text-center"
                         />
                       </TableCell>
@@ -227,6 +279,12 @@ const RamadanTimings = () => {
                           className="w-32 mx-auto text-center"
                         />
                       </TableCell>
+                      <TableCell
+                        className="text-center"
+                        onClick={() => deleteSingleTimingFunction(index)}
+                      >
+                        <Trash2 className="text-red-400 hover:text-red-600 cursor-pointer transition-colors" />
+                      </TableCell>
                     </TableRow>
                   ))
                 : ramadanTimings?.days?.map((day) => (
@@ -234,13 +292,30 @@ const RamadanTimings = () => {
                       <TableCell className="font-medium">
                         {moment(day.date).format('YYYY-MM-DD')}
                       </TableCell>
+                      <TableCell className="text-center">
+                        {moment(day.date).format('ddd')}
+                      </TableCell>
                       <TableCell className="text-center">{day.dayOfRamadan}</TableCell>
-                      <TableCell className="text-center">{day.sehri}</TableCell>
+                      <TableCell className="text-center">{day.sehri_start}</TableCell>
+                      <TableCell className="text-center">{day.sehri_end}</TableCell>
                       <TableCell className="text-center">{day.iftar}</TableCell>
                     </TableRow>
                   ))}
             </TableBody>
           </Table>
+
+          {info?.isEdit && (
+            <div className="flex gap-6 mt-4 mb-3 float-end">
+              <Button
+                className="bg-yellow-500 hover:bg-yellow-600 text-gray-900"
+                onClick={addNewSingleTimingFunction}
+              >
+                {' '}
+                <Plus /> Add
+              </Button>
+              <Button className="bg-green-500 hover:bg-green-600 text-gray-900">Update</Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -251,8 +326,9 @@ const RamadanTimings = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
-                  <TableHead className="text-center">Day of Ramadan</TableHead>
-                  <TableHead className="text-center">Sehri</TableHead>
+                  <TableHead className="text-center">Day </TableHead>
+                  <TableHead className="text-center">Sehri Start</TableHead>
+                  <TableHead className="text-center">Sehri End</TableHead>
                   <TableHead className="text-center">Iftar</TableHead>
                 </TableRow>
               </TableHeader>
@@ -261,7 +337,8 @@ const RamadanTimings = () => {
                   <TableRow key={index + 'demo_data'}>
                     <TableCell className="font-medium">{day.date}</TableCell>
                     <TableCell className="text-center">{day.dayOfRamadan}</TableCell>
-                    <TableCell className="text-center">{day.sehri}</TableCell>
+                    <TableCell className="text-center">{day.sehri_start}</TableCell>
+                    <TableCell className="text-center">{day.sehri_end}</TableCell>
                     <TableCell className="text-center">{day.iftar}</TableCell>
                   </TableRow>
                 ))}
