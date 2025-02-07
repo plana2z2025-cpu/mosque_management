@@ -30,7 +30,7 @@ const TableRow = memo(({ row, onDelete }) => (
 const AllExpenses = () => {
   const { getAllExpensesAction } = expenseActions;
   const dispatch = useDispatch();
-  const { allExpenses } = useSelector((state) => state?.expenseState);
+  const { allExpenses, loading } = useSelector((state) => state?.expenseState);
   const [info, setInfo] = useState(INITIAL_STATE);
 
   useEffect(() => {
@@ -54,6 +54,7 @@ const AllExpenses = () => {
         currentPage={allExpenses?.currentPage}
         onPageChange={(page) => setInfo((prev) => ({ ...prev, page }))}
         actions={(row) => <TableRow row={row} />}
+        loading={loading}
       />
     </Mainwrapper>
   );

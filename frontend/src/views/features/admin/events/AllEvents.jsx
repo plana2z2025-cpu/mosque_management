@@ -39,16 +39,8 @@ const INITIAL_STATE = {
 
 const TableRow = memo(({ row, onDelete, onUpdate }) => (
   <>
-    <Trash
-      color="red"
-      className="cursor-pointer size-5"
-      onClick={() => onDelete(row)}
-    />
-    <Pencil
-      color="black"
-      className="cursor-pointer size-5"
-      onClick={() => onUpdate(row)}
-    />
+    <Trash color="red" className="cursor-pointer size-5" onClick={() => onDelete(row)} />
+    <Pencil color="black" className="cursor-pointer size-5" onClick={() => onUpdate(row)} />
   </>
 ));
 
@@ -56,7 +48,7 @@ const AllEvents = () => {
   const { getCommunityEventsAction, deleteEventAction } = eventActions;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { allEvents, eventCategoryNames } = useSelector((state) => state.eventState || {});
+  const { allEvents, eventCategoryNames, loading } = useSelector((state) => state.eventState || {});
   const [info, setInfo] = useState(INITIAL_STATE);
 
   useEffect(() => {
@@ -91,21 +83,16 @@ const AllEvents = () => {
     }
   }, [dispatch, info?.deleteId, info?.deleteLoading, info?.limit, info?.page]);
 
-
   const updateEvent = (row) => {
     const matchedEvent = allEvents?.docs?.find((event) => event._id === row?._id);
     navigate(`/admin/events/event/${row?._id}`);
     dispatch({ type: SINGLE_EVENT_DETAIL.success, payload: matchedEvent });
   };
 
-
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
       <div className="w-full flex justify-end">
-        <Button
-          variant="outline"
-          onClick={() => navigate('/admin/events/event/create')}
-        >
+        <Button variant="outline" onClick={() => navigate('/admin/events/event/create')}>
           Add New Event
         </Button>
       </div>
@@ -114,13 +101,17 @@ const AllEvents = () => {
         docs={allEvents?.docs?.map((item) => {
           return {
             ...item,
-            type: item.type?.name || eventCategoryNames.find((category) => category._id === item.type)?.name || '',
+            type:
+              item.type?.name ||
+              eventCategoryNames.find((category) => category._id === item.type)?.name ||
+              '',
             startDate: moment(item?.startDate).format('DD/MM/yyyy'),
             time: moment(item?.time).format('HH:mm'),
             speakers: item.speakers?.map((speaker) => speaker.name).join(', '),
           };
         })}
         cardTitle="Events"
+        loading={loading}
         totalPages={allEvents?.totalPages}
         currentPage={allEvents?.currentPage}
         onPageChange={(page) => setInfo((prev) => ({ ...prev, page }))}
@@ -130,7 +121,6 @@ const AllEvents = () => {
       />
 
       {/* Delete Confirmation Modal */}
-
 
       <Dialog open={Boolean(info?.deleteId)} onOpenChange={() => deletePopupModalFunc(null)}>
         <DialogContent>

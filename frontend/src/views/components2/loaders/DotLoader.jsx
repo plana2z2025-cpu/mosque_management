@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import '@/assets/css/loaders/dot-loader.css';
 import { cn } from '@/lib/utils';
 import PropTypes from 'prop-types';
@@ -13,4 +14,4 @@ const DotsLoader = ({ parentClass }) => {
 DotsLoader.prototype = {
   parentClass: PropTypes.string,
 };
-export default DotsLoader;
+export default memo(DotsLoader);

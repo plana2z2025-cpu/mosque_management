@@ -66,7 +66,7 @@ const AllBeneficiaries = () => {
   const { getAllPayeeAction, deletePayeeAction } = payeeActions;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { allPayee } = useSelector((state) => state?.payeeState || {});
+  const { allPayee, loading } = useSelector((state) => state?.payeeState || {});
   const [info, setInfo] = useState(INITIAL_STATE);
 
   useEffect(() => {
@@ -140,6 +140,7 @@ const AllBeneficiaries = () => {
         actions={(row) => (
           <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={UpdateBeneficiary} />
         )}
+        loading={loading}
       />
 
       {/* Delete Confirmation Modal */}

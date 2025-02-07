@@ -113,6 +113,7 @@ CustomTable1.prototype = {
   pagination: PropTypes.bool,
   onPageChange: PropTypes.func,
   cardTitle: PropTypes.string,
+  loading: PropTypes.bool,
 };
 
 export default CustomTable1;
