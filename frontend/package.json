@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "prepare": "husky"
+    "prepare": "cd .. && husky  ./frontend/.husky"
   },
   "dependencies": {
     "@gsap/react": "^2.1.1",
