@@ -13,4 +13,5 @@ module.exports = {
 
   // webhooks
   BARKAT_BOT_WEBHOOK: process.env.BARKAT_BOT_WEBHOOK,
+  SERVER_STATUS_WEBHOOK: process.env.SERVER_STATUS_WEBHOOK,
 };
