@@ -199,19 +199,19 @@ export function CreateEventForm() {
     let options = {};
     name === 'startDate'
       ? (options = {
-        startDate: date,
-        endDate: date,
-        time: moment(formData.time)
-          .set({
-            year: date.getUTCFullYear(),
-            month: date.getUTCMonth(),
-            day: date.getUTCDate(),
-          })
-          .format(),
-      })
+          startDate: date,
+          endDate: date,
+          time: moment(formData.time)
+            .set({
+              year: date.getUTCFullYear(),
+              month: date.getUTCMonth(),
+              day: date.getUTCDate(),
+            })
+            .format(),
+        })
       : (options = {
-        endDate: date,
-      });
+          endDate: date,
+        });
     setFormData((prev) => ({
       ...prev,
       ...options,
@@ -381,7 +381,7 @@ export function CreateEventForm() {
               selected={formData.startDate}
               onSelect={(date) => changeDateHandler(date, 'startDate')}
               disabled={(date) => date < new Date()}
-            // initialFocus
+              // initialFocus
             />
           </div>
 
@@ -393,7 +393,7 @@ export function CreateEventForm() {
               selected={formData.endDate}
               onSelect={(date) => changeDateHandler(date, 'endDate')}
               disabled={(date) => date < formData?.startDate}
-            // initialFocus
+              // initialFocus
             />
           </div>
         </div>

@@ -7,7 +7,7 @@ import {
   EVENT_DASHBOARD_GRAPH,
   SINGLE_EVENT_DETAIL,
   UPDATE_CATEGORY,
-  UPDATE_EVENT
+  UPDATE_EVENT,
 } from './constant';
 
 const initialState = {
@@ -91,7 +91,6 @@ export const EventReducer = (state = initialState, action) => {
       loading: false,
       allEvents: action.payload,
     }),
-
 
     // Failure states using a utility function
     [COMMUNITY_EVENTS.fail]: () => ({

@@ -33,23 +33,23 @@ const getPayeeDetailsAction = (payeeId) => async (dispatch) => {
 
 const getAllPayeeAction =
   (query = null) =>
-    async (dispatch) => {
-      dispatch({ type: PAYEES_LIST.request });
-      const token = getAccessToken();
-      const response = await Service.fetchGet(
-        `${API.BASE_PAYEE}${API.PAYEE_TYPES.PAYEES}${query ? '?' + query : ''}`,
-        token
-      );
+  async (dispatch) => {
+    dispatch({ type: PAYEES_LIST.request });
+    const token = getAccessToken();
+    const response = await Service.fetchGet(
+      `${API.BASE_PAYEE}${API.PAYEE_TYPES.PAYEES}${query ? '?' + query : ''}`,
+      token
+    );
 
-      if (response[0] === true) {
-        dispatch({ type: PAYEES_LIST.success, payload: response[1].data });
-      } else {
-        dispatch({
-          type: PAYEES_LIST.fail,
-          payload: response[1],
-        });
-      }
-    };
+    if (response[0] === true) {
+      dispatch({ type: PAYEES_LIST.success, payload: response[1].data });
+    } else {
+      dispatch({
+        type: PAYEES_LIST.fail,
+        payload: response[1],
+      });
+    }
+  };
 
 const updatePayeeAction = (payeeId, json) => async (dispatch) => {
   dispatch({ type: UPDATE_PAYEE.request });

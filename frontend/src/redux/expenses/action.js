@@ -96,11 +96,7 @@ const getAllExpenseCategoryNamesAction = () => async (dispatch) => {
 
 const updateExpenseCategoryAction = async (categoryId, json) => {
   const token = getAccessToken();
-  const response = await Service.fetchPut(
-    `${API.BASE_TYPE_CATEGORY}/${categoryId}`,
-    json,
-    token
-  );
+  const response = await Service.fetchPut(`${API.BASE_TYPE_CATEGORY}/${categoryId}`, json, token);
   return response;
 };
 
