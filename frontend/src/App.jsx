@@ -16,13 +16,13 @@ function App() {
   return (
     <div className="app">
       <Welcome />
-                          <BrowserRouter>
-                            <Routes>
-                              {allRoutesMapper?.map((singleroute, index) => (
-                                <Route key={index} path={singleroute.path} element={singleroute.component} />
-                              ))}
-                            </Routes>
-                          </BrowserRouter>
+                                  <BrowserRouter>
+                                    <Routes>
+                                      {allRoutesMapper?.map((singleroute, index) => (
+                                        <Route key={index} path={singleroute.path} element={singleroute.component} />
+                                      ))}
+                                    </Routes>
+                                  </BrowserRouter>
 
       <OtherComponets />
     </div>

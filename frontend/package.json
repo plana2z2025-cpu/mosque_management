@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
+    "prepare": "husky"
   },
   "dependencies": {
     "@gsap/react": "^2.1.1",
@@ -68,16 +69,10 @@
     "tailwindcss": "^3.4.13",
     "vite": "^5.4.8"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
-    "*.+(js|jsx|json|css|md)": [
+    "*.{js,jsx,json,css,md}": [
       "eslint --fix",
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   }
 }
