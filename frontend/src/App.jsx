@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import allRoutesMapper from './routes';
 import { Toaster } from 'react-hot-toast';
-import Welcome from './views/components2/home/Welcome';
+import Welcome from './views/components2/home/Welcom';
 
 const OtherComponets = () => {
   return (
