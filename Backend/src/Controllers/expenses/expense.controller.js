@@ -1,12 +1,12 @@
 const expenseModel = require("../../Schema/expenses/expense.model");
 const expenseCategoryModel = require("../../Schema/expenses/expenseCategory.model");
 const payeeModel = require("../../Schema/expenses/payee.model");
-const mongoose = require("mongoose");
 const logger = require("../../Config/logger.config");
 const httpErrors = require("http-errors");
 const expenseConstant = require("../../Constants/expense.constants");
 const sortConstants = require("../../Constants/sort.constants");
 const payeeConstant = require("../../Constants/payee.constants");
+const errorHandling = require("../../Utils/errorHandling");
 
 const createExpenseController = async (req, res, next) => {
   try {
@@ -53,7 +53,7 @@ const createExpenseController = async (req, res, next) => {
       "Controller - expenses - createExpenseController - error",
       error
     );
-    next(httpErrors.InternalServerError(error?.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -85,7 +85,7 @@ const getExpenseByIdController = async (req, res, next) => {
       "Controller - expenses - getExpenseByIdController - error",
       error
     );
-    next(httpErrors.InternalServerError(error?.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -148,7 +148,7 @@ const getAllExpensesController = async (req, res, next) => {
       "Controller - expenses - getAllExpensesController - error",
       error
     );
-    next(httpErrors.InternalServerError(error?.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -186,7 +186,7 @@ const updateExpenseController = async (req, res, next) => {
       "Controller - expenses - updateExpenseController - error",
       error
     );
-    next(httpErrors.InternalServerError(error?.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -216,7 +216,7 @@ const deleteExpenseController = async (req, res, next) => {
       "Controller - expenses - deleteExpenseController - error",
       error
     );
-    next(httpErrors.InternalServerError(error?.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

@@ -4,6 +4,7 @@ import NotFoundPage from "../components/mosqueDetails/NotFound";
 
 const getMosqueData = async (slug) => {
   const response = await getSingleMosqueApi(slug);
+  console.log(response);
   return response;
 };
 
@@ -11,7 +12,7 @@ export default async function MosquePage({ params }) {
   const { slug } = await params;
   const mosqueResponse = await getMosqueData(slug);
   if (mosqueResponse[0] === true) {
-    return <MosqueDashboard mosque={mosqueResponse[1]?.data} />;
+    return <MosqueDashboard mosque={mosqueResponse[1]?.data?.mosqueDetails} />;
   } else {
     return <NotFoundPage />;
   }

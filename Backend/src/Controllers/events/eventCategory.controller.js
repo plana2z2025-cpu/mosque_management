@@ -3,6 +3,7 @@ const eventCategoryModel = require("../../Schema/events/eventCategory.model");
 const httpErrors = require("http-errors");
 const CategoryConstant = require("../../Constants/event.constants");
 const sortConstants = require("../../Constants/sort.constants");
+const errorHandling = require("../../Utils/errorHandling");
 
 // Create new event category
 const createEventCategoryController = async (req, res, next) => {
@@ -48,7 +49,7 @@ const createEventCategoryController = async (req, res, next) => {
       "Controller - events - eventCategory - createEventCategoryController - error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -82,7 +83,7 @@ const getEventCategoryByIdController = async (req, res, next) => {
       "Controller - events - eventCategory - getEventCategoryByIdController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -145,7 +146,7 @@ const getAllEventCategoriesController = async (req, res, next) => {
       "Controller - events - eventCategory - getAllEventCategoriesController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -186,7 +187,7 @@ const updateEventCategoryController = async (req, res, next) => {
       "Controller - events - eventCategory - createEventCategoryController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -224,7 +225,7 @@ const deleteEventCategoryController = async (req, res, next) => {
       error
     );
 
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -251,7 +252,7 @@ const getAllEventsCategoryNamesController = async (req, res, next) => {
       "Controller - events - getAllEventsCategoryNamesController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

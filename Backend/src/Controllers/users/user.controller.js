@@ -12,6 +12,7 @@ const {
   SUPPER_ADMIN,
   ADMIN,
 } = require("../../Constants/roles.constants");
+const errorHandling = require("../../Utils/errorHandling");
 
 const LoginUserController = async (req, res, next) => {
   try {
@@ -46,7 +47,7 @@ const LoginUserController = async (req, res, next) => {
     });
   } catch (error) {
     logger.error("Controller-user.controller-LoginUserController-Error", error);
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -72,7 +73,7 @@ const RegisterController = async (req, res, next) => {
     });
   } catch (error) {
     logger.error("Controller-user.controller-RegisterController-Error", error);
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -95,7 +96,7 @@ const MyProfileController = async (req, res, next) => {
     });
   } catch (error) {
     logger.warn("Controller-user.controller-RegisterController-End", error);
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -135,7 +136,7 @@ const LoginSubUserController = async (req, res, next) => {
       "Controller-user.controller-LoginSubUserController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

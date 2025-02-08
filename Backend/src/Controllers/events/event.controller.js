@@ -6,7 +6,7 @@ const eventConstant = require("../../Constants/event.constants");
 const moment = require("moment");
 const mongoose = require("mongoose");
 const { eventCategory } = require("../../Constants/model.constants");
-
+const errorHandling = require("../../Utils/errorHandling");
 // Controller for Creating Event
 const createEventController = async (req, res, next) => {
   try {
@@ -50,6 +50,7 @@ const createEventController = async (req, res, next) => {
     logger.info(
       "Controller - events - event.controller - createEventController - Start"
     );
+    errorHandling.handleCustomErrorService(error, res);
   }
 };
 
@@ -81,7 +82,7 @@ const getEventByIdController = async (req, res, next) => {
       "Controller - events - eventCategory - getEventByIdController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -137,7 +138,7 @@ const getAllEventController = async (req, res, next) => {
       "Controller - events - eventCategory - getAllEventController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -174,7 +175,7 @@ const updateEventController = async (req, res, next) => {
       "Controller - events - eventCategory - createEventController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -207,7 +208,7 @@ const deleteEventController = async (req, res, next) => {
       error
     );
 
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

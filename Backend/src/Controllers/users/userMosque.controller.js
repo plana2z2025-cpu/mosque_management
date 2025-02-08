@@ -1,11 +1,9 @@
 const httpErrors = require("http-errors");
 const userMosqueModel = require("../../Schema/users/user_mosque.model");
 const mosqueModel = require("../../Schema/mosque.model");
-const USER_CONSTANTS = require("../../Constants/user.constants");
 const logger = require("../../Config/logger.config");
-const { VerifyPasswordMethod } = require("../../Utils/verify.password");
-const { CreateAccessToken } = require("../../Utils/jwt.token");
 const sortConstants = require("../../Constants/sort.constants");
+const errorHandling = require("../../Utils/errorHandling");
 
 const createSubUserController = async (req, res, next) => {
   try {
@@ -50,7 +48,7 @@ const createSubUserController = async (req, res, next) => {
       "Controller - users - UserMosqueController - createSubUserController - Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -77,7 +75,7 @@ const getAllSubUsersController = async (req, res, next) => {
       "Controller - users - UserMosqueController - getAllSubUsersController - Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -106,7 +104,7 @@ const getSubUserByIdController = async (req, res, next) => {
       "Controller - users - UserMosqueController - getSubUsersByIdController - Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -135,7 +133,7 @@ const deleteSubUserByIdController = async (req, res, next) => {
       "Controller - users - UserMosqueController - getSubUsersByIdController - Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

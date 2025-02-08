@@ -3,6 +3,7 @@ const expenseCategoryModel = require("../../Schema/expenses/expenseCategory.mode
 const httpErrors = require("http-errors");
 const sortConstants = require("../../Constants/sort.constants");
 const ExpenseConstant = require("../../Constants/expense.constants");
+const errorHandling = require("../../Utils/errorHandling");
 
 const createExpenseCategoryController = async (req, res, next) => {
   try {
@@ -47,7 +48,7 @@ const createExpenseCategoryController = async (req, res, next) => {
       "Controller - expenses - expenseCategory - createExpenseCategoryController - error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -83,7 +84,7 @@ const getExpenseCategoryByIdController = async (req, res, next) => {
       "Controller - expenses - expenseCategory - getExpenseCategoryByIdController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -146,7 +147,7 @@ const getAllExpenseCategoriesController = async (req, res, next) => {
       "Controller - expenses - expenseCategory - getAllExpenseCategoriesController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -188,7 +189,7 @@ const updateExpenseCategoryController = async (req, res, next) => {
       "Controller - expenses - expenseCategory - updateExpenseCategoryController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -225,7 +226,7 @@ const deleteExpenseCategoryController = async (req, res, next) => {
       "Controller - expenses - expenseCategory - deleteExpenseCategoryController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -254,7 +255,7 @@ const getAllExpenseCategoryNamesController = async (req, res, next) => {
       "Controller - expenses - getAllExpenseCategoryNamesController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

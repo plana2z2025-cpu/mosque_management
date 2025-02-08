@@ -83,6 +83,7 @@ app.use((err, req, res, next) => {
       success: false,
       statusCode: err.status || 500,
       message: err.message || "internal server error",
+      // errorType: err.name,
       // stack: err.stack || "not present",
     });
   }

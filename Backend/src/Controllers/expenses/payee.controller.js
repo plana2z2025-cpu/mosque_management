@@ -1,9 +1,9 @@
 const payeeModel = require("../../Schema/expenses/payee.model");
 const logger = require("../../Config/logger.config");
 const httpErrors = require("http-errors");
-const moment = require("moment");
 const payeeConstant = require("../../Constants/payee.constants");
 const sortConstants = require("../../Constants/sort.constants");
+const errorHandling = require("../../Utils/errorHandling");
 
 const createPayeeController = async (req, res, next) => {
   try {
@@ -41,7 +41,7 @@ const createPayeeController = async (req, res, next) => {
       "Controller - expenses - payee - createPayeeController - error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -75,7 +75,7 @@ const getPayeeByIdController = async (req, res, next) => {
       "Controller - expenses - payee - getPayeeByIdController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -130,7 +130,7 @@ const getAllPayeesController = async (req, res, next) => {
       "Controller - expenses - payee - getAllPayeesController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -174,7 +174,7 @@ const updatePayeeController = async (req, res, next) => {
       "Controller - expenses - payee - updatePayeeController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -185,7 +185,7 @@ const deletePayeeController = async (req, res, next) => {
     );
 
     const { payeeId } = req.params;
-    console.log('Deleting payee with mosqueId:', req.mosqueId);
+    console.log("Deleting payee with mosqueId:", req.mosqueId);
     const deletedPayee = await payeeModel.findOneAndDelete({
       _id: payeeId,
       mosqueId: req.mosqueId,
@@ -207,7 +207,7 @@ const deletePayeeController = async (req, res, next) => {
       "Controller - expenses - payee - deletePayeeController - error",
       error
     );
-    next(httpErrors.InternalServerError(error));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

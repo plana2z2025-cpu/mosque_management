@@ -1,7 +1,5 @@
 const logger = require("../../Config/logger.config");
 const eventModel = require("../../Schema/events/event.model");
-const eventCategoryModel = require("../../Schema/events/eventCategory.model");
-const httpErrors = require("http-errors");
 const mongoose = require("mongoose");
 const { eventCategory } = require("../../Constants/model.constants");
 
@@ -85,7 +83,7 @@ const eventGraphController = async (req, res, next) => {
     });
   } catch (error) {
     logger.error("Controller - events - eventGraphController - error", error);
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

@@ -1,8 +1,8 @@
 const expenseModel = require("../../Schema/expenses/expense.model");
 const mongoose = require("mongoose");
 const logger = require("../../Config/logger.config");
-const httpErrors = require("http-errors");
 const { expenseCategory } = require("../../Constants/model.constants");
+const errorHandling = require("../../Utils/errorHandling");
 
 // -----------------------------------------------------
 // GRAPHQL RESOLVERS
@@ -115,7 +115,7 @@ const expenseGraphController = async (req, res, next) => {
       "Controller - graph-expenses - expenseGraphController - error",
       error
     );
-    next(httpErrors.InternalServerError(error?.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -214,7 +214,7 @@ const expensePayeeGraphController = async (req, res, next) => {
       "Controller - graph-expenses - expensePayeeGraphController - error",
       error
     );
-    next(httpErrors.InternalServerError(error?.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

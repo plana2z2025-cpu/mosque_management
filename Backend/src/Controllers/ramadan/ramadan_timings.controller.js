@@ -1,10 +1,9 @@
 const logger = require("../../Config/logger.config");
 const ramadanTimingModel = require("../../Schema/ramadan/ramadan_timings.model");
-const httpErrors = require("http-errors");
-const ramadanTimingsConstant = require("../../Constants/ramadan_timings.constants");
 const moment = require("moment");
 const { userMosque, user } = require("../../Constants/model.constants");
 const { v4: uuidv4 } = require("uuid");
+const errorHandling = require("../../Utils/errorHandling");
 
 const bulkUploadRamadanTimingsController = async (req, res, next) => {
   try {
@@ -44,21 +43,20 @@ const bulkUploadRamadanTimingsController = async (req, res, next) => {
       await ramadanTimingsData.save();
     }
 
+    logger.info(
+      "Controller - ramadan - ramadan_timings - bulkUploadRamadanTimingsController - End"
+    );
     res.status(200).json({
       success: true,
       statusCode: 200,
       data: ramadanTimingsData,
     });
-
-    logger.info(
-      "Controller - ramadan - ramadan_timings - bulkUploadRamadanTimingsController - End"
-    );
   } catch (error) {
     logger.error(
       "Controller - ramadan - ramadan_timings - bulkUploadRamadanTimingsController - Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -84,7 +82,7 @@ const getMosqueRamadanTimingsController = async (req, res, next) => {
       "Controller - ramadan - ramadan_timings - getRamadanTimingsController- Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

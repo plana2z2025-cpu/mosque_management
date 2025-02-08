@@ -1,19 +1,19 @@
 const httpErrors = require("http-errors");
 const UserServiceClass = require("../Services/user.service");
 const MosqueServiceClass = require("../Services/mosque.service");
-const MOSQUE_CONSTANTS = require("../Constants/mosque.constants");
+const mosqueModel = require("../Schema/mosque.model");
+const eventCategoryModel = require("../Schema/events/eventCategory.model");
+const ramadanTimingModel = require("../Schema/ramadan/ramadan_timings.model");
 const logger = require("../Config/logger.config");
 const { USER_ALREADY_EXISTS } = require("../Constants/user.constants");
 const moment = require("moment");
-const CommonService = require("../Services/common.service");
-const mosqueModel = require("../Schema/mosque.model");
-const eventCategoryModel = require("../Schema/events/eventCategory.model");
 const sortConstants = require("../Constants/sort.constants");
-const { MEMBER, ADMIN } = require("../Constants/roles.constants");
+const { ADMIN } = require("../Constants/roles.constants");
+const mosqueConstants = require("../Constants/mosque.constants");
 const {
   newRegistrationMosqueWebhook,
 } = require("../hooks/registration.webhook");
-const mosqueConstants = require("../Constants/mosque.constants");
+const errorHandling = require("../Utils/errorHandling");
 
 const createNewMosqueController = async (req, res, next) => {
   try {
@@ -39,7 +39,7 @@ const createNewMosqueController = async (req, res, next) => {
 
     const isSlugPresent = await mosqueModel.findOne({ slug });
     if (isSlugPresent) {
-      return next(httpErrors.BadRequest(MOSQUE_CONSTANTS.SLUG_NOT_PRESENT));
+      return next(httpErrors.BadRequest(mosqueConstants.SLUG_NOT_PRESENT));
     }
 
     // mosque creation logic
@@ -108,7 +108,7 @@ const createNewMosqueController = async (req, res, next) => {
     res.status(201).json({
       success: true,
       statusCode: 201,
-      message: MOSQUE_CONSTANTS.SUCCESSFULLY_MOSQUE_CREATED,
+      message: mosqueConstants.SUCCESSFULLY_MOSQUE_CREATED,
       details: newMosque,
     });
   } catch (error) {
@@ -116,7 +116,7 @@ const createNewMosqueController = async (req, res, next) => {
       "Controller-mosque.controller-createNewMosqueController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -135,7 +135,7 @@ const createMosqueEmailValidateController = async (req, res, next) => {
       "Controller-mosque.controller-createMosqueEmailController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -153,7 +153,7 @@ const createMosqueSlugValidateController = async (req, res, next) => {
       "Controller-mosque.controller-createMosqueSlugController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -218,7 +218,7 @@ const getMosquesListController = async (req, res, next) => {
       "Controller-mosque.controller-getMosquesListController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -231,7 +231,7 @@ const getSingleMosqueDetailController = async (req, res, next) => {
     const data = await mosqueModel.findOne({ slug });
 
     if (!data) {
-      return next(httpErrors.NotFound(MOSQUE_CONSTANTS.MOSQUE_NOT_FOUND));
+      return next(httpErrors.NotFound(mosqueConstants.MOSQUE_NOT_FOUND));
     }
 
     logger.info(
@@ -247,7 +247,7 @@ const getSingleMosqueDetailController = async (req, res, next) => {
       "Controller-mosque.controller-getSingleMosqueDetailController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -268,7 +268,7 @@ const getCommunityMosqueDetailsController = async (req, res, next) => {
       "Controller-mosque.controller-getCommunityMosqueDetails-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -281,7 +281,7 @@ const updateCommunityMosqueDetailsController = async (req, res, next) => {
     const details = req.body;
     const isSlugPresent = await mosqueModel.findOne({ slug: req.body.slug });
     if (isSlugPresent) {
-      return next(httpErrors.BadRequest(MOSQUE_CONSTANTS.SLUG_NOT_PRESENT));
+      return next(httpErrors.BadRequest(mosqueConstants.SLUG_NOT_PRESENT));
     }
 
     const updatedDetails = await mosqueModel
@@ -301,7 +301,7 @@ const updateCommunityMosqueDetailsController = async (req, res, next) => {
       "Controller-mosque.controller-updateCommunityMosqueDetailsController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -313,7 +313,7 @@ const updateCommunityMosqueTimingsController = async (req, res, next) => {
 
     let isMosqueExist = await mosqueModel.findById(req.mosqueId);
     if (!isMosqueExist) {
-      return next(httpErrors.NotFound(MOSQUE_CONSTANTS.MOSQUE_NOT_FOUND));
+      return next(httpErrors.NotFound(mosqueConstants.MOSQUE_NOT_FOUND));
     }
 
     const updatedTimings = { ...req.body };
@@ -337,7 +337,7 @@ const updateCommunityMosqueTimingsController = async (req, res, next) => {
       "Controller-mosque.controller-updateCommunityMosqueTimingsController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -413,17 +413,25 @@ const getPublicAllMosqueController = async (req, res, next) => {
       "Controller-mosque.controller-getPublicAllMosqueController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
 const getPublicSingleMosqueController = async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const data = await mosqueModel.findOne({ slug });
-    if (!data) {
+    let data = {};
+    const mosqueDetails = await mosqueModel.findOne({ slug }).lean();
+    if (!mosqueDetails) {
       return next(httpErrors.NotFound(mosqueConstants.MOSQUE_NOT_FOUND));
     }
+
+    const ramadanTimings = await ramadanTimingModel.findOne({
+      mosqueId: mosqueDetails?._id.toString(),
+    });
+
+    data.mosqueDetails = mosqueDetails;
+    data.ramadanTimings = ramadanTimings;
     res.status(200).json({
       success: true,
       status: 200,
@@ -434,7 +442,7 @@ const getPublicSingleMosqueController = async (req, res, next) => {
       "Controller-mosque.controller-getPublicSingleMosqueController-Error",
       error
     );
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
