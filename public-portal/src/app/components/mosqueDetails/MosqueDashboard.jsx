@@ -1,12 +1,12 @@
-// components/MosqueDashboard.js
 "use client";
 
 import { gsap } from "gsap";
 import AnimatedCard from "./AnimatedCard";
 import PrayerTiming from "./PrayerTiming";
 import { useGSAP } from "@gsap/react";
+import RamadanSchedule from "./RamadanSchedule";
 
-export function MosqueDashboard({ mosque }) {
+export function MosqueDashboard({ mosque, ramadanTimings }) {
   useGSAP(() => {
     const timeline = gsap.timeline();
 
@@ -30,15 +30,22 @@ export function MosqueDashboard({ mosque }) {
         duration: 0.5,
         stagger: 0.1,
         ease: "power1.out",
+      })
+      .from(".ramadan-timings", {
+        x: -30,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "power1.out",
       });
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-emerald-800 to-teal-800 p-6">
+    <div className="min-h-screen bg-[#fbfbfb] p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="header text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-2">{mosque.name}</h1>
-          <p className="text-emerald-200">{mosque.uniqueId}</p>
+        <div className="header text-center mb-12 text-emerald-900">
+          <h1 className="text-4xl font-bold mb-2">{mosque.name}</h1>
+          <p className="">{mosque.uniqueId}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -93,6 +100,12 @@ export function MosqueDashboard({ mosque }) {
             ))}
           </div>
         </AnimatedCard>
+
+        {ramadanTimings && (
+          <AnimatedCard title="Ramadan Timings" className="mb-8">
+            <RamadanSchedule data={ramadanTimings?.days || []} />
+          </AnimatedCard>
+        )}
       </div>
     </div>
   );
