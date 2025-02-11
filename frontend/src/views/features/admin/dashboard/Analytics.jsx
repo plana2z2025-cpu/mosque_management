@@ -44,7 +44,7 @@ const Analytics = () => {
     <Mainwrapper breadCumbs={breadCumbs}>
       <div className=" space-y-8 p-2">
         {' '}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-8 max-sm:grid-cols-1">
           <Card>
             <EventTypeBasedCount data={eventTypeBasedCount} />
           </Card>
@@ -53,7 +53,7 @@ const Analytics = () => {
             <EventStatusBasedCount data={eventStatusBasedCount} />
           </Card>
         </div>
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-8 max-sm:grid-cols-1">
           <Card>
             <ExpenseStatusGraph data={expenseStatusGraph} />
           </Card>

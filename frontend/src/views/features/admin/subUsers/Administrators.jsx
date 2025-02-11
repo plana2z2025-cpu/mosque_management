@@ -244,6 +244,7 @@ const Administrators = () => {
           createdAt: moment(item.createdAt).format('DD/MM/yyyy'),
         }))}
         cardTitle="Sub - Users"
+        loading={loading}
       />
     </Mainwrapper>
   );

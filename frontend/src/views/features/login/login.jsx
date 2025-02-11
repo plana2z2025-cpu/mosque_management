@@ -53,13 +53,6 @@ const Login = () => {
     }
   }, [error, isLoginSuccess]);
 
-  // useEffect(() => {
-  //   if (checkAuth()) {
-  //     console.log(checkAuth());
-  //     // navigate('/test');
-  //   }
-  // }, []);
-
   const toggleForm = () => {
     setinfo((prev) => ({
       ...prev,
@@ -91,17 +84,13 @@ const Login = () => {
   return (
     <>
       <div className="fullScreen">
-        {/* <div className="w-full">
-          <Welcome />
-        </div> */}
-
         <div
           className="flex items-center justify-center gap-4 "
           style={{ height: 'calc(100vh - 4rem)' }}
         >
-          <div className="login-container w-full max-w-6xl flex">
+          <div className="login-container w-full max-w-6xl flex max-sm:flex-col">
             {/* Left Side - Forms */}
-            <div className="w-1/2 perspective-1000">
+            <div className="w-1/2 perspective-1000 max-sm:w-full">
               {info?.isLoginForm ? (
                 <LoginComp
                   toggleForm={toggleForm}
@@ -115,7 +104,7 @@ const Login = () => {
             </div>
 
             {/* Right Side - SVG */}
-            <div className="w-1/2">
+            <div className="w-1/2 max-sm:hidden">
               <img src={SideImage} alt="sideimage" className="sideimage w-full h-full" />
             </div>
           </div>

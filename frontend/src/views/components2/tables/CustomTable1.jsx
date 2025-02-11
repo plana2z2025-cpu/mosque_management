@@ -29,7 +29,7 @@ const CustomTable1 = ({
   const isEmptyData = !docs || docs?.length === 0;
 
   return (
-    <Card className="w-full">
+    <Card className=" w-full max-sm:w-screen overflow-auto">
       {cardTitle && (
         <CardHeader>
           <CardTitle>{cardTitle}</CardTitle>

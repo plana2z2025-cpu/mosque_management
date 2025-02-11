@@ -5,7 +5,7 @@ const MongoDataBaseConn = require("./src/Config/db.config");
 const IndexRoutes = require("./src/Routes/index.route");
 const { ratelimitConfig } = require("./src/Config/ratelimit.config");
 const { DEVELOPMENT_MODE } = require("./src/Config/index.config");
-const { errors, isCelebrateError } = require("celebrate");
+const { isCelebrateError } = require("celebrate");
 // const corsConfig = require("./src/Config/cors.config");
 
 const app = express();

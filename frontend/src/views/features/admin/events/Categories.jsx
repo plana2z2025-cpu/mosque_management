@@ -61,7 +61,7 @@ const Categories = () => {
   const dispatch = useDispatch();
 
   // Optimize selectors to select only needed fields
-  const eventCategories = useSelector((state) => state.eventState.eventCategories);
+  const { eventCategories, loading } = useSelector((state) => state.eventState);
   const profileDetails = useSelector((state) => state?.userProfileState);
 
   const [info, setInfo] = useState(INITIAL_STATE);
@@ -338,6 +338,7 @@ const Categories = () => {
         actions={(row) => (
           <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={updateCateogory} />
         )}
+        loading={loading}
       />
 
       <ModalV1
