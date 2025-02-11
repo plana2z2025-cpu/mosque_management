@@ -8,4 +8,5 @@ module.exports = {
   expenseCategory: "expense_categories",
   payeeRecipient: "payee_recipient",
   ramadanTimings: "ramadan_timings",
+  queries: "queries",
 };
