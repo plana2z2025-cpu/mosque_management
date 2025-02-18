@@ -4,6 +4,7 @@ import {
   PAYEES_LIST,
   UPDATE_PAYEE,
   SINGLE_PAYEE_DETAIL,
+  SINGLE_PAYEE_EXPENSES,
 } from './constant';
 import Service from '@/services';
 import * as API from './actionTypes';
@@ -74,6 +75,24 @@ const deletePayeeAction = async (payeeId) => {
   return response;
 };
 
+const getPayeeExpensesAction = (payeeId, query) => async (dispatch) => {
+  dispatch({ type: SINGLE_PAYEE_EXPENSES.request });
+  const token = getAccessToken();
+  const response = await Service.fetchGet(
+    `${API.BASE_PAYEE}/${payeeId}${API.PAYEE_TYPES.EXPENSES}${query ? '?' + query : ''}`,
+    token
+  );
+
+  if (response[0] === true) {
+    dispatch({ type: SINGLE_PAYEE_EXPENSES.success, payload: response[1].data });
+  } else {
+    dispatch({
+      type: SINGLE_PAYEE_EXPENSES.fail,
+      payload: response[1],
+    });
+  }
+};
+
 // ----------------------------------------------------------------
 // CLEAR & RESET STATES
 // ----------------------------------------------------------------
@@ -98,4 +117,5 @@ export default {
   getAllPayeeAction,
   updatePayeeAction,
   deletePayeeAction,
+  getPayeeExpensesAction,
 };

@@ -1,4 +1,5 @@
 const payeeModel = require("../../Schema/expenses/payee.model");
+const expenseModel = require("../../Schema/expenses/expense.model");
 const logger = require("../../Config/logger.config");
 const httpErrors = require("http-errors");
 const payeeConstant = require("../../Constants/payee.constants");
@@ -211,10 +212,69 @@ const deletePayeeController = async (req, res, next) => {
   }
 };
 
+const getAllPayeesExpensesController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller - expenses - payee - getAllPayeesExpensesController - Start"
+    );
+
+    const { payeeId } = req.params;
+    let { page = 1, limit = 10, sort = "-createdAt", search = "" } = req.query;
+    page = Number(page);
+    limit = Number(limit);
+
+    const query = { payeeId, mosqueId: req.mosqueId };
+    if (search) {
+      query.description = { $regex: search, $options: "i" };
+    }
+
+    const skip_docs = (page - 1) * limit;
+    const totalDocs = await expenseModel.countDocuments(query);
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    const expenses = await expenseModel
+      .find(query)
+      .populate("category", "name")
+      .populate("createdBy", "name")
+      .populate("updatedBy", "name")
+      .populate("payeeId", "payeeName")
+      .limit(limit)
+      .skip(skip_docs)
+      .sort(sort);
+
+    const data = {
+      totalDocs,
+      totalPages,
+      docs: expenses,
+      currentPage: page,
+      hasNext: totalDocs > skip_docs + limit,
+      hasPrev: page > 1,
+      limit,
+    };
+
+    logger.info(
+      "Controller - expenses - payee - getAllPayeesExpensesController - End"
+    );
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      data,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller - expenses - payee - getAllPayeesExpensesController - error",
+      error
+    );
+    errorHandling.handleCustomErrorService(error, next);
+  }
+};
+
 module.exports = {
   createPayeeController,
   getPayeeByIdController,
   getAllPayeesController,
   updatePayeeController,
   deletePayeeController,
+  getAllPayeesExpensesController,
 };

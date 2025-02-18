@@ -3,7 +3,7 @@ import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { payeeActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
-import { Trash, AlertCircle, Pencil } from 'lucide-react';
+import { Trash, AlertCircle, Pencil, View } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -43,8 +43,15 @@ const resolveNestedKey = (obj, key) => {
   return key.split('.').reduce((acc, part) => acc && acc[part], obj);
 };
 
-const TableRow = memo(({ row, onDelete, onUpdate }) => (
+const TableRow = memo(({ row, onDelete, onUpdate, onView }) => (
   <>
+    <View
+      color="green"
+      className="cursor-pointer size-5"
+      onClick={() => {
+        onView(row);
+      }}
+    />
     <Trash
       color="red"
       className="cursor-pointer size-5"
@@ -120,6 +127,11 @@ const AllBeneficiaries = () => {
     dispatch({ type: SINGLE_PAYEE_DETAIL.success, payload: row?.original });
   };
 
+  const viewSinglePayeeExpenses = useCallback((row) => {
+    let id = row?.original?._id;
+    navigate(`${id}/expenses`);
+  }, []);
+
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
       <div className="w-full flex justify-end">
@@ -138,7 +150,12 @@ const AllBeneficiaries = () => {
         currentPage={allPayee?.currentPage}
         onPageChange={(page) => setInfo((prev) => ({ ...prev, page }))}
         actions={(row) => (
-          <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={UpdateBeneficiary} />
+          <TableRow
+            row={row}
+            onDelete={deletePopupModalFunc}
+            onUpdate={UpdateBeneficiary}
+            onView={viewSinglePayeeExpenses}
+          />
         )}
         loading={loading}
       />

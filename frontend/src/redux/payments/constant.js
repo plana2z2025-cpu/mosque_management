@@ -11,6 +11,12 @@ export const SINGLE_PAYEE_DETAIL = {
   fail: 'SINGLE_PAYEE_DETAIL.fail',
 };
 
+export const SINGLE_PAYEE_EXPENSES = {
+  request: 'SINGLE_PAYEE_EXPENSES.request',
+  success: 'SINGLE_PAYEE_EXPENSES.success',
+  fail: 'SINGLE_PAYEE_EXPENSES.fail',
+};
+
 export const UPDATE_PAYEE = {
   request: 'UPDATE_PAYEE_REQUEST',
   success: 'UPDATE_PAYEE_SUCCESS',
