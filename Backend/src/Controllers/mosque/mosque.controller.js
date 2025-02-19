@@ -1,19 +1,19 @@
 const httpErrors = require("http-errors");
-const UserServiceClass = require("../Services/user.service");
-const MosqueServiceClass = require("../Services/mosque.service");
-const mosqueModel = require("../Schema/mosque/mosque.model");
-const eventCategoryModel = require("../Schema/events/eventCategory.model");
-const ramadanTimingModel = require("../Schema/ramadan/ramadan_timings.model");
-const logger = require("../Config/logger.config");
-const { USER_ALREADY_EXISTS } = require("../Constants/user.constants");
+const UserServiceClass = require("../../Services/user.service");
+const MosqueServiceClass = require("../../Services/mosque.service");
+const mosqueModel = require("../../Schema/mosque/mosque.model");
+const eventCategoryModel = require("../../Schema/events/eventCategory.model");
+const ramadanTimingModel = require("../../Schema/ramadan/ramadan_timings.model");
+const logger = require("../../Config/logger.config");
+const { USER_ALREADY_EXISTS } = require("../../Constants/user.constants");
 const moment = require("moment");
-const sortConstants = require("../Constants/sort.constants");
-const { ADMIN } = require("../Constants/roles.constants");
-const mosqueConstants = require("../Constants/mosque.constants");
+const sortConstants = require("../../Constants/sort.constants");
+const { ADMIN } = require("../../Constants/roles.constants");
+const mosqueConstants = require("../../Constants/mosque.constants");
 const {
   newRegistrationMosqueWebhook,
-} = require("../hooks/registration.webhook");
-const errorHandling = require("../Utils/errorHandling");
+} = require("../../hooks/registration.webhook");
+const errorHandling = require("../../Utils/errorHandling");
 
 const createNewMosqueController = async (req, res, next) => {
   try {

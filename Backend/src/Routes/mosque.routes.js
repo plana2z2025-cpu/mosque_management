@@ -26,7 +26,7 @@ const {
   updateCommunityMosqueTimingsController,
   getPublicAllMosqueController,
   getPublicSingleMosqueController,
-} = require("../Controllers/mosque.controller");
+} = require("../Controllers/mosque/mosque.controller");
 const ValidateObjectId = require("../Middlewares/validateObjectid.middleware");
 const mosqueValidations = require("../validators/mosque.joi");
 
