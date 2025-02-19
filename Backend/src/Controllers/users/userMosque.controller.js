@@ -30,6 +30,9 @@ const createSubUserController = async (req, res, next) => {
       mosqueUniqueId: mosqueDetails.uniqueId,
       rootUserId: req.user._id,
       createdBy: req.user._id,
+      createdRef: req.__type__ === ADMIN ? "user" : "user_mosque",
+      updatedBy: req.user._id,
+      updatedRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     });
 
     await details.save();

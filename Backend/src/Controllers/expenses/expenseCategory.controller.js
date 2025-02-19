@@ -30,6 +30,8 @@ const createExpenseCategoryController = async (req, res, next) => {
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
       createdRef: req.__type__ === ADMIN ? "user" : "user_mosque",
+      updatedBy: req.user._id,
+      updatedRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     });
 
     const savedCategory = await newCategory.save();

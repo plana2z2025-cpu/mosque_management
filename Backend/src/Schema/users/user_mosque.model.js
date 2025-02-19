@@ -48,10 +48,22 @@ const ModelSchema = new mongoose.Schema(
         default: false,
       },
     },
+    createdRef: {
+      type: String,
+      enum: [user, userMosque],
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: user,
       required: true,
+    },
+    updatedRef: {
+      type: String,
+      enum: [user, userMosque],
+    },
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "updatedRef",
     },
   },
   { timestamps: true }

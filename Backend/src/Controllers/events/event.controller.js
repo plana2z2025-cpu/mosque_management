@@ -18,6 +18,8 @@ const createEventController = async (req, res, next) => {
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
       createdRef: req.__type__ === ADMIN ? "user" : "user_mosque",
+      updatedBy: req.user._id,
+      updatedRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     };
 
     // Additional logic to ensure endDate is after startDate

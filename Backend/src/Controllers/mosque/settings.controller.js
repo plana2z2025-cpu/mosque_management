@@ -22,6 +22,8 @@ const createSettingsController = async (req, res, next) => {
       ...req.body,
       createdBy: req.user._id,
       createdRef: req.__type__ === ADMIN ? "user" : "user_mosque",
+      updatedBy: req.user._id,
+      updatedRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     });
 
     const savedSettings = await settings.save();
