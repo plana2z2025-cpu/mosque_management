@@ -287,15 +287,15 @@ const updateCommunityMosqueDetailsController = async (req, res, next) => {
     const updatedDetails = await mosqueModel
       .findByIdAndUpdate(req.mosqueId, details, { new: true })
       .lean();
+
+    logger.info(
+      "Controller-mosque.controller-updateCommunityMosqueDetailsController-Error"
+    );
     res.status(200).json({
       success: true,
       statusCode: 200,
       details: updatedDetails,
     });
-
-    logger.info(
-      "Controller-mosque.controller-updateCommunityMosqueDetailsController-Error"
-    );
   } catch (error) {
     logger.error(
       "Controller-mosque.controller-updateCommunityMosqueDetailsController-Error",
@@ -323,15 +323,14 @@ const updateCommunityMosqueTimingsController = async (req, res, next) => {
     });
 
     await isMosqueExist.save();
+    logger.info(
+      "Controller-mosque.controller-updateCommunityMosqueTimingsController-End"
+    );
     res.status(200).json({
       success: true,
       statusCode: 200,
       details: isMosqueExist,
     });
-
-    logger.info(
-      "Controller-mosque.controller-updateCommunityMosqueTimingsController-End"
-    );
   } catch (error) {
     logger.error(
       "Controller-mosque.controller-updateCommunityMosqueTimingsController-Error",

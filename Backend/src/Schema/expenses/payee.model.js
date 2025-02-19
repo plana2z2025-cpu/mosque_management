@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { payeeRecipient } = require("../../Constants/model.constants");
-const { mosque, user } = require("../../Constants/model.constants");
+const { mosque, user, userMosque } = require("../../Constants/model.constants");
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -38,8 +38,16 @@ const ModelSchema = new mongoose.Schema(
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: user,
       required: true,
+      refPath: "createdRef",
+    },
+    updatedRef: {
+      type: String,
+      enum: [user, userMosque],
+    },
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "updatedRef",
     },
   },
   { timestamps: true }

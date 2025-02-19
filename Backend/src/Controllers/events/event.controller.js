@@ -7,6 +7,8 @@ const moment = require("moment");
 const mongoose = require("mongoose");
 const { eventCategory } = require("../../Constants/model.constants");
 const errorHandling = require("../../Utils/errorHandling");
+const { ADMIN } = require("../../Constants/roles.constants");
+
 // Controller for Creating Event
 const createEventController = async (req, res, next) => {
   try {
@@ -15,7 +17,7 @@ const createEventController = async (req, res, next) => {
       ...req.body,
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
-      createdRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
+      createdRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     };
 
     // Additional logic to ensure endDate is after startDate
@@ -151,7 +153,7 @@ const updateEventController = async (req, res, next) => {
     const { eventId } = req.params;
     const details = { ...req.body };
     details.updatedBy = req.user._id;
-    details.updatedRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
+    details.updatedRef = req.__type__ === ADMIN ? "user" : "user_mosque";
 
     const updatedCategory = await eventModel
       .findByIdAndUpdate(eventId, details, { new: true })

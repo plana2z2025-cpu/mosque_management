@@ -4,6 +4,7 @@ const httpErrors = require("http-errors");
 const sortConstants = require("../../Constants/sort.constants");
 const ExpenseConstant = require("../../Constants/expense.constants");
 const errorHandling = require("../../Utils/errorHandling");
+const { ADMIN } = require("../../Constants/roles.constants");
 
 const createExpenseCategoryController = async (req, res, next) => {
   try {
@@ -28,7 +29,7 @@ const createExpenseCategoryController = async (req, res, next) => {
       description,
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
-      createdRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
+      createdRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     });
 
     const savedCategory = await newCategory.save();
@@ -160,7 +161,7 @@ const updateExpenseCategoryController = async (req, res, next) => {
     const { categoryId } = req.params;
     const details = { ...req.body };
     details.updatedBy = req.user._id;
-    details.updatedRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
+    details.updatedRef = req.__type__ === ADMIN ? "user" : "user_mosque";
 
     const updatedCategory = await expenseCategoryModel
       .findOneAndUpdate({ _id: categoryId, mosqueId: req.mosqueId }, details, {

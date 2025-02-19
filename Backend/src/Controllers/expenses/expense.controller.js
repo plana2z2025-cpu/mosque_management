@@ -7,6 +7,7 @@ const expenseConstant = require("../../Constants/expense.constants");
 const sortConstants = require("../../Constants/sort.constants");
 const payeeConstant = require("../../Constants/payee.constants");
 const errorHandling = require("../../Utils/errorHandling");
+const { ADMIN } = require("../../Constants/roles.constants");
 
 const createExpenseController = async (req, res, next) => {
   try {
@@ -35,7 +36,7 @@ const createExpenseController = async (req, res, next) => {
       ...req.body,
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
-      createdRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
+      createdRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     });
 
     const savedExpense = await expense.save();
@@ -159,7 +160,7 @@ const updateExpenseController = async (req, res, next) => {
     const { expenseId } = req.params;
     const details = { ...req.body };
     details.updatedBy = req.user._id;
-    details.updatedRef = req.__type__ === "ROOT" ? "user" : "user_mosque";
+    details.updatedRef = req.__type__ === ADMIN ? "user" : "user_mosque";
 
     const updatedExpense = await expenseModel
       .findOneAndUpdate({ _id: expenseId, mosqueId: req.mosqueId }, details, {

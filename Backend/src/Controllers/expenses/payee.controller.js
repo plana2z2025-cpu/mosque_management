@@ -5,6 +5,7 @@ const httpErrors = require("http-errors");
 const payeeConstant = require("../../Constants/payee.constants");
 const sortConstants = require("../../Constants/sort.constants");
 const errorHandling = require("../../Utils/errorHandling");
+const { ADMIN } = require("../../Constants/roles.constants");
 
 const createPayeeController = async (req, res, next) => {
   try {
@@ -24,7 +25,7 @@ const createPayeeController = async (req, res, next) => {
       ...req.body,
       mosqueId: req.mosqueId,
       createdBy: req.user._id,
-      //   createdRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
+      createdRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     });
 
     const savedPayee = await payee.save();
@@ -145,7 +146,7 @@ const updatePayeeController = async (req, res, next) => {
     const details = {
       ...req.body,
       updatedBy: req.user._id,
-      updatedRef: req.__type__ === "ROOT" ? "user" : "user_mosque",
+      updatedRef: req.__type__ === ADMIN ? "user" : "user_mosque",
     };
 
     const updatedPayee = await payeeModel.findOneAndUpdate(
