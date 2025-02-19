@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
 import { Trash } from 'lucide-react';
+import { NumericFormat } from 'react-number-format';
 
 const breadCumbs = [{ label: 'Expenses', href: null }];
 
@@ -27,6 +28,15 @@ const TableRow = memo(({ row, onDelete }) => (
   <Trash color="red" className="cursor-pointer size-5" />
 ));
 
+const numericOptions = {
+  displayType: 'text',
+  thousandSeparator: true,
+  decimalScale: 2,
+  fixedDecimalScale: true,
+  // For RTL languages like Arabic
+  // isRTL: ['ar-SA', 'ar-AE', 'ur-PK'].includes(country.locale)
+};
+
 const AllExpenses = () => {
   const { getAllExpensesAction } = expenseActions;
   const dispatch = useDispatch();
@@ -48,6 +58,7 @@ const AllExpenses = () => {
           ...item,
           category: item?.category?.name || '',
           date: moment(item?.date).format('LL'),
+          amount: <NumericFormat value={item?.amount} prefix="$" {...numericOptions} />,
         }))}
         cardTitle="Expenses"
         totalPages={allExpenses?.totalPages}

@@ -9,4 +9,5 @@ module.exports = {
   payeeRecipient: "payee_recipient",
   ramadanTimings: "ramadan_timings",
   queries: "queries",
+  settings: "settings",
 };
