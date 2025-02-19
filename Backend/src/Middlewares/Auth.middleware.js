@@ -13,7 +13,7 @@ const {
   SUPPER_ADMIN,
   SUB_USER,
 } = require("../Constants/roles.constants");
-const mosqueModel = require("../Schema/mosque.model");
+const mosqueModel = require("../Schema/mosque/mosque.model");
 const userMosqueModel = require("../Schema/users/user_mosque.model");
 const { MOSQUE_NOT_FOUND } = require("../Constants/mosque.constants");
 

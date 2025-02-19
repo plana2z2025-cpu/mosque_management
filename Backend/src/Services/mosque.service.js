@@ -1,4 +1,4 @@
-const mosqueModel = require("../Schema/mosque.model");
+const mosqueModel = require("../Schema/mosque/mosque.model");
 
 class MosqueServiceClass {
   constructor() {

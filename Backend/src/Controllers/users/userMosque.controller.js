@@ -1,6 +1,6 @@
 const httpErrors = require("http-errors");
 const userMosqueModel = require("../../Schema/users/user_mosque.model");
-const mosqueModel = require("../../Schema/mosque.model");
+const mosqueModel = require("../../Schema/mosque/mosque.model");
 const logger = require("../../Config/logger.config");
 const sortConstants = require("../../Constants/sort.constants");
 const errorHandling = require("../../Utils/errorHandling");

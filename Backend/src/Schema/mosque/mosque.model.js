@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto");
-const { mosque, userMosque, user } = require("../Constants/model.constants");
+const { mosque, userMosque, user } = require("../../Constants/model.constants");
 
 const ModelSchema = new mongoose.Schema(
   {
