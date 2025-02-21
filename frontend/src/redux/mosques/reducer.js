@@ -49,6 +49,13 @@ export const MosqueReducer = (state = initialState, action) => {
       communityMosqueSettings: action.payload?.settings || {},
     }),
 
+    // update
+    [COMMUNITY_MOSQUE_DETAILS.update]: () => ({
+      ...state,
+      communityMosqueDetail: action.payload?.details || {},
+      communityMosqueSettings: action.payload?.settings || {},
+    }),
+
     // Failure states
     [SUPPER_ADMIN_MOSQUES.fail]: () => ({
       ...state,

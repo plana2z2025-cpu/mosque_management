@@ -12,6 +12,7 @@ export const SUPPER_ADMIN_SINGLE_MOSQUE = {
 export const COMMUNITY_MOSQUE_DETAILS = {
   request: 'COMMUNITY_MOSQUE_DETAILS.request',
   success: 'COMMUNITY_MOSQUE_DETAILS.success',
+  update: 'COMMUNITY_MOSQUE_DETAILS.update',
   fail: 'COMMUNITY_MOSQUE_DETAILS.fail',
 };
 

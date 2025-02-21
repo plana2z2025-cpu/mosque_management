@@ -7,6 +7,7 @@ export const MOSQUE_TYPES = {
   COMMUNITY: '/community',
   MOSQUE_DETAIL: '/mosque-detail',
   MOSQUE_TIMINGS: '/mosque-timings',
+  SETTINGS: '/settings',
 };
 
 export const BASE_TYPE = '/mosque';

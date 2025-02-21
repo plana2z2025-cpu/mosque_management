@@ -105,6 +105,34 @@ const updateMosqueTimingsAction = async (json) => {
   return response;
 };
 
+// for settings
+const updateMosqueSettingsAction = (json) => async (dispatch, getState) => {
+  const token = getAccessToken();
+  const { mosqueState } = getState();
+  const payload = {
+    details: { ...mosqueState?.communityMosqueDetail },
+    settings: { ...mosqueState?.communityMosqueSettings, ...json },
+  };
+
+  const previousState = {
+    details: { ...mosqueState?.communityMosqueDetail },
+    settings: { ...mosqueState?.communityMosqueSettings },
+  };
+
+  dispatch({ type: COMMUNITY_MOSQUE_DETAILS.update, payload });
+  const response = await Service.fetchPut(
+    `${API.BASE_TYPE}${API.MOSQUE_TYPES.SETTINGS}${API.MOSQUE_TYPES.COMMUNITY}`,
+    json,
+    token
+  );
+  if (response[0] === true) {
+    payload.settings = response[1]?.data;
+    dispatch({ type: COMMUNITY_MOSQUE_DETAILS.update, payload });
+  } else {
+    dispatch({ type: COMMUNITY_MOSQUE_DETAILS.update, payload: previousState });
+  }
+};
+
 const clearMosqueErrorsAction = () => (dispatch) => {
   dispatch({
     type: CLEAR_MOSQUE_ERRORS,
@@ -124,4 +152,5 @@ export default {
   clearMosqueErrorsAction,
   getCommunityMosqueDetailsAction,
   updateMosqueTimingsAction,
+  updateMosqueSettingsAction,
 };

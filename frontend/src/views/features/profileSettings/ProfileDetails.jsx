@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useDispatch, useSelector } from 'react-redux';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { mosqueActions } from '../../../redux/combineActions';
 // import toast from 'react-hot-toast';
 
 const roleDisplayConstant = {
@@ -16,9 +17,24 @@ const roleDisplayConstant = {
 
 const breadCumbs = [{ label: 'Profile', href: null }];
 const ProfileDetails = () => {
+  const dispatch = useDispatch();
   const { profileDetails } = useSelector((state) => state.userProfileState);
   const { communityMosqueSettings } = useSelector((state) => state.mosqueState);
+  const { updateMosqueSettingsAction } = mosqueActions;
 
+  const applicationChangeHandler = useCallback(
+    (e, key) => {
+      const json = {};
+      if (key === 'ramadanTimingsVisible') {
+        json[key] = e;
+      } else if (key === 'queryFormVisible') {
+        json[key] = e;
+      }
+
+      dispatch(updateMosqueSettingsAction(json));
+    },
+    [communityMosqueSettings]
+  );
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
       <Card>
@@ -100,7 +116,7 @@ const ProfileDetails = () => {
             <Switch
               id="ramadan-timings"
               checked={communityMosqueSettings?.ramadanTimingsVisible || false}
-              // onCheckedChange={setRamadanTimings}
+              onCheckedChange={(e) => applicationChangeHandler(e, 'ramadanTimingsVisible')}
             />
           </div>
           <div className="h-px bg-border" /> {/* Divider */}
@@ -118,7 +134,7 @@ const ProfileDetails = () => {
             <Switch
               id="query-form"
               checked={communityMosqueSettings?.queryFormVisible || false}
-              // onCheckedChange={setQueryForm}
+              onCheckedChange={(e) => applicationChangeHandler(e, 'queryFormVisible')}
             />
           </div>
         </CardContent>
