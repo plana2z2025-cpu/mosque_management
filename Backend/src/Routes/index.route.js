@@ -10,6 +10,7 @@ const PayeeRoutes = require("./expenses/payee.routes");
 const ExpenseGraphRoutes = require("./expenses/graphexpense.routes");
 const EventGraphRoutes = require("./events/graphevent.routes");
 const RamadanTimingsRoutes = require("./mosque/ramadan_timings.routes");
+const MosqueSettingsRoutes = require("./mosque/settings.routes");
 
 // Route config
 const IndexRoutes = express.Router();
@@ -23,6 +24,7 @@ IndexRoutes.use("/user/sub-user", SubUserRoutes);
 // Mosque routes
 // ----------------------------------------
 IndexRoutes.use("/mosque", MosqueRoutes);
+IndexRoutes.use("/mosque/settings", MosqueSettingsRoutes);
 
 // ----------------------------------------
 //  Event Routes

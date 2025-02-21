@@ -14,6 +14,7 @@ const {
   newRegistrationMosqueWebhook,
 } = require("../../hooks/registration.webhook");
 const errorHandling = require("../../Utils/errorHandling");
+const settingsModel = require("../../Schema/mosque/settings.model");
 
 const createNewMosqueController = async (req, res, next) => {
   try {
@@ -257,7 +258,13 @@ const getSingleMosqueDetailController = async (req, res, next) => {
 const getCommunityMosqueDetailsController = async (req, res, next) => {
   try {
     logger.info("Controller-mosque.controller-getCommunityMosqueDetails-Start");
-    const data = await mosqueModel.findById(req.mosqueId);
+    const data = {};
+    const details = await mosqueModel.findById(req.mosqueId).lean();
+    const settings = await settingsModel
+      .findOne({ mosqueId: req.mosqueId })
+      .lean();
+    data.details = details;
+    data.settings = settings;
     res.status(200).json({
       success: true,
       statusCode: 200,

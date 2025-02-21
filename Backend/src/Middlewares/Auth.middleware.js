@@ -16,6 +16,7 @@ const {
 const mosqueModel = require("../Schema/mosque/mosque.model");
 const userMosqueModel = require("../Schema/users/user_mosque.model");
 const { MOSQUE_NOT_FOUND } = require("../Constants/mosque.constants");
+const errorHandling = require("../Utils/errorHandling");
 
 // for authentication
 module.exports.Authentication = async (req, res, next) => {
@@ -53,7 +54,7 @@ module.exports.Authentication = async (req, res, next) => {
     );
     next();
   } catch (error) {
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 
@@ -102,7 +103,7 @@ module.exports.CheckMosqueAccess = async (req, res, next) => {
       return next(httpErrors.Forbidden(MOSQUE_ACCESS_DENIED));
     }
   } catch (error) {
-    next(httpErrors.InternalServerError(error.message));
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

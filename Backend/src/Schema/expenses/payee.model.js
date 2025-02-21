@@ -41,13 +41,17 @@ const ModelSchema = new mongoose.Schema(
       required: true,
       refPath: "createdRef",
     },
-    updatedRef: {
+    createdRef: {
       type: String,
       enum: [user, userMosque],
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       refPath: "updatedRef",
+    },
+    updatedRef: {
+      type: String,
+      enum: [user, userMosque],
     },
   },
   { timestamps: true }

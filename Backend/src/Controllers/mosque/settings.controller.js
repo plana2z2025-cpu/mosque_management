@@ -46,6 +46,50 @@ const createSettingsController = async (req, res, next) => {
   }
 };
 
+const updateSettingsController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller - mosque - settings - updateSettingsController - Start"
+    );
+
+    const mosqueId = req.mosqueId;
+    const details = {
+      ...req.body,
+      updatedBy: req.user._id,
+      updatedRef: req.__type__ === ADMIN ? "user" : "user_mosque",
+    };
+
+    const updatedSettings = await settingsModel.findOneAndUpdate(
+      { mosqueId },
+      details,
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedSettings) {
+      return next(httpErrors.NotFound(mosqueConstants.SETTINGS_NOT_FOUND));
+    }
+
+    logger.info(
+      "Controller - mosque - settings - updateSettingsController - End"
+    );
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      data: updatedSettings,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller - mosque - settings - updateSettingsController - error",
+      error
+    );
+    errorHandling.handleCustomErrorService(error, next);
+  }
+};
+
 module.exports = {
   createSettingsController,
+  updateSettingsController,
 };

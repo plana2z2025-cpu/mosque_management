@@ -38,6 +38,7 @@ const ModelSchema = new mongoose.Schema(
     },
     description: {
       type: String,
+      default: "",
     },
     icon: {
       type: String,
@@ -61,13 +62,15 @@ const ModelSchema = new mongoose.Schema(
       enum: [user, userMosque],
       required: true,
     },
-    updatedRef: {
-      type: String,
-      enum: [user, userMosque],
-    },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       refPath: "updatedRef",
+      required: true,
+    },
+    updatedRef: {
+      type: String,
+      enum: [user, userMosque],
+      required: true,
     },
   },
 

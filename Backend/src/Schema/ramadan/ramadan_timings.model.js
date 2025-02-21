@@ -57,10 +57,12 @@ const ModelSchema = new mongoose.Schema(
     updatedRef: {
       type: String,
       enum: [user, userMosque],
+      required: true,
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       refPath: "updatedRef",
+      required: true,
     },
   },
   {
@@ -69,5 +71,4 @@ const ModelSchema = new mongoose.Schema(
 );
 
 const ramadanTimingModel = mongoose.model(ramadanTimings, ModelSchema);
-
 module.exports = ramadanTimingModel;

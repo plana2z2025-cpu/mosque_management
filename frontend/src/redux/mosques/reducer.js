@@ -13,6 +13,7 @@ const initialState = {
   supperAdminMosques: null,
   supperAdminSingleMosque: null,
   communityMosqueDetail: null,
+  communityMosqueSettings: null,
 };
 export const MosqueReducer = (state = initialState, action) => {
   const actionHandlers = {
@@ -44,7 +45,8 @@ export const MosqueReducer = (state = initialState, action) => {
     [COMMUNITY_MOSQUE_DETAILS.success]: () => ({
       ...state,
       loading: false,
-      communityMosqueDetail: action.payload,
+      communityMosqueDetail: action.payload?.details || {},
+      communityMosqueSettings: action.payload?.settings || {},
     }),
 
     // Failure states

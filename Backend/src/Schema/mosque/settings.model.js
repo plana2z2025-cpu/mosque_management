@@ -18,7 +18,7 @@ const ModelSchema = new mongoose.Schema(
       default: false,
     },
     queryFormVisible: {
-      type: String,
+      type: Boolean,
       default: true,
     },
     currency: {
