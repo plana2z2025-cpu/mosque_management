@@ -376,7 +376,7 @@ const getPublicAllMosqueController = async (req, res, next) => {
     const totalPages = Math.ceil(totalDocs / limit);
 
     const query = {};
-    if (name) query.name = name;
+    if (name) query.name = { $regex: name, $options: "i" };
     if (city) query["address.city"] = city;
     if (state) query["address.state"] = state;
     if (country) query["address.country"] = country;
