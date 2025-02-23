@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
+import SearchIcon from "../../assets/svgs/search.svg";
 
 const SearchComponent = () => {
   //   const router = useRouter();
@@ -9,6 +10,16 @@ const SearchComponent = () => {
   const [info, setInfo] = useState({
     search: "",
   });
+
+  useEffect(() => {
+    let searchName = searchParams.get("search");
+    if (searchName) {
+      setInfo((prev) => ({
+        ...prev,
+        search: searchName,
+      }));
+    }
+  }, []);
 
   // Initialize search term from URL on component mount
 
@@ -37,7 +48,7 @@ const SearchComponent = () => {
       <div className="relative w-full">
         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
           <svg
-            className="w-4 h-4 text-gray-500 dark:text-gray-400"
+            className="w-4 h-4 text-gray-500"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -56,8 +67,9 @@ const SearchComponent = () => {
           type="text"
           id="voice-search"
           name="search"
+          value={info?.search}
           onChange={changeHandlerFunction}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
           placeholder="Search Mockups, Logos, Design Templates..."
           required
         />
@@ -66,7 +78,7 @@ const SearchComponent = () => {
           className="absolute inset-y-0 end-0 flex items-center pe-3"
         >
           <svg
-            className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="w-4 h-4 text-gray-500 hover:text-gray-900"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -84,24 +96,10 @@ const SearchComponent = () => {
       </div>
       <button
         type="submit"
-        className="text-green-700 flex hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
+        className="text-green-700 flex hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
         onClick={submitQueryHandler}
       >
-        <svg
-          className="w-4 h-4 me-2"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 20 20"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-          />
-        </svg>
+        <SearchIcon />
         Search
       </button>
     </form>

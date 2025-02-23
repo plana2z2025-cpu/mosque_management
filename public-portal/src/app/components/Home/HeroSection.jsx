@@ -2,6 +2,7 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { getIslamicDate } from "@/app/helpers/islamic-date";
 
 const HeroSection = () => {
   const heroRef = useRef(null);
@@ -51,9 +52,7 @@ const HeroSection = () => {
           <div className="hero-text mt-8 bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-md mx-auto">
             <div className="flex items-center justify-center space-x-2 text-white">
               <div className="h-2 w-2 bg-emerald-400 rounded-full animate-pulse"></div>
-              <p className="text-sm font-medium">
-                Next Prayer: {getCurrentPrayerTime()}
-              </p>
+              <p className="text-xl font-medium">{getIslamicDate()}</p>
             </div>
           </div>
         </div>
@@ -65,11 +64,11 @@ const HeroSection = () => {
 // Helper function to get current prayer time (simplified)
 function getCurrentPrayerTime() {
   const hour = new Date().getHours();
-  if (hour >= 4 && hour < 12) return "Dhuhr in 2 hours";
-  if (hour >= 12 && hour < 15) return "Asr in 3 hours";
-  if (hour >= 15 && hour < 18) return "Maghrib in 2 hours";
-  if (hour >= 18 && hour < 20) return "Isha in 1 hour";
-  return "Fajr at 5:15 AM";
+  if (hour >= 4 && hour < 12) return "Dhuhr";
+  if (hour >= 12 && hour < 15) return "Asr";
+  if (hour >= 15 && hour < 18) return "Maghrib";
+  if (hour >= 18 && hour < 20) return "Isha";
+  return "Fajr";
 }
 
 export default HeroSection;

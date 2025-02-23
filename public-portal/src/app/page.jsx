@@ -5,6 +5,7 @@ import { getMosquesApi } from "./apis/mosque.api";
 import HeroSection from "./components/Home/HeroSection";
 import Pagination from "./components/Home/Pagination";
 import SearchComponent from "./components/Home/SearchComponent";
+import EmptyMosque from "./components/Home/EmptyMosque";
 
 async function getData(page = 1, search = null) {
   const queryParams = {
@@ -23,26 +24,31 @@ async function Page({ searchParams }) {
   return (
     <div className="bg-gray-50">
       <HeroSection />
-      <main className="max-w-7xl mx-auto px-4 pb-12">
+      <main className="max-w-7xl mx-auto px-4 pb-4">
         <SearchComponent />
 
-        <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
-          {data?.docs?.map((mosque, index) => (
-            <div key={index}>
-              <MosqueCardWrapper mosque={mosque} />
+        {data?.docs?.length ? (
+          <>
+            <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+              {data?.docs?.map((mosque, index) => (
+                <div key={index}>
+                  <MosqueCardWrapper mosque={mosque} />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+            <dir className="w-full flex justify-center">
+              <Pagination
+                currentPage={data?.currentPage || 1}
+                totalPages={data?.totalPages || 1}
+                hasNext={data?.hasNext ?? false}
+                hasPrev={data?.hasPrev ?? false}
+              />
+            </dir>{" "}
+          </>
+        ) : (
+          <EmptyMosque />
+        )}
       </main>
-
-      <dir className="w-full flex justify-center">
-        <Pagination
-          currentPage={data?.currentPage || 1}
-          totalPages={data?.totalPages || 1}
-          hasNext={data?.hasNext ?? false}
-          hasPrev={data?.hasPrev ?? false}
-        />
-      </dir>
     </div>
   );
 }

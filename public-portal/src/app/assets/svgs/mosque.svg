@@ -1,0 +1,7 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <path d="M256 80l140 70v40H116v-40l140-70zM256 20l-160 80v110h320V100L256 20z" fill="#9CA3AF" />
+    <path d="M96 270h320v222H96V270z" fill="#9CA3AF" />
+    <path d="M256 120c11 0 20 9 20 20s-9 20-20 20-20-9-20-20 9-20 20-20z" fill="#9CA3AF" />
+    <path d="M216 270h80v222h-80V270z" fill="#9CA3AF" />
+    <path d="M156 320h40v40h-40v-40zm160 0h40v40h-40v-40zm-160 80h40v40h-40v-40zm160 0h40v40h-40v-40z" fill="#F3F4F6" />
+</svg>
