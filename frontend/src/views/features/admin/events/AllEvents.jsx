@@ -101,10 +101,7 @@ const AllEvents = () => {
         docs={allEvents?.docs?.map((item) => {
           return {
             ...item,
-            type:
-              item.type?.name ||
-              eventCategoryNames.find((category) => category._id === item.type)?.name ||
-              '',
+            type: item.type?.name || '',
             startDate: moment(item?.startDate).format('DD/MM/yyyy'),
             time: moment(item?.time).format('HH:mm'),
             speakers: item.speakers?.map((speaker) => speaker.name).join(', '),

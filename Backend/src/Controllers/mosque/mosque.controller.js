@@ -4,6 +4,7 @@ const MosqueServiceClass = require("../../Services/mosque.service");
 const mosqueModel = require("../../Schema/mosque/mosque.model");
 const eventCategoryModel = require("../../Schema/events/eventCategory.model");
 const ramadanTimingModel = require("../../Schema/ramadan/ramadan_timings.model");
+const settingsModel = require("../../Schema/mosque/settings.model");
 const logger = require("../../Config/logger.config");
 const { USER_ALREADY_EXISTS } = require("../../Constants/user.constants");
 const moment = require("moment");
@@ -14,7 +15,6 @@ const {
   newRegistrationMosqueWebhook,
 } = require("../../hooks/registration.webhook");
 const errorHandling = require("../../Utils/errorHandling");
-const settingsModel = require("../../Schema/mosque/settings.model");
 
 const createNewMosqueController = async (req, res, next) => {
   try {

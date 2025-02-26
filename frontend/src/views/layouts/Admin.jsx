@@ -85,6 +85,10 @@ const data = {
           title: 'Events',
           url: '/admin/events',
         },
+        {
+          title: 'Event Calendar',
+          url: '/admin/events/calendar',
+        },
       ],
     },
 

@@ -18,6 +18,7 @@ import CreatePayeeForm from './views/features/admin/payments/createPayee';
 import Analytics from './views/features/admin/dashboard/Analytics';
 import RamadanTimings from './views/features/admin/ramadan/RamadanTimings';
 import PayeeExpenses from './views/features/admin/payments/PayeeExpenses';
+import EventCalendar from './views/features/admin/events/EventsCalendar';
 const allRoutesMapper = [
   {
     path: '/',
@@ -71,7 +72,14 @@ const allRoutesMapper = [
       </AuthWrapper>
     ),
   },
-
+  {
+    path: '/admin/events/calendar',
+    component: (
+      <AuthWrapper>
+        <EventCalendar />
+      </AuthWrapper>
+    ),
+  },
   {
     path: '/profile',
     component: (
