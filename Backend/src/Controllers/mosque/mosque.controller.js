@@ -99,12 +99,32 @@ const createNewMosqueController = async (req, res, next) => {
       ...item,
       mosqueId: newMosque._id,
       createdBy: userExist._id,
+      updatedBy: userExist._id,
       createdRef: "user",
+      updatedRef: "user",
       default: true,
     }));
 
+    const settingsDetails = {
+      ramadanTimingsVisible: false,
+      queryFormVisible: false,
+      currency: {
+        abbreviation: "USD",
+        currency: "US Dollar",
+        code: "USD",
+        symbol: "$",
+      },
+      mosqueId: newMosque._id,
+      createdBy: userExist._id,
+      updatedBy: userExist._id,
+      createdRef: "user",
+      updatedRef: "user",
+    };
+
     await eventCategoryModel.insertMany(eventsData);
+    await settingsModel.create(settingsDetails);
     await newRegistrationMosqueWebhook(newMosque);
+
     logger.info("Controller-mosque.controller-createNewMosqueController-End");
     res.status(201).json({
       success: true,
@@ -452,6 +472,85 @@ const getPublicSingleMosqueController = async (req, res, next) => {
   }
 };
 
+const getMosqueCitiesListController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller-mosque.controller-getMosqueCitiesListController-Error"
+    );
+
+    const aggregation = [
+      {
+        $group: {
+          _id: "$address.country",
+          states: { $addToSet: "$address.state" },
+          cities: {
+            $addToSet: {
+              state: "$address.state",
+              city: "$address.city",
+            },
+          },
+        },
+      },
+      // {
+      //   $unwind: "$states",
+      // },
+      // {
+      //   $group: {
+      //     _id: { country: "$_id", state: "$states" },
+      //     cities: { $addToSet: "$address.city" },
+      //   },
+      // },
+      // {
+      //   $group: {
+      //     _id: "$_id.country",
+      //     states: {
+      //       $push: {
+      //         state: "$_id.state",
+      //         cities: "$cities",
+      //       },
+      //     },
+      //   },
+      // },
+      // {
+      //   $project: {
+      //     _id: 0,
+      //     country: "$_id",
+      //     states: 1,
+      //   },
+      // },
+    ];
+    const aggregation2 = [
+      {
+        $group: {
+          _id: "$address.country",
+          states: { $addToSet: "$address.state" },
+          cities: { $addToSet: "$address.city" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          country: "$_id",
+          states: 1,
+          cities: 1,
+        },
+      },
+    ];
+    const data = await mosqueModel.aggregate(aggregation2);
+    res.status(200).json({
+      success: true,
+      statusCode: true,
+      data,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-getMosqueCitiesListController-Error",
+      error
+    );
+    errorHandling.handleCustomErrorService(error, next);
+  }
+};
+
 module.exports = {
   createNewMosqueController,
   getMosquesListController,
@@ -463,4 +562,5 @@ module.exports = {
   updateCommunityMosqueTimingsController,
   getPublicAllMosqueController,
   getPublicSingleMosqueController,
+  getMosqueCitiesListController,
 };

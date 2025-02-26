@@ -26,6 +26,7 @@ const {
   updateCommunityMosqueTimingsController,
   getPublicAllMosqueController,
   getPublicSingleMosqueController,
+  getMosqueCitiesListController,
 } = require("../Controllers/mosque/mosque.controller");
 const ValidateObjectId = require("../Middlewares/validateObjectid.middleware");
 const mosqueValidations = require("../validators/mosque.joi");
@@ -95,5 +96,5 @@ MosqueRoutes.route("/community/mosque-timings").put(
 // -----------------------------------------------------------------------------
 MosqueRoutes.route("/public/all").get(getPublicAllMosqueController);
 MosqueRoutes.route("/public/:slug").get(getPublicSingleMosqueController);
-
+MosqueRoutes.route("/public/all/cities").get(getMosqueCitiesListController);
 module.exports = MosqueRoutes;
