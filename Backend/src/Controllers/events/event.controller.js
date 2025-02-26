@@ -96,7 +96,14 @@ const getAllEventController = async (req, res, next) => {
     logger.info(
       "Controller - events - eventCategory - getAllEventController - Start"
     );
-    let { page = 1, limit = 10, search = "" } = req.query;
+    let {
+      page = 1,
+      limit = 10,
+      search = "",
+      startDate = null,
+      endDate = null,
+    } = req.query;
+
     page = Number(page);
     limit = Number(limit);
 
@@ -106,7 +113,21 @@ const getAllEventController = async (req, res, next) => {
     });
     const totalPages = Math.ceil(totalDocs / limit);
 
-    const query = search ? { name: { $regex: search, $options: "i" } } : {};
+    const query = {};
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    if (startDate && endDate) {
+      query.startDate = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    } else if (startDate) {
+      query.startDate = { $gte: new Date(startDate) };
+    } else if (endDate) {
+      query.startDate = { $lte: new Date(endDate) };
+    }
 
     const docs = await eventModel
       .find(query)

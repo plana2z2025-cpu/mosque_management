@@ -44,6 +44,17 @@ const createEventValidation = celebrate({
   }),
 });
 
+const getAllEventsControllerValidation = celebrate({
+  [Segments.QUERY]: Joi.object({
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).default(10),
+    search: Joi.string().allow("").optional(),
+    startDate: Joi.date().iso().optional().label("Date should be YYYY-MM-DD"),
+    endDate: Joi.date().iso().optional().label("Date should be YYYY-MM-DD"),
+  }),
+});
+
 module.exports = {
   createEventValidation,
+  getAllEventsControllerValidation,
 };

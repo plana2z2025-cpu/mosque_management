@@ -41,6 +41,7 @@ EventRoutes.route("/events").get(
   CheckMosqueAccess,
   CheckMosqueAuthorization(ADMIN, SUB_USER),
   CheckMosquePermissions(READ),
+  eventValidations.getAllEventsControllerValidation,
   getAllEventController
 );
 
