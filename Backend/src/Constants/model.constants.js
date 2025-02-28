@@ -10,4 +10,5 @@ module.exports = {
   ramadanTimings: "ramadan_timings",
   queries: "queries",
   settings: "settings",
+  fridayCollection: "friday_collections",
 };
