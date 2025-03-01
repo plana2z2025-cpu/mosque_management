@@ -19,7 +19,15 @@ const getAllFridayCollectionValidation = celebrate({
   }),
 });
 
+const updateFridayCollectionValidation = celebrate({
+  body: Joi.object({
+    online_amount: Joi.number().default(0),
+    offline_amount: Joi.number().default(0),
+  }).min(1),
+});
+
 module.exports = {
   createFridayCollectionValidation,
   getAllFridayCollectionValidation,
+  updateFridayCollectionValidation,
 };

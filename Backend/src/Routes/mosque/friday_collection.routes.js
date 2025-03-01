@@ -18,6 +18,9 @@ const {
 const {
   createFridayCollectionController,
   getFridayCollectionController,
+  getSingleFridayCollectionController,
+  updateFridayCollectionController,
+  deleteFridayCollectionController,
 } = require("../../Controllers/mosque/fridaycollection.controller");
 const fridayCollection = require("../../validators/mosque/friday_collection.joi");
 
@@ -42,4 +45,32 @@ FridayCollectionRoute.route("/friday-collection/all").get(
   fridayCollection.getAllFridayCollectionValidation,
   getFridayCollectionController
 );
+
+FridayCollectionRoute.route("/collection/:collectionId")
+  .get(
+    Authentication,
+    Authorization(ADMIN, SUB_USER),
+    CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(READ),
+    getSingleFridayCollectionController
+  )
+  .put(
+    Authentication,
+    Authorization(ADMIN, SUB_USER),
+    CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
+    fridayCollection.updateFridayCollectionValidation,
+    updateFridayCollectionController
+  )
+  .delete(
+    Authentication,
+    Authorization(ADMIN, SUB_USER),
+    CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(DELETE),
+    deleteFridayCollectionController
+  );
+
 module.exports = FridayCollectionRoute;

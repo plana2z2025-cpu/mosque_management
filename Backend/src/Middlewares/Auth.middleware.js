@@ -83,6 +83,10 @@ module.exports.CheckMosqueAccess = async (req, res, next) => {
       return next(httpErrors.NotFound(MOSQUE_NOT_FOUND));
     }
 
+    if (req.body.mosqueId && req.body.mosqueId !== mosqueId.toString()) {
+      return next(httpErrors.Forbidden("Cannot edit mosqueId"));
+    }
+
     if (role === SUPPER_ADMIN) {
       return next();
     } else if (
