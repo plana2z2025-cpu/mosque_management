@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import useAuth from '@/hooks/useAuth';
+import { useLocation } from 'react-router-dom';
 import { userActions } from '@/redux/combineActions';
 import { useDispatch, useSelector } from 'react-redux';
 import InitialLoader from '../components2/loaders/loader';
 import DashboardSkeleton from '../skeletons/DashboardSkeleton';
-
+import Service from '@/services';
 const SidebarSkeleton = () => {
   return (
     <div className="flex h-screen w-64 flex-col bg-white shadow-lg">
@@ -81,6 +82,7 @@ const AuthWrapper = ({ children }) => {
   const { profileDetails } = useSelector((state) => state.userProfileState);
   const dispatch = useDispatch();
   const checkAuth = useAuth();
+  const location = useLocation();
 
   const [isLoading, setisLoading] = useState(true);
 
@@ -96,6 +98,15 @@ const AuthWrapper = ({ children }) => {
       setisLoading(false);
     }
   }, [profileDetails]);
+
+  useEffect(() => {
+    // Return cleanup function that will execute when route changes
+    return () => {
+      if (!isLoading) {
+        Service.cancelAllRequests();
+      }
+    };
+  }, [location.pathname, isLoading]);
 
   return isLoading ? (
     <div className="flex">

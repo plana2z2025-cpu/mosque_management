@@ -1,5 +1,6 @@
 import { AxiosConfig, RequestMethodInstance } from './axiosInstance';
 import { API_URL } from './config';
+import axios from 'axios';
 
 const handleHeaders = (token, contentType) => {
   const axiosConfig = new AxiosConfig();
@@ -38,6 +39,11 @@ const Service = {
       const response = await apiFetch.getMethod(endpoint, headers);
       return processResponse(response);
     } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log(`Request to ${url} was cancelled`);
+        // Return a specific value or throw a custom error to indicate cancellation
+        return [false, { message: 'api is aborted' }];
+      }
       onFailure('network', url);
       return processResponse(error?.response || error);
     }
@@ -79,6 +85,16 @@ const Service = {
       onFailure('network', url);
       return processResponse(error?.response || error);
     }
+  },
+
+  cancelAllRequests: () => {
+    apiFetch.cancelAllRequests();
+  },
+
+  // Cancel a specific API request if needed
+  cancelRequest: (url, method) => {
+    const endpoint = API_URL + url;
+    apiFetch.cancelRequest(endpoint, method);
   },
 };
 
