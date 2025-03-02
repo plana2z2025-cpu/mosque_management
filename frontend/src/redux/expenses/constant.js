@@ -28,5 +28,11 @@ export const EXPENSE_DASHBOARD_GRAPH = {
   fail: 'EXPENSE_DASHBOARD_GRAPH.fail',
 };
 
+export const FRIDAY_COLLECTION = {
+  request: 'FRIDAY_COLLECTION.request',
+  success: 'FRIDAY_COLLECTION.success',
+  fail: 'FRIDAY_COLLECTION.fail',
+};
+
 export const CLEAR_EXPENSE_ERRORS = 'CLEAR_EXPENSE_ERRORS';
 export const RESET_EXPENSE_STATE = 'RESET_EXPENSE_STATE';

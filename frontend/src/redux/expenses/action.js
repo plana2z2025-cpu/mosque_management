@@ -5,6 +5,7 @@ import {
   EXPENSE_CATEGORIES,
   EXPENSE_CATEGORIES_NAMES,
   EXPENSE_DASHBOARD_GRAPH,
+  FRIDAY_COLLECTION,
 } from './constant';
 import Service from '@/services';
 import * as API from './actionTypes';
@@ -128,6 +129,27 @@ const expenseDashboardGraphAction = () => async (dispatch) => {
 };
 
 // ----------------------------------------------------------------
+// COLLECTION
+// ----------------------------------------------------------------
+const getAllFridayCollectionAction = () => async (dispatch) => {
+  const token = getAccessToken();
+  dispatch({ type: FRIDAY_COLLECTION.request });
+  const response = await Service.fetchGet(
+    `${API.BASE_COLLECTION}${API.COLLECTION_TYPE.FRIDAY_COLLECTION}${API.COLLECTION_TYPE.ALL}`,
+    token
+  );
+
+  if (response[0] === true) {
+    dispatch({ type: FRIDAY_COLLECTION.success, payload: response[1].data });
+  } else {
+    dispatch({
+      type: FRIDAY_COLLECTION.fail,
+      payload: response[1],
+    });
+  }
+};
+
+// ----------------------------------------------------------------
 // CLEAR & RESET STATES
 // ----------------------------------------------------------------
 
@@ -158,4 +180,7 @@ export default {
 
   // GRAPHS
   expenseDashboardGraphAction,
+
+  // COLLECTIONS
+  getAllFridayCollectionAction,
 };

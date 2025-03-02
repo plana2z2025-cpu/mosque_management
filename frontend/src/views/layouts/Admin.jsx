@@ -107,6 +107,10 @@ const data = {
           url: '/admin/expenses',
         },
         {
+          title: 'Friday Collection',
+          url: '/admin/expenses/collection',
+        },
+        {
           title: 'Beneficiaries',
           url: '/admin/expenses/payees',
         },

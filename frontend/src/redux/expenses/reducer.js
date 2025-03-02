@@ -6,6 +6,7 @@ import {
   EXPENSE_CATEGORIES_NAMES,
   UPDATE_CATEGORY,
   EXPENSE_DASHBOARD_GRAPH,
+  FRIDAY_COLLECTION,
 } from './constant';
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
   expenseTypeGraph: null,
   expenseStatusGraph: null,
   expensePaymentGraph: null,
+  allFridayCollections: null,
 };
 
 export const ExpenseReducer = (state = initialState, action) => {
@@ -40,6 +42,10 @@ export const ExpenseReducer = (state = initialState, action) => {
       loading: true,
     }),
     [UPDATE_CATEGORY.request]: () => ({
+      ...state,
+      loading: true,
+    }),
+    [FRIDAY_COLLECTION.request]: () => ({
       ...state,
       loading: true,
     }),
@@ -72,6 +78,11 @@ export const ExpenseReducer = (state = initialState, action) => {
       loading: false,
       expenseCategories: action.payload,
     }),
+    [FRIDAY_COLLECTION.success]: () => ({
+      ...state,
+      loading: false,
+      allFridayCollections: action.payload,
+    }),
 
     // Failure states
     [EXPENSES.fail]: () => ({
@@ -101,7 +112,13 @@ export const ExpenseReducer = (state = initialState, action) => {
     [UPDATE_CATEGORY.fail]: () => ({
       ...state,
       loading: false,
-      error: action?.payload?.message,
+      error: action?.payload?.message || 'An error occurred',
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [FRIDAY_COLLECTION.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message || 'An error occurred',
       statusCode: action?.payload?.statusCode || 500,
     }),
 
