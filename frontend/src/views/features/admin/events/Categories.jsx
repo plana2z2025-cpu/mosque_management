@@ -345,6 +345,8 @@ const Categories = () => {
         isOpen={Boolean(info?.deleteId)}
         onClose={deletePopupModalFunc}
         title="Delete Category"
+        size="small"
+        maxHeight="fit-content"
       >
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
