@@ -53,7 +53,11 @@ const RamadanTimings = () => {
     if (bulkUpload?.isBulkSubmit) {
       toast.success('Bulk timings submitted successfully');
       bulkUploadClearResetFunction(false, true);
-      closeModalPopupFunction();
+      if (info?.isEdit) {
+        setInfo((prev) => ({ ...prev, isEdit: false, editableTimings: null }));
+      } else {
+        closeModalPopupFunction();
+      }
     }
   }, [bulkUpload?.isBulkSubmit]);
 
@@ -112,11 +116,22 @@ const RamadanTimings = () => {
   };
 
   const submitBulkUploadHandler = useCallback(() => {
-    let json = {
-      days: info?.days,
-    };
+    let json = {};
+    if (info?.isEdit) {
+      json.days = info?.editableTimings?.map((day) => {
+        return {
+          date: moment(day.date).format('YYYY-MM-DD'),
+          dayOfRamadan: day.dayOfRamadan,
+          sehri_start: day.sehri_start,
+          sehri_end: day.sehri_end,
+          iftar: day.iftar,
+        };
+      });
+    } else {
+      json.days = info?.days;
+    }
     dispatch(submitBulkRamadanTimingsAction(json));
-  }, [info?.days]);
+  }, [info?.days, info?.editableTimings, info?.isEdit]);
 
   const bulkUploadClearResetFunction = useCallback(
     (error = false, reset = false) => {
@@ -187,6 +202,26 @@ const RamadanTimings = () => {
     [info?.editableTimings]
   );
 
+  const changeHandlerFunction = useCallback(
+    (e) => {
+      let update = [...info?.editableTimings];
+      let { name, value, dataset } = e.target;
+      let index = dataset.index;
+      if (name === 'sehri_start' || name === 'sehri_end' || name === 'iftar') {
+        update[index][name] = moment(value, 'hh:mm').format('hh:mm A');
+      }
+
+      if (name === 'date') {
+        console.log('date', value);
+        update[index][name] = moment(value, 'YYYY-MM-DD').format();
+      }
+      setInfo((prev) => ({ ...prev, editableTimings: update }));
+    },
+    [info?.editableTimings, info?.isEdit]
+  );
+
+  console.log(info);
+
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
       <div className="flex justify-end  space-x-4">
@@ -249,6 +284,9 @@ const RamadanTimings = () => {
                             type="date"
                             value={moment(day.date).format('YYYY-MM-DD')}
                             className="w-40"
+                            name="date"
+                            data-index={index}
+                            onChange={changeHandlerFunction}
                           />
                         </TableCell>
                         <TableCell className="text-center">
@@ -265,22 +303,31 @@ const RamadanTimings = () => {
                         <TableCell className="text-center">
                           <Input
                             type="time"
+                            name="sehri_start"
+                            data-index={index}
                             value={moment(day.sehri_start, 'hh:mm A').format('hh:mm')}
                             className="w-32 mx-auto text-center"
+                            onChange={changeHandlerFunction}
                           />
                         </TableCell>
                         <TableCell className="text-center">
                           <Input
                             type="time"
+                            name="sehri_end"
+                            data-index={index}
                             value={moment(day.sehri_end, 'hh:mm A').format('hh:mm')}
                             className="w-32 mx-auto text-center"
+                            onChange={changeHandlerFunction}
                           />
                         </TableCell>
                         <TableCell className="text-center">
                           <Input
                             type="time"
+                            name="iftar"
+                            data-index={index}
                             value={moment(day.iftar, 'hh:mm A').format('hh:mm')}
                             className="w-32 mx-auto text-center"
+                            onChange={changeHandlerFunction}
                           />
                         </TableCell>
                         <TableCell
@@ -318,7 +365,12 @@ const RamadanTimings = () => {
                 {' '}
                 <Plus /> Add
               </Button>
-              <Button className="bg-green-500 hover:bg-green-600 text-gray-900">Update</Button>
+              <Button
+                className="bg-green-500 hover:bg-green-600 text-gray-900"
+                onClick={submitBulkUploadHandler}
+              >
+                Update
+              </Button>
             </div>
           )}
         </CardContent>
