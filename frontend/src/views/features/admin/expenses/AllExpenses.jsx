@@ -6,6 +6,8 @@ import moment from 'moment';
 import CustomTable1 from '@/views/components2/tables/CustomTable1';
 import { Trash } from 'lucide-react';
 import { NumericFormat } from 'react-number-format';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const breadCumbs = [{ label: 'Expenses', href: null }];
 
@@ -40,6 +42,7 @@ const numericOptions = {
 const AllExpenses = () => {
   const { getAllExpensesAction } = expenseActions;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { allExpenses, loading } = useSelector((state) => state?.expenseState);
   const [info, setInfo] = useState(INITIAL_STATE);
 
@@ -52,6 +55,11 @@ const AllExpenses = () => {
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
+      <div className="w-full flex justify-end">
+        <Button variant="outline" onClick={() => navigate('create')}>
+          Add New Expenses
+        </Button>
+      </div>
       <CustomTable1
         headers={headers}
         docs={allExpenses?.docs?.map((item) => ({

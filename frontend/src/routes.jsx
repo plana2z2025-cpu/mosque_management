@@ -20,6 +20,7 @@ import RamadanTimings from './views/features/admin/ramadan/RamadanTimings';
 import PayeeExpenses from './views/features/admin/payments/PayeeExpenses';
 import EventCalendar from './views/features/admin/events/EventsCalendar';
 import FridayCollection from './views/features/admin/expenses/FridayCollection';
+import CreateExpensesForm from './views/features/admin/expenses/CreateExpense';
 const allRoutesMapper = [
   {
     path: '/',
@@ -102,6 +103,14 @@ const allRoutesMapper = [
     component: (
       <AuthWrapper>
         <AllExpenses />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/expenses/create',
+    component: (
+      <AuthWrapper>
+        <CreateExpensesForm />
       </AuthWrapper>
     ),
   },
