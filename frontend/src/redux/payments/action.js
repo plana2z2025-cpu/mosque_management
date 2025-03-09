@@ -5,6 +5,7 @@ import {
   UPDATE_PAYEE,
   SINGLE_PAYEE_DETAIL,
   SINGLE_PAYEE_EXPENSES,
+  PAYEE_NAMES_LIST,
 } from './constant';
 import Service from '@/services';
 import * as API from './actionTypes';
@@ -51,6 +52,24 @@ const getAllPayeeAction =
       });
     }
   };
+
+const getAllPayeeNamesAction = () => async (dispatch) => {
+  dispatch({ type: PAYEE_NAMES_LIST.request });
+  const token = getAccessToken();
+  const response = await Service.fetchGet(
+    `${API.BASE_PAYEE}${API.PAYEE_TYPES.PAYEES}${API.PAYEE_TYPES.ALL}${API.PAYEE_TYPES.NAMES}`,
+    token
+  );
+
+  if (response[0] === true) {
+    dispatch({ type: PAYEE_NAMES_LIST.success, payload: response[1].data });
+  } else {
+    dispatch({
+      type: PAYEE_NAMES_LIST.fail,
+      payload: response[1],
+    });
+  }
+};
 
 const updatePayeeAction = (payeeId, json) => async (dispatch) => {
   dispatch({ type: UPDATE_PAYEE.request });
@@ -118,4 +137,5 @@ export default {
   updatePayeeAction,
   deletePayeeAction,
   getPayeeExpensesAction,
+  getAllPayeeNamesAction,
 };

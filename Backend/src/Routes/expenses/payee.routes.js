@@ -24,6 +24,7 @@ const {
   updatePayeeController,
   deletePayeeController,
   getAllPayeesExpensesController,
+  getAllPayeesNamesController,
 } = require("../../Controllers/expenses/payee.controller");
 
 PayeeRoutes.route("/create-new-payee").post(
@@ -44,6 +45,15 @@ PayeeRoutes.route("/payees").get(
   CheckMosquePermissions(READ),
   payeeValidations.allPayeesValidation,
   getAllPayeesController
+);
+
+PayeeRoutes.route("/payees/all/names").get(
+  Authentication,
+  Authorization(ADMIN, SUB_USER),
+  CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(READ),
+  getAllPayeesNamesController
 );
 
 PayeeRoutes.route("/:payeeId")

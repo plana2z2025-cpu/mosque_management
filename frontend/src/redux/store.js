@@ -5,7 +5,7 @@ import { MosqueReducer } from './mosques/reducer';
 import { AdministratorReducer } from './subUsers/reducer';
 import { EventReducer } from './events/reducer';
 import { ExpenseReducer } from './expenses/reducer';
-import { PayementsReducer } from './payments/reducer';
+import { PaymentsReducer } from './payments/reducer';
 import { RamadaReducer } from './ramadan/reducer';
 
 const initialState = {};
@@ -17,7 +17,7 @@ const reducer = {
   administratorState: AdministratorReducer,
   eventState: EventReducer,
   expenseState: ExpenseReducer,
-  payeeState: PayementsReducer,
+  payeeState: PaymentsReducer,
   ramadanState: RamadaReducer,
 };
 const store = configureStore({

@@ -309,7 +309,7 @@ const ExpenseCategories = () => {
       <CustomTable1
         headers={headers}
         docs={tableData}
-        cardTitle="Expenses"
+        cardTitle="Expenses Types"
         totalPages={expenseCategories?.totalPages}
         currentPage={expenseCategories?.currentPage}
         onPageChange={onPageChange}

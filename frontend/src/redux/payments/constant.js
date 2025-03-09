@@ -23,5 +23,11 @@ export const UPDATE_PAYEE = {
   fail: 'UPDATE_PAYEE_FAIL',
 };
 
+export const PAYEE_NAMES_LIST = {
+  request: 'PAYEE_NAMES_LIST.request',
+  success: 'PAYEE_NAMES_LIST.success',
+  fail: 'PAYEE_NAMES_LIST.fail',
+};
+
 export const CLEAR_PAYEE_ERRORS = 'CLEAR_PAYEE_ERRORS';
 export const RESET_PAYEE_STATE = 'RESET_PAYEE_STATE';

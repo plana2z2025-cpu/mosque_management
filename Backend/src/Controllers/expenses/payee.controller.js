@@ -138,6 +138,34 @@ const getAllPayeesController = async (req, res, next) => {
   }
 };
 
+const getAllPayeesNamesController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller - expenses - payee - getAllPayeesNamesController - Start"
+    );
+    const docs = await payeeModel
+      .find({ mosqueId: req.mosqueId }, "payeeName")
+      .sort(sortConstants["-createdAt"])
+      .lean();
+
+    logger.info(
+      "Controller - expenses - payee - getAllPayeesNameController - End"
+    );
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      data: docs,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller - expenses - payee - getAllPayeesController - error",
+      error
+    );
+    errorHandling.handleCustomErrorService(error, next);
+  }
+};
+
 const updatePayeeController = async (req, res, next) => {
   try {
     logger.info(
@@ -280,4 +308,5 @@ module.exports = {
   updatePayeeController,
   deletePayeeController,
   getAllPayeesExpensesController,
+  getAllPayeesNamesController,
 };

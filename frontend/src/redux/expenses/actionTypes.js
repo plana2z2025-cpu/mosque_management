@@ -1,5 +1,5 @@
 export const EXPENSE_TYPE = {
-  CREATE_NEW_EXPENSE: '/new-expense',
+  CREATE_NEW_EXPENSE: '/create-new',
   EXPENSES: '/expenses',
   ALL: '/all',
   NAMES: '/names',

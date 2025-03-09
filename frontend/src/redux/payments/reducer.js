@@ -5,6 +5,7 @@ import {
   UPDATE_PAYEE,
   SINGLE_PAYEE_DETAIL,
   SINGLE_PAYEE_EXPENSES,
+  PAYEE_NAMES_LIST,
 } from './constant';
 
 const initialState = {
@@ -14,9 +15,10 @@ const initialState = {
   allPayee: null,
   payeeDetail: null,
   payeeExpenses: null,
+  payeeNamesList: null,
 };
 
-export const PayementsReducer = (state = initialState, action) => {
+export const PaymentsReducer = (state = initialState, action) => {
   const actionHandlers = {
     // Loading states
     [PAYEES_LIST.request]: () => ({
@@ -31,7 +33,7 @@ export const PayementsReducer = (state = initialState, action) => {
       ...state,
       loading: true,
     }),
-    [SINGLE_PAYEE_EXPENSES.request]: () => ({
+    [PAYEE_NAMES_LIST.request]: () => ({
       ...state,
       loading: true,
     }),
@@ -51,6 +53,11 @@ export const PayementsReducer = (state = initialState, action) => {
       ...state,
       loading: false,
       payeeExpenses: action.payload,
+    }),
+    [PAYEE_NAMES_LIST.success]: () => ({
+      ...state,
+      loading: false,
+      payeeNamesList: action.payload,
     }),
 
     // Update payee
@@ -93,6 +100,12 @@ export const PayementsReducer = (state = initialState, action) => {
       statusCode: action?.payload?.statusCode || 500,
     }),
     [SINGLE_PAYEE_EXPENSES.fail]: () => ({
+      ...state,
+      loading: false,
+      error: action?.payload?.message,
+      statusCode: action?.payload?.statusCode || 500,
+    }),
+    [PAYEE_NAMES_LIST.fail]: () => ({
       ...state,
       loading: false,
       error: action?.payload?.message,

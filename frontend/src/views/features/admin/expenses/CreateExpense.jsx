@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import validator from 'validator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,46 +11,50 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-// import { format } from 'date-fns';
-import { CalendarIcon, Trash2, Plus, CookingPot } from 'lucide-react';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useSelector, useDispatch } from 'react-redux';
-import { expenseActions } from '@/redux/combineActions';
+import { expenseActions, payeeActions } from '@/redux/combineActions';
 import moment from 'moment';
-import { Badge } from '@/components/ui/badge';
 import toast from 'react-hot-toast';
+import { use } from 'react';
 
 const breadCumbs = [
   { label: 'Expenses', href: '/admin/expenses' },
   { label: 'Create Expense', href: null },
 ];
-const targetAudienceOptions = [
-  { label: 'men', value: 'men' },
-  { label: 'women', value: 'women' },
-  { label: 'children', value: 'children' },
-  { label: 'youth', value: 'youth' },
-  { label: 'seniors', value: 'seniors' },
-  { label: 'families', value: 'families' },
-  { label: 'converts', value: 'converts' },
-  { label: 'all', value: 'all' },
+
+const INITIAL_STATE = {
+  amount: '',
+  description: '',
+  date: new Date(),
+  paymentMethod: 'cash',
+  category: '',
+  receiptImage: 'https://example.com/receipt.jpg',
+  status: 'pending',
+  payeeId: null,
+};
+
+const paymentMethodsList = [
+  { name: 'Cash', value: 'cash' },
+  { name: 'UPI', value: 'UPI' },
+  { name: 'Card', value: 'card' },
+  { name: 'Check', value: 'check' },
+  { name: 'Other', value: 'other' },
 ];
 
+const statusList = [
+  { name: 'Paid', value: 'paid' },
+  { name: 'Pending', value: 'pending' },
+];
 export function CreateExpensesForm() {
   // State to manage form data and errors
   const dispatch = useDispatch();
   const { expenseCategoryNames } = useSelector((state) => state.expenseState);
+  const { payeeNamesList } = useSelector((state) => state.payeeState);
   const { addNewExpenseAction, getAllExpenseCategoryNamesAction } = expenseActions;
+  const { getAllPayeeNamesAction } = payeeActions;
 
-  const [formData, setFormData] = useState({
-    amount: '',
-    description: '',
-    type: '',
-    date: new Date(),
-    paymentMethod: 'cash',
-    category: '',
-    receiptImage: 'testing.jpg',
-  });
+  const [formData, setFormData] = useState({ ...INITIAL_STATE });
 
   // State to manage form errors
   const [errors, setErrors] = useState({});
@@ -60,24 +64,33 @@ export function CreateExpensesForm() {
       fetchAllCategoriesNames();
     }
   }, [expenseCategoryNames]);
+  useEffect(() => {
+    if (!payeeNamesList) {
+      fetchAllPayeesNames();
+    }
+  }, [payeeNamesList]);
 
-  const fetchAllCategoriesNames = () => {
+  console.log(payeeNamesList);
+  const fetchAllCategoriesNames = useCallback(() => {
     dispatch(getAllExpenseCategoryNamesAction());
-  };
+  }, []);
+
+  const fetchAllPayeesNames = useCallback(() => {
+    dispatch(getAllPayeeNamesAction());
+  }, []);
 
   // Validate form fields
   const validateFieldFunc = (key, value) => {
     const validateRules = {
-      title: () =>
+      amount: () =>
         value.trim() === ''
-          ? 'Title is required'
-          : value?.title?.length
-            ? 'Title must be max characters'
+          ? 'Amount is required'
+          : !validator.isNumeric(value)
+            ? 'Amount must be a number'
             : null,
       description: () => (value.trim() === '' ? 'Description is required' : null),
-      type: () => (value.trim() === '' ? 'Event Type is required' : null),
-      location: () => (value.trim() === '' ? 'Location is required' : null),
-      tagTitle: () => (value.trim() === '' ? 'tag is required' : null),
+      category: () => (value.trim() === '' ? 'Expense Type is required' : null),
+      paymentMethod: () => (value.trim() === '' ? 'Payment Method is required' : null),
     };
 
     const validateNow = validateRules?.[key] ? validateRules[key]() : null;
@@ -87,6 +100,7 @@ export function CreateExpensesForm() {
   // Handle input changes
   const handleChange = (e) => {
     let { name, value } = e.target;
+    console.log(name, value);
 
     setFormData((prev) => ({
       ...prev,
@@ -100,19 +114,19 @@ export function CreateExpensesForm() {
     }));
   };
 
-  const handleTypeEventChange = (value) => {
-    setFormData((prev) => ({ ...prev, type: value }));
-    let newError = validateFieldFunc('type', value);
+  const handleSelectChangeHandler = (value, key) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    let newError = validateFieldFunc(key, value);
     setErrors((prev) => ({
       ...prev,
-      type: newError,
+      [key]: newError,
     }));
   };
 
   // Handle Date change
   const changeDateHandler = (date, name) => {
     let options = {
-      date,
+      [name]: date,
     };
     setFormData((prev) => ({
       ...prev,
@@ -144,29 +158,33 @@ export function CreateExpensesForm() {
         ...formData,
       };
 
-      json.startDate = moment(json.startDate).utc().format();
-      json.endDate = moment(json.endDate).utc().format();
-      json.time = moment(json.time).utc().format();
+      json.date = moment(json.date).utc().format();
+      json.amount = parseFloat(json.amount);
 
-      // const response = await addNewEventAction(json);
-      // if (response[0] === 201) {
-      //   toast.success('event is created successfully');
-      // } else {
-      //   toast.error(response[1]?.message);
-      // }
+      console.log(json);
+      const response = await addNewExpenseAction(json);
+      if (response[0] === 201) {
+        toast.success('event is created successfully');
+        setFormData({ ...INITIAL_STATE });
+        setErrors({});
+      } else {
+        toast.error(response[1]?.message);
+      }
     }
   };
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
       <form onSubmit={handleSubmit} className="space-y-8 w-1/2 max-md:w-full m-auto">
-        {/* Title Input */}
+        {/* Title Input  */}
         <div>
           <label className="block text-sm font-medium mb-2">Expense Amount</label>
           <Input
             name="amount"
             type="number"
-            value={formData.amount}
+            min="0"
+            step="0.01"
+            value={formData?.amount}
             onChange={handleChange}
             placeholder="Enter expense amount"
             className={errors?.amount ? 'border-red-500' : ''}
@@ -179,19 +197,25 @@ export function CreateExpensesForm() {
           <label className="block text-sm font-medium mb-2">Description</label>
           <Textarea
             name="description"
-            value={formData.description}
+            value={formData?.description}
             onChange={handleChange}
             placeholder="Provide a detailed description of the event"
-            className={errors.description ? 'border-red-500' : ''}
+            className={errors?.description ? 'border-red-500' : ''}
           />
-          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+          {errors?.description && (
+            <p className="text-red-500 text-xs mt-1">{errors?.description}</p>
+          )}
         </div>
 
         {/* Expenses Type */}
         <div>
           <label className="block text-sm font-medium mb-2">Expense Type</label>
-          <Select name="type" value={formData.type} onValueChange={handleTypeEventChange}>
-            <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
+          <Select
+            name="category"
+            value={formData?.category}
+            onValueChange={(value) => handleSelectChangeHandler(value, 'category')}
+          >
+            <SelectTrigger className={errors?.category ? 'border-red-500' : ''}>
               <SelectValue placeholder="Select event type" />
             </SelectTrigger>
             <SelectContent>
@@ -201,19 +225,83 @@ export function CreateExpensesForm() {
                 ))}
             </SelectContent>
           </Select>
-          {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
+          {errors?.category && <p className="text-red-500 text-xs mt-1">{errors?.category}</p>}
         </div>
 
-        {/* Event Date Input */}
-
+        {/* Payee Name */}
         <div>
-          <label className="block text-sm font-medium mb-2">Start Date</label>
+          <label className="block text-sm font-medium mb-2">Payer Name</label>
+          <Select
+            name="payeeId"
+            value={formData?.payeeId || ''}
+            onValueChange={(value) => handleSelectChangeHandler(value, 'payeeId')}
+          >
+            <SelectTrigger className={errors?.payeeId ? 'border-red-500' : ''}>
+              <SelectValue placeholder="Select Payee Name" />
+            </SelectTrigger>
+            <SelectContent>
+              {payeeNamesList &&
+                payeeNamesList?.map((singlePayee) => (
+                  <SelectItem value={singlePayee?._id}>{singlePayee?.payeeName}</SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          {errors?.payeeId && <p className="text-red-500 text-xs mt-1">{errors?.payeeId}</p>}
+        </div>
+
+        {/* Payment Method */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Payment Method</label>
+          <Select
+            name="paymentMethod"
+            value={formData?.paymentMethod}
+            onValueChange={(value) => handleSelectChangeHandler(value, 'paymentMethod')}
+          >
+            <SelectTrigger className={errors?.paymentMethod ? 'border-red-500' : ''}>
+              <SelectValue placeholder="Select event type" />
+            </SelectTrigger>
+            <SelectContent>
+              {paymentMethodsList?.map((singleMethod) => (
+                <SelectItem value={singleMethod?.value} key={singleMethod?.value}>
+                  {singleMethod?.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors?.paymentMethod && (
+            <p className="text-red-500 text-xs mt-1">{errors?.paymentMethod}</p>
+          )}
+        </div>
+
+        {/* Status */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Payment Method</label>
+          <Select
+            name="status"
+            value={formData?.status}
+            onValueChange={(value) => handleSelectChangeHandler(value, 'status')}
+          >
+            <SelectTrigger className={errors?.status ? 'border-red-500' : ''}>
+              <SelectValue placeholder="Select Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {statusList?.map((singleStatus) => (
+                <SelectItem value={singleStatus?.value}>{singleStatus?.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors?.status && <p className="text-red-500 text-xs mt-1">{errors?.status}</p>}
+        </div>
+
+        {/* Expense Date Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Date</label>
           <Calendar
             mode="single"
-            name="startDate"
-            selected={formData.startDate}
-            onSelect={(date) => changeDateHandler(date, 'startDate')}
-            disabled={(date) => date < new Date()}
+            name="date"
+            selected={formData?.date}
+            onSelect={(date) => changeDateHandler(date, 'date')}
+            // disabled={(date) => date < new Date()}
             // initialFocus
           />
         </div>
