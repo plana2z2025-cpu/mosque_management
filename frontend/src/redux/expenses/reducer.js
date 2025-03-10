@@ -84,6 +84,12 @@ export const ExpenseReducer = (state = initialState, action) => {
       allFridayCollections: action.payload,
     }),
 
+    // Update states
+    [EXPENSES.update]: () => ({
+      ...state,
+      allExpenses: action.payload,
+    }),
+
     // Failure states
     [EXPENSES.fail]: () => ({
       ...state,

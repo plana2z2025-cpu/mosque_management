@@ -1,6 +1,7 @@
 export const EXPENSES = {
   request: 'EXPENSES.request',
   success: 'EXPENSES.success',
+  update: 'EXPENSES.update',
   fail: 'EXPENSES.fail',
 };
 

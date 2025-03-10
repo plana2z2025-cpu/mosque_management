@@ -22,6 +22,12 @@ const addNewExpenseAction = async (json) => {
   return response;
 };
 
+const deleteExpenseAction = async (expenseId) => {
+  const token = getAccessToken();
+  const response = await Service.fetchDelete(`${API.BASE_TYPE}/${expenseId}`, token);
+  return response;
+};
+
 const getAllExpensesAction =
   (query = null) =>
   async (dispatch) => {
@@ -170,6 +176,7 @@ export default {
   // EXPENSES
   addNewExpenseAction,
   getAllExpensesAction,
+  deleteExpenseAction,
 
   // CATEGORIES
   getExpenseCategoriesAction,
