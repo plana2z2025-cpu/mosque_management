@@ -17,6 +17,7 @@ const headers = [
   { title: 'Status', key: 'status' },
   { title: 'Method', key: 'paymentMethod' },
   { title: 'PaymentDate', key: 'date' },
+  { title: 'Paid To', key: 'payeeId' },
 ];
 
 const INITIAL_STATE = {
@@ -67,6 +68,7 @@ const AllExpenses = () => {
           category: item?.category?.name || '',
           date: moment(item?.date).format('LL'),
           amount: <NumericFormat value={item?.amount} prefix="$" {...numericOptions} />,
+          payeeId: item?.payeeId?.payeeName || '',
         }))}
         cardTitle="Expenses"
         totalPages={allExpenses?.totalPages}

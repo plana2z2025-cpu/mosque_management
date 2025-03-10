@@ -99,7 +99,7 @@ const data = {
       isActive: true,
       items: [
         {
-          title: 'Category',
+          title: 'Expenses Types',
           url: '/admin/expenses/categories',
         },
         {

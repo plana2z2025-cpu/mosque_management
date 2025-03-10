@@ -70,7 +70,6 @@ export function CreateExpensesForm() {
     }
   }, [payeeNamesList]);
 
-  console.log(payeeNamesList);
   const fetchAllCategoriesNames = useCallback(() => {
     dispatch(getAllExpenseCategoryNamesAction());
   }, []);
@@ -136,7 +135,6 @@ export function CreateExpensesForm() {
 
   const validateFormFunction = () => {
     let newErrors = {};
-    let updateFormData = {};
 
     Object.keys(formData).forEach((key) => {
       let error = null;
@@ -160,8 +158,12 @@ export function CreateExpensesForm() {
 
       json.date = moment(json.date).utc().format();
       json.amount = parseFloat(json.amount);
+      if (json.payeeId) {
+        json.payeeId = json.payeeId;
+      } else {
+        delete json.payeeId;
+      }
 
-      console.log(json);
       const response = await addNewExpenseAction(json);
       if (response[0] === 201) {
         toast.success('event is created successfully');
