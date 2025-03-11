@@ -5,6 +5,13 @@ export const EXPENSES = {
   fail: 'EXPENSES.fail',
 };
 
+export const SINGLE_EXPENSE = {
+  request: 'SINGLE_EXPENSE.request',
+  success: 'SINGLE_EXPENSE.success',
+  update: 'SINGLE_EXPENSE.update',
+  fail: 'SINGLE_EXPENSE.fail',
+};
+
 export const EXPENSE_CATEGORIES = {
   request: 'EXPENSE_CATEGORIES.request',
   success: 'EXPENSE_CATEGORIES.success',

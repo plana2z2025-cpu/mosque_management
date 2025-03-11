@@ -16,7 +16,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { expenseActions, payeeActions } from '@/redux/combineActions';
 import moment from 'moment';
 import toast from 'react-hot-toast';
-import { use } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { set } from 'date-fns';
 
 const breadCumbs = [
   { label: 'Expenses', href: '/admin/expenses' },
@@ -48,10 +49,17 @@ const statusList = [
 ];
 export function CreateExpensesForm() {
   // State to manage form data and errors
+  const { expenseId } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { expenseCategoryNames } = useSelector((state) => state.expenseState);
+  const { expenseCategoryNames, singleExpenseDetails } = useSelector((state) => state.expenseState);
   const { payeeNamesList } = useSelector((state) => state.payeeState);
-  const { addNewExpenseAction, getAllExpenseCategoryNamesAction } = expenseActions;
+  const {
+    addNewExpenseAction,
+    getAllExpenseCategoryNamesAction,
+    getSingleExpensesAction,
+    updateExpenseAction,
+  } = expenseActions;
   const { getAllPayeeNamesAction } = payeeActions;
 
   const [formData, setFormData] = useState({ ...INITIAL_STATE });
@@ -69,6 +77,23 @@ export function CreateExpensesForm() {
       fetchAllPayeesNames();
     }
   }, [payeeNamesList]);
+
+  useEffect(() => {
+    if (expenseId && singleExpenseDetails?._id !== expenseId) {
+      dispatch(getSingleExpensesAction(expenseId));
+    } else if (expenseId && singleExpenseDetails) {
+      setFormData({
+        amount: String(singleExpenseDetails?.amount),
+        description: singleExpenseDetails?.description,
+        date: new Date(singleExpenseDetails?.date),
+        paymentMethod: singleExpenseDetails?.paymentMethod,
+        category: singleExpenseDetails?.category?._id || '',
+        receiptImage: singleExpenseDetails?.receiptImage,
+        status: singleExpenseDetails?.status,
+        payeeId: singleExpenseDetails?.payeeId?._id ?? null,
+      });
+    }
+  }, [expenseId, singleExpenseDetails]);
 
   const fetchAllCategoriesNames = useCallback(() => {
     dispatch(getAllExpenseCategoryNamesAction());
@@ -149,35 +174,73 @@ export function CreateExpensesForm() {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateFormFunction()) {
-      const json = {
-        ...formData,
-      };
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (validateFormFunction()) {
+        const json = {
+          ...formData,
+        };
 
-      json.date = moment(json.date).utc().format();
-      json.amount = parseFloat(json.amount);
-      if (json.payeeId) {
-        json.payeeId = json.payeeId;
-      } else {
-        delete json.payeeId;
-      }
+        json.date = moment(json.date).utc().format();
+        json.amount = parseFloat(json.amount);
+        if (json.payeeId) {
+          json.payeeId = json.payeeId;
+        } else {
+          delete json.payeeId;
+        }
 
-      const response = await addNewExpenseAction(json);
-      if (response[0] === 201) {
-        toast.success('event is created successfully');
-        setFormData({ ...INITIAL_STATE });
-        setErrors({});
-      } else {
-        toast.error(response[1]?.message);
+        const response = await addNewExpenseAction(json);
+        if (response[2] === 201) {
+          toast.success('Expense is created successfully');
+          setFormData({ ...INITIAL_STATE });
+          setErrors({});
+        } else {
+          toast.error(response[1]?.message);
+        }
       }
-    }
-  };
+    },
+    [formData]
+  );
+
+  const handleUpdateForm = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (validateFormFunction()) {
+        const json = {
+          ...formData,
+        };
+
+        // json.date = moment(json.date).utc().format();
+        delete json.date;
+        json.amount = parseFloat(json.amount);
+        if (json.payeeId) {
+          json.payeeId = json.payeeId;
+        } else {
+          delete json.payeeId;
+        }
+
+        const response = await updateExpenseAction(expenseId, json);
+        console.log(response);
+        if (response[2] === 200) {
+          toast.success('Expenses is updated successfully');
+          setFormData({ ...INITIAL_STATE });
+          setErrors({});
+          navigate('/admin/expenses');
+        } else {
+          toast.error(response[1]?.message);
+        }
+      }
+    },
+    [formData]
+  );
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
-      <form onSubmit={handleSubmit} className="space-y-8 w-1/2 max-md:w-full m-auto">
+      <form
+        onSubmit={expenseId ? handleUpdateForm : handleSubmit}
+        className="space-y-8 w-1/2 max-md:w-full m-auto"
+      >
         {/* Title Input  */}
         <div>
           <label className="block text-sm font-medium mb-2">Expense Amount</label>
@@ -303,14 +366,14 @@ export function CreateExpensesForm() {
             name="date"
             selected={formData?.date}
             onSelect={(date) => changeDateHandler(date, 'date')}
-            // disabled={(date) => date < new Date()}
+            disabled={expenseId ? true : false}
             // initialFocus
           />
         </div>
 
         {/* Submit Button */}
         <Button type="submit" className="w-full">
-          Create Expense
+          {expenseId ? 'Update Expense' : 'Create Expense'}
         </Button>
       </form>
     </Mainwrapper>

@@ -6,6 +6,7 @@ import {
   EXPENSE_CATEGORIES_NAMES,
   EXPENSE_DASHBOARD_GRAPH,
   FRIDAY_COLLECTION,
+  SINGLE_EXPENSE,
 } from './constant';
 import Service from '@/services';
 import * as API from './actionTypes';
@@ -28,6 +29,12 @@ const deleteExpenseAction = async (expenseId) => {
   return response;
 };
 
+const updateExpenseAction = async (expenseId, json) => {
+  const token = getAccessToken();
+  const response = await Service.fetchPut(`${API.BASE_TYPE}/${expenseId}`, json, token);
+  return response;
+};
+
 const getAllExpensesAction =
   (query = null) =>
   async (dispatch) => {
@@ -47,6 +54,21 @@ const getAllExpensesAction =
       });
     }
   };
+
+const getSingleExpensesAction = (expenseId) => async (dispatch) => {
+  dispatch({ type: SINGLE_EXPENSE.request });
+  const token = getAccessToken();
+  const response = await Service.fetchGet(`${API.BASE_TYPE}/${expenseId}`, token);
+
+  if (response[0] === true) {
+    dispatch({ type: SINGLE_EXPENSE.success, payload: response[1].data });
+  } else {
+    dispatch({
+      type: SINGLE_EXPENSE.fail,
+      payload: response[1],
+    });
+  }
+};
 
 // ----------------------------------------------------------------
 // CATEGORIES
@@ -176,7 +198,9 @@ export default {
   // EXPENSES
   addNewExpenseAction,
   getAllExpensesAction,
+  getSingleExpensesAction,
   deleteExpenseAction,
+  updateExpenseAction,
 
   // CATEGORIES
   getExpenseCategoriesAction,

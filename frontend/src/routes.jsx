@@ -115,6 +115,14 @@ const allRoutesMapper = [
     ),
   },
   {
+    path: '/admin/expenses/edit/:expenseId',
+    component: (
+      <AuthWrapper>
+        <CreateExpensesForm />
+      </AuthWrapper>
+    ),
+  },
+  {
     path: '/admin/expenses/collection',
     component: (
       <AuthWrapper>

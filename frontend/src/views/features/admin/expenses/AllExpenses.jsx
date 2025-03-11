@@ -18,7 +18,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import toast from 'react-hot-toast';
 import { Input } from '@/components/ui/input';
-import { EXPENSES } from '@/redux/expenses/constant';
+import { EXPENSES, SINGLE_EXPENSE } from '@/redux/expenses/constant';
 import { all } from 'axios';
 
 const breadCumbs = [{ label: 'Expenses', href: null }];
@@ -99,6 +99,12 @@ const AllExpenses = () => {
     }
   }, [info?.deleteId, info?.deleteLoading]);
 
+  const editExpanseHandler = useCallback((row) => {
+    const payload = allExpenses?.docs?.find((item) => item._id === row._id);
+    dispatch({ type: SINGLE_EXPENSE.update, payload });
+    navigate(`./edit/${row._id}`);
+  }, []);
+
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
       <div className="w-full flex justify-end">
@@ -119,7 +125,9 @@ const AllExpenses = () => {
         totalPages={allExpenses?.totalPages}
         currentPage={allExpenses?.currentPage}
         onPageChange={(page) => setInfo((prev) => ({ ...prev, page }))}
-        actions={(row) => <TableRow row={row} onDelete={deletePopupModalFunc} />}
+        actions={(row) => (
+          <TableRow row={row} onDelete={deletePopupModalFunc} onUpdate={editExpanseHandler} />
+        )}
         loading={loading}
       />
 
