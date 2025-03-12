@@ -1,34 +1,91 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { useTranslation } from 'react-i18next';
+import { Eye, EyeOff } from 'lucide-react';
 
-const SignupComp = ({ toggleForm }) => {
+const SignupComp = ({ toggleForm, loginSubmitHandlerFunction, changeHandlerFunction, loading }) => {
+  const { t } = useTranslation();
+  const [info, setInfo] = useState({
+    showPassword: false,
+  });
+
+  const togglePasswordVisibility = useCallback(() => {
+    setInfo((prevState) => ({
+      ...prevState,
+      showPassword: !prevState.showPassword,
+    }));
+  }, [info?.showPassword]);
   return (
-    <Card className="signup-form w-full">
+    <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Sign Up</CardTitle>
+        <CardTitle className="text-2xl">{t('login.login')}</CardTitle>
+        <CardDescription>Enter your email below to login to your account</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Input type="text" placeholder="Full Name" className="w-full left-to-right-an" />
-          <Input type="email" placeholder="Email" className="w-full left-to-right-an" />
-          <Input type="password" placeholder="Password" className="w-full left-to-right-an" />
-          <Input
-            type="password"
-            placeholder="Confirm Password"
-            className="w-full left-to-right-an"
-          />
+      <CardContent>
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="email">Mosque Unique ID</Label>
+            <Input
+              id="mosqueUniqueId"
+              type="text"
+              name="mosqueId"
+              placeholder={t('login.emailPlaceholder')}
+              onChange={changeHandlerFunction}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="name"
+              type="text"
+              name="name"
+              placeholder={t('login.emailPlaceholder')}
+              onChange={changeHandlerFunction}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <div className="flex items-center">
+              <Label htmlFor="password">Password</Label>
+              <div className="ml-auto inline-block text-sm underline">Forgot your password?</div>
+            </div>
+            <div className="relative">
+              <Input
+                id="password"
+                type={info.showPassword ? 'text' : 'password'}
+                name="password"
+                placeholder={t('login.passwordPlaceholder')}
+                onChange={changeHandlerFunction}
+                onKeyDown={(e) => e.key === 'Enter' && loginSubmitHandlerFunction()}
+                required
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                onClick={togglePasswordVisibility}
+              >
+                {info?.showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          <Button className="w-full" onClick={loginSubmitHandlerFunction} disabled={loading}>
+            {t('login.loginButton')}
+          </Button>
         </div>
-        <Button className="w-full bg-indigo-600 hover:bg-indigo-700 left-to-right-an">
-          Sign Up
-        </Button>
-        <p className="text-center text-sm text-gray-600 left-to-right-an">
-          Already have an account?{' '}
-          <button onClick={toggleForm} className="text-indigo-600 hover:underline">
-            Login
-          </button>
-        </p>
+        <div className="mt-4 text-center text-sm">
+          {t('login.dontHaveAnAccount')}
+          <div className="underline" onClick={toggleForm}>
+            {' '}
+            {t('login.signup')}
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

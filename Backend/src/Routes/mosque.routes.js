@@ -67,7 +67,7 @@ MosqueRoutes.route("/community/mosque-detail")
     Authorization(ADMIN, SUB_USER),
     CheckMosqueAccess,
     CheckMosqueAuthorization(ADMIN, SUB_USER),
-    CheckMosquePermissions(READ),
+    // CheckMosquePermissions(READ),
     getCommunityMosqueDetailsController
   )
   .put(

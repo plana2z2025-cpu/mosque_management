@@ -16,6 +16,22 @@ const loginUserAction = (json) => async (dispatch) => {
     });
   }
 };
+const loginSubUserAction = (json) => async (dispatch) => {
+  dispatch({ type: USER_LOGIN.request });
+  const response = await Service.fetchPost(
+    `${API.USERS_LOGIN.USER}${API.USERS_LOGIN.LOGIN}${API.USERS_LOGIN.SUB_USER}`,
+    json
+  );
+  if (response[0] === true) {
+    setAccessToken(response[1]?.accessToken);
+    dispatch({ type: USER_LOGIN.success, payload: response[1]?.data?.role });
+  } else {
+    dispatch({
+      type: USER_LOGIN.fail,
+      payload: response[1],
+    });
+  }
+};
 
 const clearLoginErrorsAction = () => (dispatch) => {
   dispatch({
@@ -28,6 +44,7 @@ const resetLoginAction = () => (dispatch) => {
 };
 export default {
   loginUserAction,
+  loginSubUserAction,
   clearLoginErrorsAction,
   resetLoginAction,
 };

@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import SideImage from '../../../assets/images/loginside.jpg';
@@ -19,13 +19,16 @@ const Login = () => {
   const { profileDetails } = useSelector((state) => state.userProfileState);
 
   const dispatch = useDispatch();
-  const { loginUserAction, clearLoginErrorsAction, resetLoginAction } = loginActions;
+  const { loginUserAction, loginSubUserAction, clearLoginErrorsAction, resetLoginAction } =
+    loginActions;
   const navigate = useNavigate();
   const checkAuth = useAuth();
 
   const [info, setinfo] = useState({
     email: '',
     password: '',
+    mosqueId: '',
+    name: '',
     isLoginForm: true,
   });
 
@@ -65,7 +68,7 @@ const Login = () => {
     setinfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const loginSubmitHandlerFunction = () => {
+  const loginSubmitHandlerFunction = useCallback(() => {
     if (!validator.isEmail(info.email || '')) {
       toast.error('Enter the correct email');
       return;
@@ -79,8 +82,29 @@ const Login = () => {
       password: info?.password || '',
     };
     dispatch(loginUserAction(json));
-  };
+  }, [info?.email, info?.password]);
 
+  const loginSubUserSubmitHandlerFunction = useCallback(() => {
+    if (info.mosqueId.trim() === '') {
+      toast.error('Enter the correct name');
+      return;
+    } else if (!validator.isStrongPassword(info.password || '')) {
+      toast.error('Enter the strong password');
+      return;
+    } else if (typeof info.mosqueId !== 'string' || info.mosqueId.trim() === '') {
+      toast.error('Mosque ID should be a valid string');
+      return;
+    }
+
+    const json = {
+      name: info?.name || '',
+      password: info?.password || '',
+      mosqueUniqueId: info?.mosqueId || '',
+    };
+    dispatch(loginSubUserAction(json));
+  }, [info?.name, info?.mosqueId, info?.password]);
+
+  console.log(info);
   return (
     <>
       <div className="fullScreen">
@@ -99,7 +123,12 @@ const Login = () => {
                   loading={loading}
                 />
               ) : (
-                <SignupComp toggleForm={toggleForm} />
+                <SignupComp
+                  toggleForm={toggleForm}
+                  loginSubmitHandlerFunction={loginSubUserSubmitHandlerFunction}
+                  changeHandlerFunction={changeHandlerFunction}
+                  loading={loading}
+                />
               )}
             </div>
 

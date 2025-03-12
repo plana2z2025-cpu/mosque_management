@@ -37,21 +37,6 @@ const LoginComp = ({ toggleForm, loginSubmitHandlerFunction, changeHandlerFuncti
               required
             />
           </div>
-          {/* <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
-              <div className="ml-auto inline-block text-sm underline">Forgot your password?</div>
-            </div>
-            <Input
-              id="password"
-              type="password"
-              name="password"
-              placeholder={t('login.passwordPlaceholder')}
-              onChange={changeHandlerFunction}
-              onKeyDown={(e) => e.key === 'Enter' && loginSubmitHandlerFunction()}
-              required
-            />
-          </div> */}
 
           <div className="grid gap-2">
             <div className="flex items-center">
@@ -84,7 +69,10 @@ const LoginComp = ({ toggleForm, loginSubmitHandlerFunction, changeHandlerFuncti
         </div>
         <div className="mt-4 text-center text-sm">
           {t('login.dontHaveAnAccount')}
-          <div className="underline"> {t('login.signup')}</div>
+          <div className="underline" onClick={toggleForm}>
+            {' '}
+            {t('login.signup')}
+          </div>
         </div>
       </CardContent>
     </Card>

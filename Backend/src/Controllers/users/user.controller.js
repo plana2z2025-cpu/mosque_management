@@ -87,6 +87,7 @@ const MyProfileController = async (req, res, next) => {
         .populate("mosque_admin", "name");
     } else if (req.__type__ === SUB_USER) {
       data = await userMosqueModel.findById(req.user._id).lean();
+      data.role = SUB_USER;
     }
 
     res.status(200).json({
@@ -123,6 +124,7 @@ const LoginSubUserController = async (req, res, next) => {
       return next(httpErrors.BadRequest(USER_CONSTANTS.INVALID_EMAIL_PASSWORD));
 
     delete userExist.password;
+    userExist.role = SUB_USER;
     const token = await CreateAccessToken(userExist._id, SUB_USER);
     res.status(200).send({
       success: true,
