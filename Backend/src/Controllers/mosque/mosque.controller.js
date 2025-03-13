@@ -15,6 +15,7 @@ const {
   newRegistrationMosqueWebhook,
 } = require("../../hooks/registration.webhook");
 const errorHandling = require("../../Utils/errorHandling");
+const cloudinary = require("cloudinary");
 
 const createNewMosqueController = async (req, res, next) => {
   try {
@@ -367,6 +368,55 @@ const updateCommunityMosqueTimingsController = async (req, res, next) => {
   }
 };
 
+const updateCommunityMosqueProfileController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller-mosque.controller-updateCommunityMosqueProfileController-Start"
+    );
+    const mosqueId = req.mosqueId;
+    const mosqueProfile = req.file;
+
+    let oldData = await mosqueModel.findById(mosqueId).lean();
+
+    const profileDetails = {
+      fileName: mosqueProfile.filename,
+      originalName: mosqueProfile.originalname,
+      size: mosqueProfile.size,
+    };
+
+    const myCloud = await cloudinary.v2.uploader.upload(mosqueProfile.path, {
+      folder: "Mosque_Management/userProfile",
+      width: 150,
+      height: 150,
+      aspect_ratio: "1:1",
+    });
+
+    profileDetails.public_id = myCloud.public_id;
+    profileDetails.url = myCloud.secure_url;
+    let deleteImageId = oldData?.profile?.public_id || null;
+
+    oldData = await mosqueModel
+      .findByIdAndUpdate(mosqueId, { profile: profileDetails }, { new: true })
+      .lean();
+
+    if (deleteImageId) {
+      await cloudinary.v2.uploader.destroy(deleteImageId);
+    }
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      data: oldData,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-updateCommunityMosqueProfileController-Error",
+      error
+    );
+    errorHandling.handleCustomErrorService(error, next);
+  }
+};
+
 // -----------------------------------------------------------------------------
 // __TYPE__ : PUBLIC
 // -----------------------------------------------------------------------------
@@ -560,6 +610,8 @@ module.exports = {
   getCommunityMosqueDetailsController,
   updateCommunityMosqueDetailsController,
   updateCommunityMosqueTimingsController,
+  updateCommunityMosqueProfileController,
+  // public
   getPublicAllMosqueController,
   getPublicSingleMosqueController,
   getMosqueCitiesListController,

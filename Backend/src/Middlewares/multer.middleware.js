@@ -10,6 +10,8 @@ const storage = multer.diskStorage({
   },
 });
 
-const ProfileUpload = multer({ storage }).single("ProfileAvatar");
+const mosqueProfile = multer({ storage }).single("mosqueProfile");
 
-module.exports.UserProfileUpload = ProfileUpload;
+module.exports = {
+  mosqueProfile,
+};

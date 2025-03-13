@@ -129,6 +129,13 @@ const ModelSchema = new mongoose.Schema(
         qutba: String,
       },
     },
+    profile: {
+      public_id: String,
+      url: String,
+      fileName: String,
+      originalName: String,
+      size: Number,
+    },
     images: [
       {
         public_id: String,

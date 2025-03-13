@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const MongoDataBaseConn = require("./src/Config/db.config");
+const CloudinaryConn = require("./src/Config/cloudinary.config");
 const IndexRoutes = require("./src/Routes/index.route");
 const { ratelimitConfig } = require("./src/Config/ratelimit.config");
 const { DEVELOPMENT_MODE } = require("./src/Config/index.config");
@@ -15,6 +16,7 @@ const app = express();
 //----------------------------------------
 // MongoDataBaseConn
 MongoDataBaseConn();
+CloudinaryConn();
 
 if (DEVELOPMENT_MODE === "development") {
   const morgan = require("morgan");

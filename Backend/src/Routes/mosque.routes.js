@@ -27,9 +27,11 @@ const {
   getPublicAllMosqueController,
   getPublicSingleMosqueController,
   getMosqueCitiesListController,
+  updateCommunityMosqueProfileController,
 } = require("../Controllers/mosque/mosque.controller");
 const ValidateObjectId = require("../Middlewares/validateObjectid.middleware");
 const mosqueValidations = require("../validators/mosque.joi");
+const { mosqueProfile } = require("../Middlewares/multer.middleware");
 
 const MosqueRoutes = express.Router();
 
@@ -88,6 +90,16 @@ MosqueRoutes.route("/community/mosque-timings").put(
   CheckMosquePermissions(UPDATE),
   mosqueValidations.updateMosqueTimingsValidation,
   updateCommunityMosqueTimingsController
+);
+
+MosqueRoutes.route("/community/profile").put(
+  Authentication,
+  Authorization(ADMIN, SUB_USER),
+  CheckMosqueAccess,
+  CheckMosqueAuthorization(ADMIN, SUB_USER),
+  CheckMosquePermissions(UPDATE),
+  mosqueProfile,
+  updateCommunityMosqueProfileController
 );
 
 //
