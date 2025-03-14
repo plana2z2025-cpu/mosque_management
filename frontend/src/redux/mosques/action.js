@@ -105,6 +105,17 @@ const updateMosqueTimingsAction = async (json) => {
   return response;
 };
 
+const updateMosqueProfileAction = async (form) => {
+  const token = getAccessToken();
+  const response = await Service.fetchPut(
+    `${API.BASE_TYPE}${API.MOSQUE_TYPES.COMMUNITY}${API.MOSQUE_TYPES.PROFILE}`,
+    form,
+    token,
+    'formData'
+  );
+  return response;
+};
+
 // for settings
 const updateMosqueSettingsAction = (json) => async (dispatch, getState) => {
   const token = getAccessToken();
@@ -152,5 +163,6 @@ export default {
   clearMosqueErrorsAction,
   getCommunityMosqueDetailsAction,
   updateMosqueTimingsAction,
+  updateMosqueProfileAction,
   updateMosqueSettingsAction,
 };

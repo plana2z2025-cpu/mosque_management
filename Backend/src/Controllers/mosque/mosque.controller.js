@@ -376,6 +376,10 @@ const updateCommunityMosqueProfileController = async (req, res, next) => {
     const mosqueId = req.mosqueId;
     const mosqueProfile = req.file;
 
+    if (!req.file) {
+      return next(httpErrors.BadRequest("Please upload a file"));
+    }
+
     let oldData = await mosqueModel.findById(mosqueId).lean();
 
     const profileDetails = {

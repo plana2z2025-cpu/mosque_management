@@ -300,6 +300,10 @@ const AdminSidebar = ({ user, children }) => {
                       <Settings2 />
                       Profile Settings
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/mosque-settings')}>
+                      <Settings2 />
+                      Mosque Settings
+                    </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Wallet />
                       Subscription

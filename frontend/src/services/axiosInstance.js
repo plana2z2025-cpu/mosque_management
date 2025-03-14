@@ -37,6 +37,10 @@ export class AxiosConfig {
     this.addConfigHeader('Authorization', `Bearer ${token}`);
   }
 
+  addFormHeaderContentType() {
+    this.addConfigHeader('Content-Type', 'multipart/form-data');
+  }
+
   getConfig() {
     return this.config;
   }

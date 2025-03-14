@@ -21,6 +21,7 @@ import PayeeExpenses from './views/features/admin/payments/PayeeExpenses';
 import EventCalendar from './views/features/admin/events/EventsCalendar';
 import FridayCollection from './views/features/admin/expenses/FridayCollection';
 import CreateExpensesForm from './views/features/admin/expenses/CreateExpense';
+import MosqueProfile from './views/features/profileSettings/MosqueProfile';
 const allRoutesMapper = [
   {
     path: '/',
@@ -87,6 +88,14 @@ const allRoutesMapper = [
     component: (
       <AuthWrapper>
         <ProfileDetails />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/mosque-settings',
+    component: (
+      <AuthWrapper>
+        <MosqueProfile />
       </AuthWrapper>
     ),
   },

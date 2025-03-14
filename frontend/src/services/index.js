@@ -7,7 +7,7 @@ const handleHeaders = (token, contentType) => {
   if (!contentType) {
     axiosConfig.removeContentType();
   } else if (contentType === 'formData') {
-    axiosConfig.setContentType('multipart/form-data');
+    axiosConfig.addFormHeaderContentType();
   }
   if (token) {
     axiosConfig.addAuthorization(token);
@@ -77,8 +77,6 @@ const Service = {
     try {
       const endpoint = API_URL + url;
       const headers = handleHeaders(token, contentType);
-      console.log(headers);
-
       const response = await apiFetch.deleteMethod(endpoint, body, headers);
       return processResponse(response);
     } catch (error) {
