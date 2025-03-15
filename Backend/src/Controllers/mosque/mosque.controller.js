@@ -393,6 +393,7 @@ const updateCommunityMosqueProfileController = async (req, res, next) => {
       width: 150,
       height: 150,
       aspect_ratio: "1:1",
+      filename_override: mosqueProfile.fileName,
     });
 
     profileDetails.public_id = myCloud.public_id;

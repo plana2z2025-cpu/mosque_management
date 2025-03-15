@@ -22,6 +22,7 @@ import EventCalendar from './views/features/admin/events/EventsCalendar';
 import FridayCollection from './views/features/admin/expenses/FridayCollection';
 import CreateExpensesForm from './views/features/admin/expenses/CreateExpense';
 import MosqueProfile from './views/features/profileSettings/MosqueProfile';
+import Setting from './views/features/profileSettings/Setting';
 const allRoutesMapper = [
   {
     path: '/',
@@ -84,10 +85,10 @@ const allRoutesMapper = [
     ),
   },
   {
-    path: '/profile',
+    path: '/settings/:settingId',
     component: (
       <AuthWrapper>
-        <ProfileDetails />
+        <Setting />
       </AuthWrapper>
     ),
   },

@@ -1,24 +1,14 @@
 import React, { memo, useState, useCallback, useEffect, useRef } from 'react';
-import Mainwrapper from '@/views/layouts/Mainwrapper';
 import { useDispatch, useSelector } from 'react-redux';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { mosqueActions } from '../../../redux/combineActions';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { Pencil, Image as ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-// import toast from 'react-hot-toast';
-
-const roleDisplayConstant = {
-  admin: 'Owner',
-  user: 'User',
-  supper_admin: 'Super Admin',
-};
 
 const INITIAL_STATE = {
   mosqueInfo: {
@@ -39,19 +29,13 @@ const INITIAL_STATE = {
   profile: {},
 };
 
-const breadCumbs = [{ label: 'Mosque Profile', href: null }];
-
 const MosqueProfile = () => {
-  //   const { t } = useTranslation();
-  //   const translation = t('registration');
   const translation = useTranslation().t('registration') || {};
   const dispatch = useDispatch();
-  const { profileDetails } = useSelector((state) => state.userProfileState);
   const { communityMosqueSettings, communityMosqueDetail } = useSelector(
     (state) => state.mosqueState
   );
-  const { updateMosqueSettingsAction, updateMosqueProfileAction, getCommunityMosqueDetailsAction } =
-    mosqueActions;
+  const { updateMosqueProfileAction, getCommunityMosqueDetailsAction } = mosqueActions;
   const [info, setInfo] = useState(INITIAL_STATE);
   const [fileUploadImage, setFileUploadImage] = useState(null);
   const [error, setError] = useState({});
@@ -85,20 +69,6 @@ const MosqueProfile = () => {
     }
   }, [communityMosqueDetail]);
 
-  const applicationChangeHandler = useCallback(
-    (e, key) => {
-      const json = {};
-      if (key === 'ramadanTimingsVisible') {
-        json[key] = e;
-      } else if (key === 'queryFormVisible') {
-        json[key] = e;
-      }
-
-      dispatch(updateMosqueSettingsAction(json));
-    },
-    [communityMosqueSettings]
-  );
-
   const mosqueInfoHandleChangeFunc = useCallback((e) => {}, []);
 
   const aboutInfoHandlerChangeFunc = useCallback((e) => {}, []);
@@ -131,7 +101,7 @@ const MosqueProfile = () => {
     }
   };
   return (
-    <Mainwrapper breadCumbs={breadCumbs}>
+    <>
       {/* Mosque Details */}
       <Card>
         <CardHeader>
@@ -241,7 +211,7 @@ const MosqueProfile = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>{translation['profile-image']}</CardTitle>
+          <CardTitle>Mosque Profile</CardTitle>
           <CardDescription>Upload or update your mosque's profile image.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -340,51 +310,7 @@ const MosqueProfile = () => {
           </div>
         </CardContent>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Application Settings</CardTitle>
-          <CardDescription>Manage your application preferences and features</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Ramadan Timings Setting */}
-          <div className="flex flex-row items-center justify-between space-y-2">
-            <div>
-              <Label htmlFor="ramadan-timings" className="text-base">
-                Ramadan Timings
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Show prayer and iftar timings during Ramadan month. This will display a special
-                calendar with accurate timings for your location.
-              </p>
-            </div>
-            <Switch
-              id="ramadan-timings"
-              checked={communityMosqueSettings?.ramadanTimingsVisible || false}
-              onCheckedChange={(e) => applicationChangeHandler(e, 'ramadanTimingsVisible')}
-            />
-          </div>
-          <div className="h-px bg-border" /> {/* Divider */}
-          {/* Query Form Setting */}
-          <div className="flex flex-row items-center justify-between space-y-2">
-            <div>
-              <Label htmlFor="query-form" className="text-base">
-                Query Form
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Enable the query form feature to submit questions or requests. This helps us provide
-                better assistance and support for your needs.
-              </p>
-            </div>
-            <Switch
-              id="query-form"
-              checked={communityMosqueSettings?.queryFormVisible || false}
-              onCheckedChange={(e) => applicationChangeHandler(e, 'queryFormVisible')}
-            />
-          </div>
-        </CardContent>
-      </Card>
-    </Mainwrapper>
+    </>
   );
 };
 

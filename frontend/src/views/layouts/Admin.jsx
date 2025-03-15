@@ -296,13 +296,9 @@ const AdminSidebar = ({ user, children }) => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    <DropdownMenuItem onClick={() => navigate('/settings/my-profile')}>
                       <Settings2 />
-                      Profile Settings
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/mosque-settings')}>
-                      <Settings2 />
-                      Mosque Settings
+                      Settings
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Wallet />
