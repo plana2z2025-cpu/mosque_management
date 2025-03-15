@@ -19,8 +19,8 @@ const colors = [
 ];
 
 const EventTypeBasedCount = ({ data }) => {
-  const categories = data?.map((item) => item.eventType) || [];
-  const seriesData = data?.map((item) => item.count) || [];
+  const categories = data?.map((item) => item?.eventType || 'other') || [];
+  const seriesData = data?.map((item) => item?.count ?? 0) || [];
 
   // Chart options
   const chartOptions = {
@@ -81,10 +81,11 @@ const EventTypeBasedCount = ({ data }) => {
       data: seriesData,
     },
   ];
+  console.log(data);
   return (
     <div>
       {' '}
-      <ReactApexChart options={chartOptions} series={series} type="bar" height={350} />
+      <ReactApexChart options={chartOptions} series={series || []} type="bar" height={350} />
     </div>
   );
 };
