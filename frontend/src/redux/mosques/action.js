@@ -75,7 +75,7 @@ const getCommunityMosqueDetailsAction =
   (updateDetails = null) =>
   async (dispatch) => {
     if (updateDetails) {
-      dispatch({ type: COMMUNITY_MOSQUE_DETAILS.success, payload: updateDetails });
+      dispatch({ type: COMMUNITY_MOSQUE_DETAILS.update, payload: updateDetails });
       return;
     }
     dispatch({ type: COMMUNITY_MOSQUE_DETAILS.request });

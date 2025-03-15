@@ -410,7 +410,7 @@ const updateCommunityMosqueProfileController = async (req, res, next) => {
     res.status(200).json({
       success: true,
       statusCode: 200,
-      data: oldData,
+      details: oldData,
     });
   } catch (error) {
     logger.error(

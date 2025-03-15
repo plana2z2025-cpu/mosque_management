@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
 export class AxiosConfig {
   constructor() {
     this.config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
   }
@@ -30,11 +30,15 @@ export class AxiosConfig {
   }
 
   removeContentType() {
-    this.removeConfig('Content-Type');
+    this.removeConfig("Content-Type");
   }
 
   addAuthorization(token) {
-    this.addConfigHeader('Authorization', `Bearer ${token}`);
+    this.addConfigHeader("Authorization", `Bearer ${token}`);
+  }
+
+  addFormHeaderContentType() {
+    this.addConfigHeader("Content-Type", "multipart/form-data");
   }
 
   getConfig() {

@@ -16,7 +16,9 @@ const CommunityMosqueTimings = () => {
   const translation = t('registration');
   const { updateMosqueTimingsAction, getCommunityMosqueDetailsAction } = mosqueActions;
   const dispatch = useDispatch();
-  const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
+  const { communityMosqueDetail, communityMosqueSettings } = useSelector(
+    (state) => state.mosqueState
+  );
 
   const [mosqueInfo, setMosqueInfo] = useState({});
   const [info, setInfo] = useState({
@@ -73,7 +75,11 @@ const CommunityMosqueTimings = () => {
       const response = await updateMosqueTimingsAction(changes);
       if (response[0] === true) {
         toast.success('successfully updated the timings');
-        dispatch(getCommunityMosqueDetailsAction(response[1].details));
+        const payload = {
+          details: { ...response[1]?.details },
+          settings: { ...communityMosqueSettings },
+        };
+        dispatch(getCommunityMosqueDetailsAction(payload));
         updateState.isChanged = false;
       } else {
         toast.error(response[1].message);

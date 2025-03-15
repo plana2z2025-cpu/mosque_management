@@ -50,7 +50,8 @@ const MosqueProfile = () => {
   const { communityMosqueSettings, communityMosqueDetail } = useSelector(
     (state) => state.mosqueState
   );
-  const { updateMosqueSettingsAction, updateMosqueProfileAction } = mosqueActions;
+  const { updateMosqueSettingsAction, updateMosqueProfileAction, getCommunityMosqueDetailsAction } =
+    mosqueActions;
   const [info, setInfo] = useState(INITIAL_STATE);
   const [fileUploadImage, setFileUploadImage] = useState(null);
   const [error, setError] = useState({});
@@ -115,6 +116,13 @@ const MosqueProfile = () => {
         toast.dismiss();
         if (response[0] === true) {
           toast.success('Image Uploaded Successfully');
+          const payload = {
+            details: { ...response[1]?.details },
+            settings: { ...communityMosqueSettings },
+          };
+          dispatch(getCommunityMosqueDetailsAction(payload));
+          setFileUploadImage(null);
+          openFileInput.current.value = '';
         } else {
           toast.error(response[1]?.message || 'Image Upload Failed');
         }
