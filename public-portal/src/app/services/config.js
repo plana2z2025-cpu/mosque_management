@@ -1,6 +1,7 @@
 const config_urls = {
   local: "http://localhost:3000",
   development: "http://localhost:8000",
+  dev: "http://mosqueapi.shahidnagodriya.online",
   production:
     process.env.NEXT_PUBLIC_SERVER_URL_API || "https://mosque.dev.mooo.com",
 };
