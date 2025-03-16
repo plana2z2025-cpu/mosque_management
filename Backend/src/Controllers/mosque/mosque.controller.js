@@ -422,6 +422,111 @@ const updateCommunityMosqueProfileController = async (req, res, next) => {
   }
 };
 
+const uploadCommunityMosqueGalleryController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller-mosque.controller-uploadMosqueGalleryController-Start"
+    );
+    const mosqueId = req.mosqueId;
+    const mosqueGallery = req.file;
+
+    if (!mosqueGallery) {
+      return next(httpErrors.BadRequest("Please upload a file"));
+    }
+
+    let oldData = await mosqueModel.findById(mosqueId).lean();
+    let totalImages = oldData?.images || [];
+    // check if total images are more than 20
+    if (totalImages.length >= 20) {
+      return next(
+        httpErrors.BadRequest("You can't upload more than 20 images")
+      );
+    }
+
+    let isFileImageExist = totalImages.find(
+      (item) => item.originalName === mosqueGallery.originalname
+    );
+    if (isFileImageExist) {
+      return next(httpErrors.BadRequest("Image already exist with same name"));
+    }
+
+    // upload image to cloudinary
+    const imageDetails = {
+      fileName: mosqueGallery.filename,
+      originalName: mosqueGallery.originalname,
+      size: mosqueGallery.size,
+    };
+
+    const myCloud = await cloudinary.v2.uploader.upload(mosqueGallery.path, {
+      folder: "Mosque_Management/galleryImages",
+      filename_override: mosqueGallery.fileName,
+    });
+
+    imageDetails.public_id = myCloud.public_id;
+    imageDetails.url = myCloud.secure_url;
+
+    oldData = await mosqueModel
+      .findByIdAndUpdate(
+        mosqueId,
+        { $push: { images: imageDetails } },
+        { new: true }
+      )
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      details: oldData,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-uploadMosqueGalleryController-Error",
+      error
+    );
+    errorHandling.handleCustomErrorService(error, next);
+  }
+};
+
+const deleteCommunityMosqueGalleryController = async (req, res, next) => {
+  try {
+    logger.info(
+      "Controller-mosque.controller-deleteCommunityMosqueGalleryController-Start"
+    );
+    const images = req.body.images;
+    const mosqueId = req.mosqueId;
+    let imagesDeleted = {};
+    let oldData = await mosqueModel.findById(mosqueId).lean();
+
+    images.forEach(async (item) => {
+      const isFileImageExist = oldData.images.find(
+        (image) => image._id === item
+      );
+      if (isFileImageExist && isFileImageExist?.public_id) {
+        imagesDeleted[item] = isFileImageExist;
+        await cloudinary.v2.uploader.destroy(isFileImageExist.public_id);
+        oldData.images = oldData.images.filter((image) => image._id !== item);
+      }
+    });
+
+    oldData = await mosqueModel
+      .findByIdAndUpdate(mosqueId, { images: oldData.images }, { new: true })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      details: oldData,
+      imagesDeleted,
+    });
+  } catch (error) {
+    logger.error(
+      "Controller-mosque.controller-deleteCommunityMosqueGalleryController-Error",
+      error
+    );
+    errorHandling.handleCustomErrorService(error, next);
+  }
+};
+
 // -----------------------------------------------------------------------------
 // __TYPE__ : PUBLIC
 // -----------------------------------------------------------------------------
@@ -616,6 +721,7 @@ module.exports = {
   updateCommunityMosqueDetailsController,
   updateCommunityMosqueTimingsController,
   updateCommunityMosqueProfileController,
+  uploadCommunityMosqueGalleryController,
   // public
   getPublicAllMosqueController,
   getPublicSingleMosqueController,

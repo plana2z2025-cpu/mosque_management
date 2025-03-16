@@ -140,6 +140,9 @@ const ModelSchema = new mongoose.Schema(
       {
         public_id: String,
         url: String,
+        fileName: String,
+        originalName: String,
+        size: Number,
       },
     ],
     active: {
