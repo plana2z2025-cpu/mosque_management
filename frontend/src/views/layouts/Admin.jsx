@@ -12,6 +12,7 @@ import {
   CreditCard,
   Clock,
   Receipt,
+  GalleryThumbnails,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -126,6 +127,18 @@ const data = {
         {
           title: 'Ramadan Timings',
           url: '/admin/ramadan/timings',
+        },
+      ],
+    },
+
+    {
+      title: 'Gallery',
+      url: '#',
+      icon: GalleryThumbnails,
+      items: [
+        {
+          title: 'Upload Photos',
+          url: '/admin/gallery/upload',
         },
       ],
     },
