@@ -13,8 +13,8 @@ import { useSelector } from 'react-redux';
 const INITIAL_STATE = {
   uploadImages: {},
   uploadSize: 0,
-  startedUploading: false,
-  uploadLimit: 1,
+  startedUploading: true,
+  uploadLimit: 2,
   currentUpload: 1,
 };
 
@@ -108,6 +108,7 @@ const UploadGallery = () => {
     const queue = _.keys(info.uploadImages);
     const activeUploads = [];
     let totalImages = _.size(info.uploadImages || {});
+    setInfo((prev) => ({ ...prev, startedUploading: true }));
 
     const nextUploadFunc = async () => {
       if (queue.length === 0) return;
@@ -158,7 +159,6 @@ const UploadGallery = () => {
 
     await Promise.allSettled(activeUploads);
   };
-  console.log(info);
 
   return (
     <Mainwrapper breadCumbs={breadCumbs}>
@@ -224,17 +224,37 @@ const UploadGallery = () => {
                 >
                   Size
                 </th>
+
+                {info?.startedUploading && (
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Upload Status
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {Object.entries(info.uploadImages).map(([fileName, fileData]) => (
+              {Object.entries(info?.uploadImages).map(([fileName, fileData]) => (
                 <tr key={fileName}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {fileName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {getImageSizeFormat(fileData.size)}
+                    {getImageSizeFormat(fileData?.size)}
                   </td>
+                  {info?.startedUploading && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex gap-4 items-center">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5  dark:bg-gray-700">
+                        <div
+                          className="bg-gray-600 h-2.5 rounded-full dark:bg-gray-300"
+                          style={{ width: `${fileData?.uploadedPercentage}%` }}
+                        ></div>
+                      </div>
+                      <p className="m-0 p-0">{fileData?.uploadedPercentage}%</p>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
