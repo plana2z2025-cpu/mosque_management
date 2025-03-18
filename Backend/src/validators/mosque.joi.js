@@ -182,10 +182,20 @@ const updateMosqueTimingsValidation = celebrate({
   }),
 });
 
+const deleteGalleryImagesValidation = celebrate({
+  body: Joi.object({
+    images: Joi.array()
+      .items(Joi.string().regex(/^[0-9a-fA-F]{24}$/))
+      .required()
+      .label("images"),
+  }),
+});
+
 module.exports = {
   createNewMosqueValidation,
   createMosqueEmailValidation,
   createMosqueSlugValidation,
   updateMosqueDetailsValidation,
   updateMosqueTimingsValidation,
+  deleteGalleryImagesValidation,
 };

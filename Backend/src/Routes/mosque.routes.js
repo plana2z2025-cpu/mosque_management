@@ -123,6 +123,7 @@ MosqueRoutes.route("/community/gallery")
     CheckMosqueAccess,
     CheckMosqueAuthorization(ADMIN, SUB_USER),
     CheckMosquePermissions(UPDATE),
+    mosqueValidations.deleteGalleryImagesValidation,
     deleteCommunityMosqueGalleryController
   );
 

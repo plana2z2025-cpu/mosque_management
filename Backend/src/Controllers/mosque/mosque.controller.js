@@ -492,21 +492,26 @@ const deleteCommunityMosqueGalleryController = async (req, res, next) => {
     logger.info(
       "Controller-mosque.controller-deleteCommunityMosqueGalleryController-Start"
     );
-    const images = req.body.images;
+    const images = req.body.images || [];
     const mosqueId = req.mosqueId;
     let imagesDeleted = {};
     let oldData = await mosqueModel.findById(mosqueId).lean();
 
-    images.forEach(async (item) => {
-      const isFileImageExist = oldData.images.find(
-        (image) => image._id === item
+    images?.forEach(async (item) => {
+      const isFileImageExist = oldData?.images?.find(
+        (image) => image._id.toString() === item
       );
+
       if (isFileImageExist && isFileImageExist?.public_id) {
         imagesDeleted[item] = isFileImageExist;
         await cloudinary.v2.uploader.destroy(isFileImageExist.public_id);
-        oldData.images = oldData.images.filter((image) => image._id !== item);
       }
     });
+
+    let deletedIds = Object.keys(imagesDeleted);
+    oldData.images = oldData.images.filter(
+      (image) => !deletedIds.includes(image._id.toString())
+    );
 
     oldData = await mosqueModel
       .findByIdAndUpdate(mosqueId, { images: oldData.images }, { new: true })

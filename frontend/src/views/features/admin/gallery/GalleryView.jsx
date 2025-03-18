@@ -35,7 +35,10 @@ const GalleryView = () => {
   // Delete selected images
   const deleteSelected = async () => {
     toast.loading('Deleting selected images...');
-    const response = await deleteMosqueGalleryImagesAction(info?.selectedImages);
+    let json = {
+      images: info?.selectedImages,
+    };
+    const response = await deleteMosqueGalleryImagesAction(json);
     toast.dismiss();
     if (response[0] === true) {
       toast.success('images deleted successfully');
