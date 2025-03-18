@@ -9,6 +9,7 @@ export const MOSQUE_TYPES = {
   MOSQUE_TIMINGS: '/mosque-timings',
   SETTINGS: '/settings',
   PROFILE: '/profile',
+  GALLERY: '/gallery',
 };
 
 export const BASE_TYPE = '/mosque';

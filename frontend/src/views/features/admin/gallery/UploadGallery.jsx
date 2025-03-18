@@ -6,6 +6,9 @@ import { getImageSizeFormat } from '@/helpers/file-size';
 import { Button } from '@/components/ui/button';
 import _ from '@/helpers/loadash';
 import axios from 'axios';
+import { getAccessToken } from '@/helpers/local-storage';
+import { API_URL } from '@/services/config';
+import { useSelector } from 'react-redux';
 
 const INITIAL_STATE = {
   uploadImages: {},
@@ -17,19 +20,29 @@ const INITIAL_STATE = {
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; //2Mb
 
-const breadCumbs = [{ label: 'Analytics', href: null }];
+const breadCumbs = [{ label: 'Gallery', href: null }];
+
 const UploadGallery = () => {
+  const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
+
   const [info, setInfo] = useState({ ...INITIAL_STATE });
   const recentImageInitiatedRef = useRef(null);
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
+
+    if (selectedFiles.length < 0) return;
+
     let uploadedImages = { ...info?.uploadImages };
-    let uploadedSize = 0;
+    let uploadedSize = info?.uploadSize;
 
     selectedFiles.forEach((singleImage) => {
       let uploadedImageCount = Object.keys(uploadedImages)?.length;
-      if (singleImage.size <= MAX_FILE_SIZE && uploadedImageCount <= 20) {
+      let isDuplicate =
+        communityMosqueDetail?.images?.find((item) => item?.originalName === singleImage?.name) ??
+        false;
+
+      if (singleImage.size <= MAX_FILE_SIZE && uploadedImageCount <= 20 && !isDuplicate) {
         uploadedImages[singleImage.name] = {
           file: singleImage,
           isUploaded: false,
@@ -61,18 +74,38 @@ const UploadGallery = () => {
     return formData;
   };
 
-  const uploadToServerFunction = async (form) => {
-    console.log(form, 'upload');
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 3000);
-    });
+  const uploadToServerFunction = async (form, currentFile) => {
+    try {
+      const token = getAccessToken();
+      const config = {
+        onUploadProgress: (progressEvent) => {
+          const { loaded, total } = progressEvent;
+          const progressPercentage = Math.floor((loaded * 100) / total);
+          console.log(`Upload Progress: ${progressPercentage}%`);
+          if (percent <= 100) {
+            setInfo((prev) => {
+              const uploadImages = { ...prev.uploadImages };
+              uploadImages[key]['uploadedPercentage'] = parseInt(percent);
+              return { ...prev, uploadImages };
+            });
+          }
+        },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const url = API_URL + '/mosque/community/gallery';
+      const { data } = await axios.post(url, form, config);
+      console.log(data);
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   const uploadFilesConcurrently = async () => {
     const queue = _.keys(info.uploadImages);
-    console.log(queue, 'uploadFilesCon');
     const activeUploads = [];
     let totalImages = _.size(info.uploadImages || {});
 
@@ -84,10 +117,8 @@ const UploadGallery = () => {
       let isSuccessUpload = false;
 
       while (attempts < 3) {
-        let uploadPromise = await uploadToServerFunction(json);
+        let uploadPromise = await uploadToServerFunction(json, currentFile);
         activeUploads.push(uploadPromise);
-        console.log(uploadPromise);
-
         isSuccessUpload = await uploadPromise;
 
         if (isSuccessUpload) {

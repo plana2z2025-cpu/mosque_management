@@ -29,6 +29,7 @@ const {
   getMosqueCitiesListController,
   updateCommunityMosqueProfileController,
   uploadCommunityMosqueGalleryController,
+  deleteCommunityMosqueGalleryController,
 } = require("../Controllers/mosque/mosque.controller");
 const ValidateObjectId = require("../Middlewares/validateObjectid.middleware");
 const mosqueValidations = require("../validators/mosque.joi");
@@ -106,15 +107,24 @@ MosqueRoutes.route("/community/profile").put(
   updateCommunityMosqueProfileController
 );
 
-MosqueRoutes.route("/community/gallery").post(
-  Authentication,
-  Authorization(ADMIN, SUB_USER),
-  CheckMosqueAccess,
-  CheckMosqueAuthorization(ADMIN, SUB_USER),
-  CheckMosquePermissions(UPDATE),
-  galleryImages,
-  uploadCommunityMosqueGalleryController
-);
+MosqueRoutes.route("/community/gallery")
+  .post(
+    Authentication,
+    Authorization(ADMIN, SUB_USER),
+    CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
+    galleryImages,
+    uploadCommunityMosqueGalleryController
+  )
+  .put(
+    Authentication,
+    Authorization(ADMIN, SUB_USER),
+    CheckMosqueAccess,
+    CheckMosqueAuthorization(ADMIN, SUB_USER),
+    CheckMosquePermissions(UPDATE),
+    deleteCommunityMosqueGalleryController
+  );
 
 //
 // -----------------------------------------------------------------------------

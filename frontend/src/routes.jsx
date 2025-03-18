@@ -24,6 +24,7 @@ import CreateExpensesForm from './views/features/admin/expenses/CreateExpense';
 import MosqueProfile from './views/features/profileSettings/MosqueProfile';
 import Setting from './views/features/profileSettings/Setting';
 import UploadGallery from './views/features/admin/gallery/UploadGallery';
+import GalleryView from './views/features/admin/gallery/GalleryView';
 const allRoutesMapper = [
   {
     path: '/',
@@ -211,6 +212,14 @@ const allRoutesMapper = [
     component: (
       <AuthWrapper>
         <UploadGallery />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: '/admin/gallery',
+    component: (
+      <AuthWrapper>
+        <GalleryView />
       </AuthWrapper>
     ),
   },

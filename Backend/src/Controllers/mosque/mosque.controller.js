@@ -722,6 +722,7 @@ module.exports = {
   updateCommunityMosqueTimingsController,
   updateCommunityMosqueProfileController,
   uploadCommunityMosqueGalleryController,
+  deleteCommunityMosqueGalleryController,
   // public
   getPublicAllMosqueController,
   getPublicSingleMosqueController,

@@ -140,6 +140,10 @@ const data = {
           title: 'Upload Photos',
           url: '/admin/gallery/upload',
         },
+        {
+          title: 'Gallery',
+          url: '/admin/gallery',
+        },
       ],
     },
 
