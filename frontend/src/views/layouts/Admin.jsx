@@ -97,7 +97,7 @@ const data = {
       title: 'Expenses',
       url: '#',
       icon: Receipt,
-      isActive: false,
+      isActive: true,
       items: [
         {
           title: 'Expenses Types',
@@ -122,7 +122,7 @@ const data = {
       title: 'Ramadan',
       url: '#',
       icon: Hourglass,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: 'Ramadan Timings',
@@ -135,7 +135,7 @@ const data = {
       title: 'Gallery',
       url: '#',
       icon: GalleryThumbnails,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: 'Upload Photos',
