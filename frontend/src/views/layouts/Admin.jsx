@@ -59,7 +59,7 @@ const data = {
       title: 'Dashboard',
       url: '#',
       icon: School,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: 'Overview',
@@ -76,7 +76,7 @@ const data = {
       title: 'Programs & Events',
       url: '#',
       icon: Calendar,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: 'Event Types',
@@ -97,7 +97,7 @@ const data = {
       title: 'Expenses',
       url: '#',
       icon: Receipt,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: 'Expenses Types',
@@ -135,6 +135,7 @@ const data = {
       title: 'Gallery',
       url: '#',
       icon: GalleryThumbnails,
+      isActive: true,
       items: [
         {
           title: 'Upload Photos',

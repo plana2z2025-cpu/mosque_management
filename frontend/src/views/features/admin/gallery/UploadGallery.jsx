@@ -8,7 +8,8 @@ import _ from '@/helpers/loadash';
 import axios from 'axios';
 import { getAccessToken } from '@/helpers/local-storage';
 import { API_URL } from '@/services/config';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { mosqueActions } from '@/redux/combineActions';
 
 const INITIAL_STATE = {
   uploadImages: {},
@@ -23,7 +24,12 @@ const MAX_FILE_SIZE = 2 * 1024 * 1024; //2Mb
 const breadCumbs = [{ label: 'Gallery', href: null }];
 
 const UploadGallery = () => {
-  const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
+  const dispatch = useDispatch();
+  const { communityMosqueDetail, communityMosqueSettings } = useSelector(
+    (state) => state.mosqueState
+  );
+
+  const { getCommunityMosqueDetailsAction } = mosqueActions;
 
   const [info, setInfo] = useState({ ...INITIAL_STATE });
   const recentImageInitiatedRef = useRef(null);
@@ -59,7 +65,6 @@ const UploadGallery = () => {
 
   const getJsonFunction = (currentImage) => {
     const imageKeysArray = _.keys(info?.uploadImages || {});
-
     const imageKeyIndex =
       recentImageInitiatedRef.current !== null
         ? imageKeysArray[imageKeysArray.indexOf(currentImage)]
@@ -71,6 +76,8 @@ const UploadGallery = () => {
     const formData = new FormData();
     formData.append('galleryImage', image.file);
 
+    recentImageInitiatedRef.current = currentImage;
+
     return formData;
   };
 
@@ -81,11 +88,10 @@ const UploadGallery = () => {
         onUploadProgress: (progressEvent) => {
           const { loaded, total } = progressEvent;
           const progressPercentage = Math.floor((loaded * 100) / total);
-          console.log(`Upload Progress: ${progressPercentage}%`);
-          if (percent <= 100) {
+          if (progressPercentage <= 100) {
             setInfo((prev) => {
               const uploadImages = { ...prev.uploadImages };
-              uploadImages[key]['uploadedPercentage'] = parseInt(percent);
+              uploadImages[currentFile]['uploadedPercentage'] = parseInt(progressPercentage);
               return { ...prev, uploadImages };
             });
           }
@@ -97,8 +103,7 @@ const UploadGallery = () => {
       };
       const url = API_URL + '/mosque/community/gallery';
       const { data } = await axios.post(url, form, config);
-      console.log(data);
-      return true;
+      return data;
     } catch (error) {
       return false;
     }
@@ -124,6 +129,11 @@ const UploadGallery = () => {
 
         if (isSuccessUpload) {
           activeUploads.splice(activeUploads.indexOf(uploadPromise), 1);
+          let json = {
+            details: isSuccessUpload?.details,
+            settings: communityMosqueSettings,
+          };
+          dispatch(getCommunityMosqueDetailsAction(json));
           break;
         }
 

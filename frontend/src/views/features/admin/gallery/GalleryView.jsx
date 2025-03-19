@@ -2,15 +2,18 @@ import React, { useState, useCallback } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Mainwrapper from '@/views/layouts/Mainwrapper';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { mosqueActions } from '@/redux/combineActions';
 import toast from 'react-hot-toast';
 
 const breadCumbs = [{ label: 'Gallery', href: null }];
 
 const GalleryView = () => {
-  const { communityMosqueDetail } = useSelector((state) => state.mosqueState);
-  const { deleteMosqueGalleryImagesAction } = mosqueActions;
+  const { communityMosqueDetail, communityMosqueSettings } = useSelector(
+    (state) => state.mosqueState
+  );
+  const { deleteMosqueGalleryImagesAction, getCommunityMosqueDetailsAction } = mosqueActions;
+  const dispatch = useDispatch();
 
   const [info, setInfo] = useState({
     selectedImages: [],
@@ -42,6 +45,11 @@ const GalleryView = () => {
     toast.dismiss();
     if (response[0] === true) {
       toast.success('images deleted successfully');
+      const payload = {
+        details: response[1]?.details,
+        settings: communityMosqueSettings,
+      };
+      dispatch(getCommunityMosqueDetailsAction(payload));
     } else {
       toast.error(response[1]?.message);
     }
@@ -66,7 +74,7 @@ const GalleryView = () => {
           <h2 className="text-2xl font-bold">Image Gallery</h2>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" onClick={selectAll}>
-              {info?.selectedImages.length === communityMosqueDetail?.images.length
+              {info?.selectedImages?.length === communityMosqueDetail?.images?.length
                 ? 'Deselect All'
                 : 'Select All'}
             </Button>
@@ -85,24 +93,24 @@ const GalleryView = () => {
 
         {/* Masonry layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {communityMosqueDetail?.images.map((image) => (
+          {communityMosqueDetail?.images?.map((image) => (
             <div
               key={image._id}
               className={`relative group overflow-hidden rounded-lg shadow-md transition-all duration-200 ${
-                info?.selectedImages.includes(image._id) ? 'ring-4 ring-blue-500' : ''
+                info?.selectedImages?.includes(image._id) ? 'ring-4 ring-blue-500' : ''
               }`}
             >
               {/* Checkbox for selection */}
               <div
                 className={`absolute top-2 left-2 z-10 ${
-                  info?.selectedImages.includes(image._id)
+                  info?.selectedImages?.includes(image._id)
                     ? 'opacity-100'
                     : 'opacity-0 group-hover:opacity-100'
                 }`}
               >
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center cursor-pointer ${
-                    info?.selectedImages.includes(image.id)
+                    info?.selectedImages?.includes(image.id)
                       ? 'bg-blue-500 border-blue-500 text-white'
                       : 'border-white bg-black bg-opacity-20'
                   }`}
@@ -139,7 +147,7 @@ const GalleryView = () => {
               {/* Overlay on hover or selection */}
               <div
                 className={`absolute inset-0 transition-opacity duration-200 ${
-                  info?.selectedImages.includes(image._id)
+                  info?.selectedImages?.includes(image._id)
                     ? 'bg-blue-900 bg-opacity-20'
                     : 'bg-black bg-opacity-0 group-hover:bg-opacity-10'
                 }`}
