@@ -6,6 +6,7 @@ import EventAction from './events/action';
 import ExpenseAction from './expenses/action';
 import payeeAction from './payments/action';
 import ramadanAction from './ramadan/action';
+import builderAction from './builder/action';
 
 export const loginActions = { ...LoginActions };
 export const userActions = { ...UserActions };
@@ -15,5 +16,6 @@ export const eventActions = { ...EventAction };
 export const expenseActions = { ...ExpenseAction };
 export const payeeActions = { ...payeeAction };
 export const ramadanActions = { ...ramadanAction };
+export const builderActions = { ...builderAction };
 
 // after adding reset the action in to the logout hook

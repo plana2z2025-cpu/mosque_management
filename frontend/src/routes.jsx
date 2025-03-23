@@ -25,6 +25,7 @@ import MosqueProfile from './views/features/profileSettings/MosqueProfile';
 import Setting from './views/features/profileSettings/Setting';
 import UploadGallery from './views/features/admin/gallery/UploadGallery';
 import GalleryView from './views/features/admin/gallery/GalleryView';
+import BuilderEditor from './views/features/admin/builder/BuilderEditor';
 const allRoutesMapper = [
   {
     path: '/',
@@ -34,6 +35,7 @@ const allRoutesMapper = [
     path: '/login',
     component: <Login />,
   },
+  { path: '/builder', component: <BuilderEditor /> },
   {
     path: '/register-mosque',
     component: <MosqueRegistrationForm />,

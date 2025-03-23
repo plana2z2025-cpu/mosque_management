@@ -15,7 +15,7 @@ const OtherComponets = () => {
 function App() {
   return (
     <div className="app">
-      <Welcome />
+      {/* <Welcome /> */}
       <BrowserRouter>
         <Routes>
           {allRoutesMapper?.map((singleroute, index) => (

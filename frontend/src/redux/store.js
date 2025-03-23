@@ -7,6 +7,7 @@ import { EventReducer } from './events/reducer';
 import { ExpenseReducer } from './expenses/reducer';
 import { PaymentsReducer } from './payments/reducer';
 import { RamadaReducer } from './ramadan/reducer';
+import { builderReducer, builderReducerToolkit } from './builder/reducer';
 
 const initialState = {};
 
@@ -19,6 +20,8 @@ const reducer = {
   expenseState: ExpenseReducer,
   payeeState: PaymentsReducer,
   ramadanState: RamadaReducer,
+  builderState: builderReducer,
+  builderToolkitState: builderReducerToolkit,
 };
 const store = configureStore({
   reducer,
