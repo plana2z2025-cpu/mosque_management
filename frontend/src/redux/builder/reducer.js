@@ -8,6 +8,7 @@ const initialState = {
   screenSize: 'desktop',
   dragLayout: null,
   templateSections: [],
+  activeSection: null,
 };
 
 export const builderReducer = (state = initialState, action) => {
@@ -37,8 +38,12 @@ const builderSlice = createSlice({
     setTemplateData: (state, action) => {
       state.templateSections = action.payload;
     },
+    setActiveSection: (state, action) => {
+      state.activeSection = action.payload;
+    },
   },
 });
 
-export const { setScreenSize, setDragLayout, setTemplateData } = builderSlice.actions;
+export const { setScreenSize, setDragLayout, setTemplateData, setActiveSection } =
+  builderSlice.actions;
 export const builderReducerToolkit = builderSlice.reducer;

@@ -5,6 +5,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidV4 } from 'uuid';
 import { builderActions } from '@/redux/combineActions';
+import { v4 as uuidv4 } from 'uuid';
 
 const ElementSidebar = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ const ElementSidebar = () => {
     let uuid = uuidV4();
     payload.uuid = uuid;
     payload.json = { ...payload.json, uuid };
+    payload.json.block = payload.json?.block?.map((block) => ({ ...block, uuid: uuidv4() }));
     dispatch(setDragLayoutAction(payload));
   };
 
