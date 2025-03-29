@@ -12,11 +12,11 @@ const BuilderEditor = () => {
       <div className="grid grid-cols-5">
         <ElementSidebar />
 
-        <div className=" col-span-4 bg-gray-100">
+        <div className=" col-span-3 bg-gray-100">
           <Canvas />
         </div>
 
-        {/* <SidebarSettings /> */}
+        <SidebarSettings />
       </div>
     </div>
   );

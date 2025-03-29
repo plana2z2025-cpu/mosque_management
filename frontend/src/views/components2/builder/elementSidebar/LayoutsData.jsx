@@ -8,6 +8,9 @@ export default [
     icon: RectangleHorizontal,
     json: {
       type: 'column',
+      styles: {
+        background: '#9c27b0',
+      },
       columns: 1,
       block: [
         {
@@ -24,6 +27,8 @@ export default [
     icon: Columns2,
     json: {
       type: 'column',
+      styleClass: 'flex',
+      styles: {},
       columns: 2,
       block: [
         { index: 0, subBlock: [] },
@@ -38,6 +43,7 @@ export default [
     icon: Columns3,
     json: {
       type: 'column',
+      styles: {},
       columns: 3,
       block: [
         { index: 0, subBlock: [] },
@@ -53,6 +59,7 @@ export default [
     icon: Columns4,
     json: {
       type: 'column',
+      styles: {},
       columns: 4,
       block: [
         { index: 0, subBlock: [] },

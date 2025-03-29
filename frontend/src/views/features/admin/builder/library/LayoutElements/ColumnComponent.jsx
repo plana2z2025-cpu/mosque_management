@@ -92,6 +92,7 @@ const ColumnComponent = ({ layout, sectionIndex }) => {
               onDragOver={(e) => onDragOverHandler(e, index)}
               onDragLeave={onDragLeaveHandler}
               onDrop={onDropHandler}
+              style={{ ...layout.styles }}
             >
               {_.size(_.keys(singleBlock?.subBlock)) > 0 ? (
                 singleBlock?.subBlock.map((singleSubBlock, subBlockIndex) => {
