@@ -32,7 +32,7 @@ const defaultPresets = [
 ];
 
 const ColorPicker = ({
-  value = '#000000',
+  value = '#fffff',
   onChange,
   presets = defaultPresets,
   label = 'Color',

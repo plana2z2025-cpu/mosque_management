@@ -7,11 +7,12 @@ import TextComponent from '../ElementComponents/TextComponent';
 import LogoComponent from '../ElementComponents/LogoComponent';
 import DividerComponent from '../ElementComponents/DividerComponent';
 import ImageComponent from '../ElementComponents/ImageComponent';
+import { cn } from '@/lib/utils';
 
 const ColumnComponent = ({ layout, sectionIndex }) => {
   const dispatch = useDispatch();
   const { setDragLayoutAction, setTemplateDataAction, setActiveSectionAction } = builderActions;
-  const { screenSize, dragLayout, templateSections, activeSection } = useSelector(
+  const { dragLayout, templateSections, activeSection } = useSelector(
     (state) => state.builderToolkitState
   );
 
@@ -76,30 +77,34 @@ const ColumnComponent = ({ layout, sectionIndex }) => {
   return (
     <div>
       <div
-        className="grid gap-0"
+        className={cn(layout?.styleClassName)}
         style={{
-          gridTemplateColumns: `repeat(${layout.columns},1fr)`,
+          ...layout?.styles,
         }}
       >
         {layout?.block?.map((singleBlock, index) => {
           return (
             <div
               key={singleBlock?.uuid || index}
-              className={`p-2 flex items-center justify-center 
-                ${_.size(_.keys(singleBlock?.subBlock)) === 0 && 'bg-gray-100 border border-dashed'}
-                ${info?.dragOverClass && info?.dragOver?.index == index && info?.dragOverClass}
-                `}
+              className={cn(
+                singleBlock?.blockStyleClassName,
+                _.size(_.keys(singleBlock?.subBlock)) === 0 && 'bg-gray-100 border border-dashed',
+                info?.dragOverClass && info?.dragOver?.index == index && info?.dragOverClass,
+                activeSection?.section_uuid === layout?.uuid &&
+                  activeSection?.block_uuid === singleBlock?.uuid &&
+                  'border border-blue-500'
+              )}
               onDragOver={(e) => onDragOverHandler(e, index)}
               onDragLeave={onDragLeaveHandler}
               onDrop={onDropHandler}
-              style={{ ...layout.styles }}
+              style={{ ...singleBlock?.blockStyles }}
             >
               {_.size(_.keys(singleBlock?.subBlock)) > 0 ? (
                 singleBlock?.subBlock.map((singleSubBlock, subBlockIndex) => {
                   const ComponentType = elementTypesConstants[singleSubBlock.type.toLowerCase()];
                   return ComponentType ? (
                     <div
-                      className={`${activeSection?.section_uuid === layout?.uuid && activeSection?.block_uuid === singleBlock?.uuid && 'border border-blue-500'}`}
+                      className={cn('')}
                       onClick={() => setActiveElementFunction(layout, singleBlock)}
                     >
                       <ComponentType {...singleSubBlock} />
@@ -107,7 +112,7 @@ const ColumnComponent = ({ layout, sectionIndex }) => {
                   ) : null;
                 })
               ) : (
-                <h2 className="p-4 text-center text-sm bg-gray-100 border border-dashed">
+                <h2 className={cn('p-4 text-center text-sm bg-gray-100 border border-dashed')}>
                   Add Element
                 </h2>
               )}

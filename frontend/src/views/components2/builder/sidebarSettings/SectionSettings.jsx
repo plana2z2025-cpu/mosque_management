@@ -17,20 +17,20 @@ import ColorPicker from '../../color-picker/ColorPicker';
 import { useSelector, useDispatch } from 'react-redux';
 import { builderActions } from '@/redux/combineActions';
 import _ from '@/helpers/loadash';
+import { getNumberFromPx } from '@/helpers/get-initials';
 
 const SectionSettings = () => {
-  const { setTemplateDataAction, setActiveSectionAction } = builderActions;
+  const { setTemplateDataAction } = builderActions;
   const dispatch = useDispatch();
   const { activeSection, templateSections } = useSelector((state) => state.builderToolkitState);
 
-  const sectionStyles = useMemo(() => {
+  const sectionLayout = useMemo(() => {
     let sectionId = activeSection?.section_uuid;
     let layout = templateSections?.find((item) => item?.uuid === sectionId);
-    return { ...layout?.styles };
+    return layout;
   }, [activeSection?.section_uuid, templateSections]);
 
   const changeColorFunction = (color, property) => {
-    console.log('testing', color, property);
     let sectionId = activeSection?.section_uuid;
     let updatedSections = _.deepClone(templateSections);
 
@@ -45,6 +45,46 @@ const SectionSettings = () => {
     dispatch(setTemplateDataAction(updatedSections));
   };
 
+  const changeContainerTypeSelection = (e) => {
+    let updatedTemplate = _.deepClone(templateSections);
+    let currentLayout = updatedTemplate?.find((item) => item.uuid === sectionLayout?.uuid);
+    currentLayout.properties.containerType = e;
+
+    if (e === 'grid') {
+      currentLayout.styleClassName = currentLayout.styleClassName.replace(
+        'flex',
+        `grid gap-0 grid-cols-${currentLayout?.properties?.columns}`
+      );
+      currentLayout?.block?.forEach((item) => {
+        delete item.blockStyles.width;
+      });
+    } else if (e === 'flex') {
+      currentLayout.styleClassName = currentLayout.styleClassName.replace(
+        `grid gap-0 grid-cols-${currentLayout?.properties?.columns}`,
+        'flex'
+      );
+      let equalWidths = parseFloat((100 / currentLayout?.properties?.columns).toFixed(2));
+      currentLayout?.block?.forEach((item) => {
+        item.blockStyles.width = equalWidths + '%';
+      });
+    }
+    updatedTemplate.forEach((item) => {
+      if (item?.uuid === sectionLayout?.uuid) {
+        item = currentLayout;
+      }
+    });
+
+    dispatch(setTemplateDataAction(updatedTemplate));
+  };
+
+  const customWidthChangeHandler = (value, index) => {
+    let updatedTemplate = _.deepClone(templateSections);
+    let currentLayout = updatedTemplate?.find((item) => item.uuid === sectionLayout?.uuid);
+    currentLayout.block[index].blockStyles.width = `${value}%`;
+    dispatch(setTemplateDataAction(updatedTemplate));
+  };
+
+  // console.log(sectionLayout, 'shahid');
   return (
     <Card>
       <CardHeader>
@@ -73,24 +113,50 @@ const SectionSettings = () => {
           </div>
         </div> */}
 
-        {/* <div className="space-y-2">
+        <div>
+          <ColorPicker
+            value={sectionLayout?.styles?.background}
+            onChange={(e) => changeColorFunction(e, 'background')}
+            label="Background Color"
+          />
+        </div>
+
+        <div className="space-y-2">
           <Label>Container Type</Label>
-          <Select defaultValue="container">
+          <Select
+            value={sectionLayout?.properties?.containerType}
+            onValueChange={changeContainerTypeSelection}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select container type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="container">Container</SelectItem>
-              <SelectItem value="fluid">Fluid</SelectItem>
-              <SelectItem value="custom">Custom Width</SelectItem>
+              <SelectItem value="grid">Equal Grids</SelectItem>
+              <SelectItem value="flex">Custom Width</SelectItem>
             </SelectContent>
           </Select>
-        </div> */}
+        </div>
 
-        {/* <div className="space-y-2">
-          <Label htmlFor="section-margin">Vertical Spacing</Label>
-          <Slider defaultValue={[32]} max={128} step={8} />
-        </div> */}
+        {sectionLayout?.properties?.containerType === 'flex' && (
+          <div className="group space-y-3">
+            <Label>Custom Width</Label>
+            {sectionLayout?.block?.map((singleBlock, index) => (
+              <div className="space-y-2">
+                <Label htmlFor="section-margin">
+                  Block - {index + 1} : {singleBlock?.blockStyles?.width || '50%'}{' '}
+                </Label>
+                <Slider
+                  defaultValue="50%"
+                  value={[getNumberFromPx(singleBlock?.blockStyles?.width || '50%')]}
+                  max={100}
+                  min={1}
+                  step={1}
+                  onValueChange={(e) => customWidthChangeHandler(e[0], index)}
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* <div className="flex items-center justify-between">
           <Label htmlFor="section-visible">Visible</Label>
@@ -98,14 +164,6 @@ const SectionSettings = () => {
         </div> */}
 
         {/* <Button className="w-full">Apply Settings</Button> */}
-
-        <div>
-          <ColorPicker
-            value={sectionStyles?.background}
-            onChange={(e) => changeColorFunction(e, 'background')}
-            label="Background Color"
-          />
-        </div>
       </CardContent>
     </Card>
   );

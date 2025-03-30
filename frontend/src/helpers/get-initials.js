@@ -8,3 +8,12 @@ const getInitials = (fullName) => {
 };
 
 export default getInitials;
+
+export const getNumberFromPx = (px = '0px') => {
+  if (typeof px === 'string' && px.includes('px')) {
+    return Number(px.replace('px', ''));
+  } else if (typeof px === 'string' && px.includes('%')) {
+    return Number(px.replace('%', ''));
+  }
+  return Number(px);
+};

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { builderActions } from '@/redux/combineActions';
 import _ from '@/helpers/loadash';
 import ColumnComponent from './library/LayoutElements/ColumnComponent';
+import { LucideMove } from 'lucide-react';
 
 const Canvas = () => {
   const dispatch = useDispatch();
@@ -68,7 +69,10 @@ const Canvas = () => {
             return <Comp key={block?.uuid || index} layout={block} sectionIndex={index} />;
           })
         ) : (
-          <h2 className="p-4 text-center bg-gray-100 border border-dashed">Add Layout Here</h2>
+          <div className="p-4 text-center flex justify-center items-center bg-gray-100 border border-dashed">
+            <LucideMove className="mr-2" />
+            <h2>Drag and Drop Layout</h2>
+          </div>
         )}
       </div>
     </div>
