@@ -88,7 +88,8 @@ const ColumnComponent = ({ layout, sectionIndex }) => {
               key={singleBlock?.uuid || index}
               className={cn(
                 singleBlock?.blockStyleClassName,
-                _.size(_.keys(singleBlock?.subBlock)) === 0 && 'bg-gray-100 border border-dashed',
+                _.size(_.keys(singleBlock?.subBlock)) === 0 &&
+                  'bg-gray-100 opacity-90 border border-dashed',
                 info?.dragOverClass && info?.dragOver?.index == index && info?.dragOverClass,
                 activeSection?.section_uuid === layout?.uuid &&
                   activeSection?.block_uuid === singleBlock?.uuid &&

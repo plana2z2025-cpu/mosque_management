@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Settings, Layers, Box, Type } from 'lucide-react';
 import SectionSettings from '@/views/components2/builder/sidebarSettings/SectionSettings';
 import BlockSettings from '@/views/components2/builder/sidebarSettings/BlockSettings';
 import ElementSettings from '@/views/components2/builder/sidebarSettings/ElementSettings';
+import NoSelectionPlaceholder from '@/views/components2/builder/sidebarSettings/InActiveSettings';
+import { useDispatch, useSelector } from 'react-redux';
 
 const SidebarSettings = () => {
+  const dispatch = useDispatch();
+
+  const { activeSection } = useSelector((state) => state.builderToolkitState);
   const [activeTab, setActiveTab] = useState('element');
 
   return (
@@ -45,17 +38,17 @@ const SidebarSettings = () => {
 
         {/* Element Settings */}
         <TabsContent value="element">
-          <ElementSettings />
+          {activeSection ? <ElementSettings /> : <NoSelectionPlaceholder />}
         </TabsContent>
 
         {/* Block Settings */}
         <TabsContent value="block">
-          <BlockSettings />
+          {activeSection ? <BlockSettings /> : <NoSelectionPlaceholder />}
         </TabsContent>
 
         {/* Section Settings */}
         <TabsContent value="section">
-          <SectionSettings />
+          {activeSection ? <SectionSettings /> : <NoSelectionPlaceholder />}
         </TabsContent>
       </Tabs>
     </div>
