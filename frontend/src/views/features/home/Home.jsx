@@ -6,10 +6,12 @@ import {
   UsersIcon,
   SettingsIcon,
   ImageIcon,
+  Menu,
 } from 'lucide-react';
 import Image1 from '@/assets/images/home1.png';
 import Image2 from '@/assets/images/home2.png';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
@@ -50,15 +52,67 @@ export default function LandingPage() {
             </a>
           </nav>
           <div className="flex items-center gap-4">
-            <Link to={'/login'}>
-              {' '}
+            <div className="block md:hidden">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Menu">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[250px]">
+                  <div className="flex flex-col gap-6 py-6">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center">
+                        <span className="text-white font-bold">M</span>
+                      </div>
+                      <span className="text-xl font-bold">MosqueManager</span>
+                    </div>
+                    <nav className="flex flex-col gap-4">
+                      <Link
+                        href="#features"
+                        className="text-sm font-medium hover:text-emerald-600 transition-colors"
+                      >
+                        Features
+                      </Link>
+                      <Link
+                        href="#portals"
+                        className="text-sm font-medium hover:text-emerald-600 transition-colors"
+                      >
+                        Portals
+                      </Link>
+                      <Link
+                        href="#testimonials"
+                        className="text-sm font-medium hover:text-emerald-600 transition-colors"
+                      >
+                        Testimonials
+                      </Link>
+                      <Link
+                        href="#contact"
+                        className="text-sm font-medium hover:text-emerald-600 transition-colors"
+                      >
+                        Contact
+                      </Link>
+                    </nav>
+                    <div className="flex flex-col gap-2 mt-4">
+                      <Button variant="outline" className="w-full justify-start">
+                        Log In
+                      </Button>
+                      <Button className="w-full justify-start bg-emerald-600 hover:bg-emerald-700">
+                        Get Started
+                      </Button>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+            <div className="hidden md:flex items-center gap-4">
               <Button variant="outline" size="sm">
                 Log In
               </Button>
-            </Link>
-            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-              Get Started
-            </Button>
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                Get Started
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -512,11 +566,6 @@ export default function LandingPage() {
                 <li>
                   <a href="#" className="hover:text-emerald-600 transition-colors">
                     Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-emerald-600 transition-colors">
-                    Careers
                   </a>
                 </li>
                 <li>
