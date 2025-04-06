@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { DASHBOARD_URL } from "@/app/services/config";
 
 const Header = () => {
   return (
@@ -18,25 +19,37 @@ const Header = () => {
         </div>
         <nav className="hidden md:flex items-center gap-6">
           <Link
-            href="#features"
+            href="/"
+            className="text-sm font-medium hover:text-emerald-600 transition-colors"
+          >
+            Mosques
+          </Link>
+          <Link
+            href="/about"
+            className="text-sm font-medium hover:text-emerald-600 transition-colors"
+          >
+            About
+          </Link>
+          <Link
+            href="/about#features"
             className="text-sm font-medium hover:text-emerald-600 transition-colors"
           >
             Features
           </Link>
           <Link
-            href="#portals"
+            href="/about#portals"
             className="text-sm font-medium hover:text-emerald-600 transition-colors"
           >
             Portals
           </Link>
           <Link
-            href="#testimonials"
+            href="/about#testimonials"
             className="text-sm font-medium hover:text-emerald-600 transition-colors"
           >
             Testimonials
           </Link>
           <Link
-            href="#contact"
+            href="/about#contact"
             className="text-sm font-medium hover:text-emerald-600 transition-colors"
           >
             Contact
@@ -97,9 +110,11 @@ const Header = () => {
             </Sheet>
           </div>
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="outline" size="sm">
-              Log In
-            </Button>
+            <Link href={DASHBOARD_URL + "/login"}>
+              <Button variant="outline" size="sm">
+                Log In
+              </Button>
+            </Link>
             <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
               Get Started
             </Button>

@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer
       id="contact"
-      className="w-full border-t bg-background py-6 md:py-12"
+      className="w-full border-t bg-background py-6 md:pt-12"
     >
       <div className="container px-4 md:px-6">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
@@ -64,7 +64,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-gray-500">
               <li>
                 <Link
-                  href="#"
+                  href="/about"
                   className="hover:text-emerald-600 transition-colors"
                 >
                   About Us
@@ -72,23 +72,16 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/blog"
                   className="hover:text-emerald-600 transition-colors"
                 >
                   Blog
                 </Link>
               </li>
+
               <li>
                 <Link
-                  href="#"
-                  className="hover:text-emerald-600 transition-colors"
-                >
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
+                  href="/about#contact"
                   className="hover:text-emerald-600 transition-colors"
                 >
                   Contact
@@ -101,10 +94,10 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-gray-500">
               <li>
                 <a
-                  href="mailto:info@mosquemanager.com"
+                  href="mailto:mohammedshahidnagodriya@gmail.com"
                   className="hover:text-emerald-600 transition-colors"
                 >
-                  info@mosquemanager.com
+                  mohammedshahidnagodriya@gmail.com
                 </a>
               </li>
               <li>
@@ -112,16 +105,16 @@ const Footer = () => {
                   href="tel:+1234567890"
                   className="hover:text-emerald-600 transition-colors"
                 >
-                  +1 (234) 567-890
+                  +91 (9347) 222-304
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <address className="not-italic">
                   123 Mosque Street
                   <br />
                   City, State 12345
                 </address>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
