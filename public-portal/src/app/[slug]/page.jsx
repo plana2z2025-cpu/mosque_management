@@ -5,9 +5,9 @@ import NotFoundPage from "../components/mosqueDetails/NotFound";
 import Footer from "../components/headers/Footer";
 import MosqueHeader from "./MosqueHeader";
 import PrayerTimings from "./PrayerTimings";
-import RamadanTimings from "./ramadanTimings";
-import MosqueGallery from "./mosqueGallery";
-import MosqueDetails from "./mosqueDetails";
+import RamadanTimings from "./RamadanTimings";
+import MosqueGallery from "./MosqueGallery";
+import MosqueDetails from "./MosqueDetails";
 
 const getMosqueData = async (slug) => {
   const response = await getSingleMosqueApi(slug);
