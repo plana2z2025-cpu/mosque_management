@@ -8,6 +8,7 @@ import SearchComponent from "./components/Home/SearchComponent";
 import EmptyMosque from "./components/Home/EmptyMosque";
 import Header from "./components/headers/Header";
 import Footer from "./components/headers/Footer";
+import { MosqueDirectory } from "./components/home2/MosqueDirectory";
 
 async function getData(page = 1, search = null) {
   const queryParams = {
@@ -29,9 +30,9 @@ async function Page({ searchParams }) {
         <Header />
 
         <main className="flex-1">
-          <div className="bg-gray-50 mt-5">
+          <div className="bg-gray-50 my-5">
             <HeroSection />
-            <main className="max-w-7xl mx-auto px-4 pb-4">
+            {/* <main className="max-w-7xl mx-auto px-4 pb-4">
               <SearchComponent />
 
               {data?.docs?.length ? (
@@ -55,7 +56,9 @@ async function Page({ searchParams }) {
               ) : (
                 <EmptyMosque />
               )}
-            </main>
+            </main> */}
+
+            <MosqueDirectory mosqueData={data?.docs} />
           </div>
         </main>
 
