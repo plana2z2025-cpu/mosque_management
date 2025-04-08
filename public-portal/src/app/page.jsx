@@ -24,6 +24,7 @@ async function getData(page = 1, search = null) {
 async function Page({ searchParams }) {
   const { page = 1, search = null } = await searchParams;
   const data = await getData(page, search);
+  console.log(data);
   return (
     <div className="app">
       <div className="flex min-h-screen flex-col w-full">
