@@ -52,11 +52,15 @@ export function SearchAndFilter({
     [info?.search]
   );
 
-  const submitQueryHandler = useCallback(() => {
-    const params = new URLSearchParams(searchParams);
-    params.set("search", info.search);
-    window.location.href = `${pathname}?${params.toString()}`;
-  }, [info.search, pathname, searchParams]);
+  const submitQueryHandler = useCallback(
+    (reset = false) => {
+      const params = new URLSearchParams(searchParams);
+      params.set("search", info.search);
+      if (reset) window.location.href = `${pathname}`;
+      else window.location.href = `${pathname}?${params.toString()}`;
+    },
+    [info.search, pathname, searchParams]
+  );
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -159,7 +163,7 @@ export function SearchAndFilter({
         <div className="flex justify-end">
           <Button
             variant="outline"
-            onClick={onReset}
+            onClick={submitQueryHandler}
             className="flex items-center gap-2"
           >
             <X size={16} />
