@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 export function MosqueCard({ mosque }) {
   const { name, address, timings } = mosque;
@@ -123,10 +124,12 @@ export function MosqueCard({ mosque }) {
         </div>
       </CardContent>
       <CardFooter className="flex gap-2 pt-2">
-        <Button variant="secondary" className="flex-1 gap-1">
-          <Info size={16} />
-          <span>View Details</span>
-        </Button>
+        <Link href={`/${mosque?.slug}`} className="flex-1">
+          <Button variant="secondary" className="flex-1 gap-1">
+            <Info size={16} />
+            <span>View Details</span>
+          </Button>
+        </Link>
         <Button
           variant="outline"
           className="flex-1 gap-1 bg-emerald-600 text-white hover:text-white hover:bg-emerald-600"
