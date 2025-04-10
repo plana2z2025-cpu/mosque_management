@@ -1,47 +1,34 @@
 const express = require("express");
 const GoogleAuthServiceClass = require("../../Services/google.auth.service");
 const GoogleCalendarServiceClass = require("../../Services/google.calendar.service");
-const userModel = require("../../Schema/users/user.model");
+const errorHandling = require("../../Utils/errorHandling");
 
 const GoogleAuthRoutes = express.Router();
 
 GoogleAuthRoutes.route("/").get((req, res) => {
-  const googleAuthService = new GoogleAuthServiceClass();
-  const authUrl = googleAuthService.generateAuthUrl("673e19244f630ca743c7abd0");
+  const googleAuthService = new GoogleAuthServiceClass(
+    "673e19244f630ca743c7abd0"
+  );
+  const authUrl = googleAuthService.generateAuthUrl();
   res.redirect(authUrl);
 });
 
 GoogleAuthRoutes.route("/callback").get(async (req, res) => {
   const { code, state } = req.query;
-  const googleAuthService = new GoogleAuthServiceClass();
+  const googleAuthService = new GoogleAuthServiceClass(state);
   try {
-    const tokens = await googleAuthService.getTokensFromCode(code);
-    // const userInfo = await googleAuthService.getUserInfo(tokens.access_token);
-    let details = {
-      tokens,
-    };
-
-    let userDetails = await userModel.findByIdAndUpdate(
-      state,
-      { google: details },
-      { $new: true }
+    const { tokens, userDetails } = await googleAuthService.getTokensFromCode(
+      code
     );
 
-    // Store tokens in session or database as needed
     res.status(200).json({
       success: true,
       message: "Google authentication successful",
       tokens,
-      //   userInfo,
       userDetails,
     });
   } catch (error) {
-    console.error("Error getting tokens:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error getting tokens",
-      error: error.message,
-    });
+    errorHandling.handleCustomErrorService(error, next);
   }
 });
 

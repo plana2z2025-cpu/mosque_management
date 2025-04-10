@@ -8,7 +8,7 @@ const userModel = require("../Schema/users/user.model.js");
 
 const scopes = ["email", "profile", "https://www.googleapis.com/auth/calendar"];
 
-class GoogleAuthServiceClass {
+class GoogleAuthServiceClass2 {
   constructor() {
     this.oAuth2Client = new google.auth.OAuth2(
       GOOGLE_CLIENT_ID,
@@ -56,39 +56,45 @@ class GoogleAuthServiceClass {
   }
 }
 
-class GoogleAuthServiceClass2 {
-  constructor() {
+class GoogleAuthServiceClass {
+  constructor(userID) {
     this.oAuth2Client = new google.auth.OAuth2(
       GOOGLE_CLIENT_ID,
       GOOGLE_CLIENT_SECRET,
       GOOGLE_REDIRECT_URI
     );
-    this.userID = null;
+    this.userID = userID || null;
   }
 
+  // user related methods
   setUserID(userID) {
     this.userID = userID;
   }
+  getUserID() {
+    return this.userID;
+  }
 
-  generateAuthUrl(userID) {
+  // OAuth2 related methods
+  generateAuthUrl() {
     return this.oAuth2Client.generateAuthUrl({
       access_type: "offline", // Ensures refresh_token is returned on first consent
       prompt: "consent", // Always show the consent screen
       scope: scopes,
-      state: userID, // Pass userID in state to retrieve it later
+      state: this.userID, // Pass userID in state to retrieve it later
     });
   }
 
   async getTokensFromCode(code) {
     const { tokens } = await this.oAuth2Client.getToken(code);
     this.oAuth2Client.setCredentials(tokens);
+    let userDetails = null;
 
     // Store tokens in database
     if (this.userID) {
-      await this.saveTokensToDatabase(tokens);
+      userDetails = await this.saveTokensToDatabase(tokens);
     }
 
-    return tokens;
+    return { tokens, userDetails };
   }
 
   setCredentials(tokens) {
@@ -104,20 +110,29 @@ class GoogleAuthServiceClass2 {
     return details;
   }
 
+  // for db related write
   async saveTokensToDatabase(tokens) {
     try {
-      await userModel.findByIdAndUpdate(
-        this.userID,
-        { "google.tokens": tokens },
-        { new: true, upsert: true }
-      );
+      let response = await userModel
+        .findByIdAndUpdate(
+          this.userID,
+          { "google.tokens": tokens },
+          { new: true, upsert: true }
+        )
+        .lean();
+
+      if (!response) {
+        throw new Error("Failed to save tokens to database.");
+      }
+
+      return response;
     } catch (error) {
       console.error("Error saving tokens to database:", error);
       throw new Error("Failed to save tokens to database");
     }
   }
 
-  async getTokens() {
+  async getTokensFromDatabase() {
     try {
       const user = await userModel
         .findById(this.userID)
@@ -126,7 +141,7 @@ class GoogleAuthServiceClass2 {
       if (!user || !user.google || !user.google.tokens) {
         throw new Error("No tokens found for this user.");
       }
-      return user.google.tokens;
+      return user.google;
     } catch (error) {
       console.error("Error retrieving tokens:", error);
       throw new Error("Failed to retrieve tokens");
@@ -136,7 +151,7 @@ class GoogleAuthServiceClass2 {
   async getValidAccessToken() {
     try {
       // Get current tokens from database
-      const tokens = await this.getTokens();
+      const { tokens } = await this.getTokensFromDatabase();
 
       // Set credentials
       this.setCredentials(tokens);
@@ -166,7 +181,7 @@ class GoogleAuthServiceClass2 {
         }
       }
 
-      return tokens.access_token;
+      return { tokens };
     } catch (error) {
       if (error.message === "REFRESH_TOKEN_EXPIRED") {
         throw error; // Propagate this specific error
