@@ -7,6 +7,7 @@ const IndexRoutes = require("./src/Routes/index.route");
 const { ratelimitConfig } = require("./src/Config/ratelimit.config");
 const { DEVELOPMENT_MODE } = require("./src/Config/index.config");
 const errorHandling = require("./src/Utils/errorHandling");
+const GoogleAuthRoutes = require("./src/Routes/auth/google.route");
 // const corsConfig = require("./src/Config/cors.config");
 
 const app = express();
@@ -43,7 +44,9 @@ app.get("/", (req, res) => {
   });
 });
 
+// Routes
 app.use("/api/v1", IndexRoutes);
+app.use("/auth/google", GoogleAuthRoutes);
 
 //----------------------------------------
 //--------------- others -----------------

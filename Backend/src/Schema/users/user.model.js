@@ -37,6 +37,46 @@ const ModelSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    google: {
+      tokens: {
+        type: Object,
+      },
+    },
+    // google: {
+    //   access_token: {
+    //     type: String,
+    //   },
+    //   refresh_token: {
+    //     type: String,
+    //   },
+    //   id_token: {
+    //     type: String,
+    //   },
+    //   email: {
+    //     type: String,
+    //   },
+    //   email_verified: {
+    //     type: Boolean,
+    //   },
+    //   name: {
+    //     type: String,
+    //   },
+    //   given_name: {
+    //     type: String,
+    //   },
+    //   family_name: {
+    //     type: String,
+    //   },
+    //   picture: {
+    //     type: String,
+    //   },
+    //   expiry_date: {
+    //     type: Number,
+    //   },
+    //   refresh_token_expiry_in: {
+    //     type: Number,
+    //   },
+    // },
   },
   { timestamps: true }
 );
