@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const { eventCategory } = require("../../Constants/model.constants");
 const errorHandling = require("../../Utils/errorHandling");
 const { ADMIN } = require("../../Constants/roles.constants");
+const GoogleCalendarServiceClass = require("../../Services/google.calendar.service");
 
 // Controller for Creating Event
 const createEventController = async (req, res, next) => {
@@ -40,6 +41,38 @@ const createEventController = async (req, res, next) => {
     const newEvent = new eventModel(eventData);
     await newEvent.save();
 
+    if (eventData.modePlatform === "googleMeet") {
+      const googleCalendarService = await new GoogleCalendarServiceClass(
+        req.user._id
+      );
+      await googleCalendarService.initialize();
+
+      let googleEventDetails = {
+        summary: eventData.title,
+        description: eventData.description,
+        startDate: eventData.startDate,
+        endDate: eventData.endDate,
+        timezone: eventData.timezone || "UTC",
+        location: "Google Meet" || "",
+        attendees: [{ email: req.user.email }],
+      };
+
+      let eventResponseDetails = await googleCalendarService.createEvent(
+        "primary",
+        googleEventDetails
+      );
+
+      if (eventResponseDetails) {
+        newEvent.googleMeet = {
+          enabled: true,
+          meetLink: eventResponseDetails.hangoutLink,
+          conferenceId: eventResponseDetails.conferenceData.conferenceId,
+          details: eventResponseDetails,
+        };
+        await newEvent.save();
+      }
+    }
+
     logger.info(
       "Controller - events - event.controller - createEventController - Start"
     );
@@ -54,7 +87,7 @@ const createEventController = async (req, res, next) => {
     logger.info(
       "Controller - events - event.controller - createEventController - Start"
     );
-    errorHandling.handleCustomErrorService(error, res);
+    errorHandling.handleCustomErrorService(error, next);
   }
 };
 

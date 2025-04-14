@@ -40,6 +40,10 @@ const createEventValidation = celebrate({
     }).optional(),
     coverImage: Joi.string().optional(),
     tags: Joi.array().items(Joi.string()).optional(),
+    mode: Joi.string().valid("online", "offline").optional(),
+    modePlatform: Joi.string()
+      .valid("zoom", "googleMeet", "teams", "live", "other")
+      .optional(),
     status: Joi.string().valid("draft", "published", "cancelled").optional(),
   }),
 });

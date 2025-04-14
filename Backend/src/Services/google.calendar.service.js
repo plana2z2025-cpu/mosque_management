@@ -1,6 +1,7 @@
 const GoogleAuthServiceClass = require("./google.auth.service");
 const { google } = require("googleapis");
-
+const { v4: uuidv4 } = require("uuid");
+const logger = require("../Config/logger.config");
 class GoogleCalendarServiceClass extends GoogleAuthServiceClass {
   constructor(userID) {
     super();
@@ -61,14 +62,36 @@ class GoogleCalendarServiceClass extends GoogleAuthServiceClass {
     }
   }
 
-  async createEvent(calendarId = "primary", event) {
+  async createEvent(calendarId = "primary", eventData) {
     try {
       await this.ensureAuthenticated();
 
       const response = await this.calendar.events.insert({
         calendarId,
-        resource: event,
+        conferenceDataVersion: 1, // Required for Google Meet links
+        auth: this.getAuthClient(), // Ensure we use the authenticated client
+        colorId: 1, // Optional: Set a color for the event
+        requestBody: {
+          summary: eventData?.summary,
+          description: eventData?.description,
+          start: {
+            dateTime: eventData?.startDate.toISOString(),
+            timeZone: eventData?.timezone || "UTC",
+          },
+          end: {
+            dateTime: eventData?.endDate.toISOString(),
+            timeZone: eventData?.timezone || "UTC",
+          },
+          conferenceData: {
+            createRequest: {
+              requestId: uuidv4(),
+            },
+          },
+          attendees: eventData?.attendees || [],
+          location: eventData?.location || "",
+        },
       });
+
       return response.data;
     } catch (error) {
       if (this.isAuthError(error)) {

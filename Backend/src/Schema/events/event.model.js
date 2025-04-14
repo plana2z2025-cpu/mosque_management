@@ -39,6 +39,15 @@ const ModelSchema = new mongoose.Schema(
       ref: eventCategory,
       required: true,
     },
+    mode: {
+      type: String,
+      enum: ["online", "offline"],
+    },
+    modePlatform: {
+      type: String,
+      enum: ["zoom", "googleMeet", "teams", "live", "other"],
+      default: "live",
+    },
     startDate: {
       type: Date,
       required: true,
@@ -74,6 +83,23 @@ const ModelSchema = new mongoose.Schema(
     },
     coverImage: String,
     tags: [String],
+    googleMeet: {
+      enabled: {
+        type: Boolean,
+        default: false,
+      },
+      meetLink: {
+        type: String,
+        trim: true,
+      },
+      conferenceId: {
+        type: String,
+        trim: true,
+      },
+      details: {
+        type: mongoose.Schema.Types.Mixed,
+      },
+    },
     status: {
       type: String,
       enum: enumStatus,

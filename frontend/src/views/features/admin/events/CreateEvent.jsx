@@ -372,6 +372,7 @@ export function CreateEventForm() {
         startDate: moment(formData.startDate).utc().format(),
         endDate: moment(formData.endDate).utc().format(),
         time: moment(formData.time).utc().format(),
+        modePlatform: 'googleMeet',
       };
 
       if (eventId) {

@@ -5,6 +5,10 @@ const {
   mosque,
   settings,
 } = require("../../Constants/model.constants");
+const { MOSQUE_LOCATIONS } = require("../../Constants/region.constants");
+
+let timeZones = MOSQUE_LOCATIONS.map((location) => location.timezone);
+const enumTimeZone = [...new Set(timeZones)];
 
 const ModelSchema = new mongoose.Schema(
   {
@@ -38,6 +42,12 @@ const ModelSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
+    },
+    timeZone: {
+      type: String,
+      default: "UTC",
+      enum: enumTimeZone,
+      required: true,
     },
     createdRef: {
       type: String,
