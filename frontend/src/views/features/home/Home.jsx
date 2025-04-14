@@ -13,6 +13,7 @@ import Image2 from '@/assets/images/home2.png';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Link } from 'react-router-dom';
+import { public_url } from '@/services/config';
 
 export default function LandingPage() {
   return (
@@ -94,9 +95,11 @@ export default function LandingPage() {
                       </Link>
                     </nav>
                     <div className="flex flex-col gap-2 mt-4">
-                      <Button variant="outline" className="w-full justify-start">
-                        Log In
-                      </Button>
+                      <Link to="/login">
+                        <Button variant="outline" className="w-full justify-start">
+                          Log In
+                        </Button>
+                      </Link>
                       <Button className="w-full justify-start bg-emerald-600 hover:bg-emerald-700">
                         Get Started
                       </Button>
@@ -106,12 +109,16 @@ export default function LandingPage() {
               </Sheet>
             </div>
             <div className="hidden md:flex items-center gap-4">
-              <Button variant="outline" size="sm">
-                Log In
-              </Button>
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-                Get Started
-              </Button>
+              <Link to="/login">
+                <Button variant="outline" size="sm">
+                  Log In
+                </Button>
+              </Link>
+              <Link to={public_url}>
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
