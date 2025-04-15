@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import allRoutesMapper from './routes';
 import { Toaster } from 'react-hot-toast';
 import Welcome from './views/components2/home/Welcome';
+import MetaData from './utils/MetaData';
 
 const OtherComponets = () => {
   return (
@@ -15,6 +16,7 @@ const OtherComponets = () => {
 function App() {
   return (
     <div className="app">
+      <MetaData />
       {/* <Welcome /> */}
       <BrowserRouter>
         <Routes>
