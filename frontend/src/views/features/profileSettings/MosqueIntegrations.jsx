@@ -12,21 +12,16 @@ import { mosqueActions } from '../../../redux/combineActions';
 import {
   ExternalLink,
   Calendar,
-  Mail,
   FileSpreadsheet,
   MessageSquare,
   CreditCard,
   Users,
-  BookOpen,
-  Clock,
   Video,
-  Megaphone,
-  MapPin,
-  Bell,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import { BASE_URL } from '@/services/config';
 
 const integrations = [
   {
@@ -34,7 +29,7 @@ const integrations = [
     name: 'Google Calendar',
     description: 'Schedule and manage prayer times, Jummah, Eid prayers, and community events.',
     icon: <Calendar className="h-8 w-8" />,
-    consoleUrl: 'https://calendar.google.com/',
+    consoleUrl: `${BASE_URL}/auth/google`,
     category: 'prayer',
     popular: true,
   },
@@ -94,9 +89,9 @@ const integrations = [
   },
 ];
 const MosqueIntegrations = () => {
-  const dispatch = useDispatch();
-  const { communityMosqueSettings } = useSelector((state) => state.mosqueState);
-  const { updateMosqueSettingsAction } = mosqueActions;
+  //   const dispatch = useDispatch();
+  //   const { communityMosqueSettings } = useSelector((state) => state.mosqueState);
+  //   const { updateMosqueSettingsAction } = mosqueActions;
 
   return (
     <>
