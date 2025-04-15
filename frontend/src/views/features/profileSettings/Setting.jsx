@@ -6,6 +6,7 @@ import ProfileDetails from './ProfileDetails';
 import { useParams, useNavigate } from 'react-router-dom';
 import MosqueProfile from './MosqueProfile';
 import MosqueSettings from './MosqueSettings';
+import MosqueIntegrations from './MosqueIntegrations';
 
 const menuItems = [
   {
@@ -32,12 +33,21 @@ const menuItems = [
       { label: 'Mosque Settings', href: null },
     ],
   },
+  {
+    id: 'mosque-integrations',
+    label: 'Integrations',
+    breadCumbs: [
+      { label: 'Settings', href: null },
+      { label: 'Integrations', href: null },
+    ],
+  },
 ];
 
 const settingsMenuMapper = {
   'my-profile': ProfileDetails,
   'mosque-profile': MosqueProfile,
   'mosque-settings': MosqueSettings,
+  'mosque-integrations': MosqueIntegrations,
 };
 
 const Setting = () => {
