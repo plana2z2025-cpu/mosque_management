@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.787.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "celebrate": "^15.0.3",
@@ -22,6 +23,7 @@
     "express-rate-limit": "^7.3.1",
     "googleapis": "^148.0.0",
     "http-errors": "^2.0.0",
+    "i": "^0.3.7",
     "joi": "^17.13.3",
     "joi-password-complexity": "^5.2.0",
     "jsonwebtoken": "^9.0.2",
@@ -29,6 +31,7 @@
     "mongoose": "^8.4.4",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "npm": "^11.3.0",
     "uuid": "^10.0.0",
     "winston": "^3.13.0"
   },

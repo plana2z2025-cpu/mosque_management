@@ -24,4 +24,10 @@ module.exports = {
   // webhooks
   BARKAT_BOT_WEBHOOK: process.env.BARKAT_BOT_WEBHOOK,
   SERVER_STATUS_WEBHOOK: process.env.SERVER_STATUS_WEBHOOK,
+
+  // Aws SES credentials
+  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+  AWS_REGION: process.env.AWS_REGION,
+  AWS_SES_SENDER: process.env.AWS_SES_SENDER,
 };

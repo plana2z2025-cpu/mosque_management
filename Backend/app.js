@@ -47,6 +47,12 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/v1", IndexRoutes);
 app.use("/auth/google", GoogleAuthRoutes);
+app.get("/get/email", (req, res) => {
+  res.status(200).json({
+    success: true,
+    statusCode: 200,
+  });
+});
 
 //----------------------------------------
 //--------------- others -----------------
