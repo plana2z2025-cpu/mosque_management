@@ -309,7 +309,7 @@ async function sendEmailFunction(sesTemplate, recipientEmail) {
         ToAddresses: [recipientEmail],
       },
       TemplateData: JSON.stringify({
-        mosque_name: "Masjid Al-Haram",
+        mosque_name: "Masjid Al-Haramm ",
       }),
     });
 

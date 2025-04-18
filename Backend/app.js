@@ -8,6 +8,7 @@ const { ratelimitConfig } = require("./src/Config/ratelimit.config");
 const { DEVELOPMENT_MODE } = require("./src/Config/index.config");
 const errorHandling = require("./src/Utils/errorHandling");
 const GoogleAuthRoutes = require("./src/Routes/auth/google.route");
+const AwsMailServiceClass = require("./src/aws_ses/mails/mail.index");
 // const corsConfig = require("./src/Config/cors.config");
 
 const app = express();
@@ -47,12 +48,28 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/v1", IndexRoutes);
 app.use("/auth/google", GoogleAuthRoutes);
-app.get("/get/email", (req, res) => {
-  res.status(200).json({
-    success: true,
-    statusCode: 200,
-  });
-});
+// app.get("/get/email", async (req, res) => {
+//   const AwsMailService = new AwsMailServiceClass();
+//   let response = await AwsMailService.sendEmail(
+//     "mohammedshahidnagodriya@gmail.com",
+//     "welcomeMosqueTemplate",
+//     null,
+//     {
+//       mosque_name: "Masjid - E - Qasimmusa",
+//     }
+//   );
+
+// let response = await AwsMailService.sendTemplatedEmail(
+//   "www.mohdshahid303@gmail.com",
+//   "WelcomeMosqueTemplateWithMosqueName",
+//   { mosque_name: "Masjid Al-Haram" }
+// );
+//   res.status(200).json({
+//     success: true,
+//     statusCode: 200,
+//     response,
+//   });
+// });
 
 //----------------------------------------
 //--------------- others -----------------

@@ -1,0 +1,19 @@
+{
+  "welcomeMosqueTemplate": {
+    "Message": {
+      "Subject": { "Charset": "UTF-8", "Data": "Welcome to the Mosque" },
+      "Body": {
+        "Html": {
+          "Charset": "UTF-8",
+          "Data": null
+        },
+        "Text": {
+          "Charset": "UTF-8",
+          "Data": "Welcome to the Mosque. We are glad to have you with us."
+        }
+      }
+    },
+    "fileName": "welcomeMosque.template.html",
+    "dynamicDataKeys": ["mosque_name"]
+  }
+}
