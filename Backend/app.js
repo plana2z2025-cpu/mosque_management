@@ -1,4 +1,5 @@
 const express = require("express");
+const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const MongoDataBaseConn = require("./src/Config/db.config");
@@ -12,6 +13,11 @@ const AwsMailServiceClass = require("./src/aws_ses/mails/mail.index");
 // const corsConfig = require("./src/Config/cors.config");
 
 const app = express();
+app.use(
+  helmet({
+    xPoweredBy: false,
+  })
+);
 
 //----------------------------------------
 //------------ config --------------------
