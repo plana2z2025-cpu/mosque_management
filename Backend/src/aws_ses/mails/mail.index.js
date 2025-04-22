@@ -8,7 +8,7 @@ const {
   AWS_SECRET_ACCESS_KEY,
   AWS_REGION,
   AWS_SES_SENDER,
-} = require("../../config/index.config");
+} = require("../../Config/index.config");
 const fs = require("fs");
 const path = require("path");
 const JsonTemplatesCollection = require("./templateCollection.json");
