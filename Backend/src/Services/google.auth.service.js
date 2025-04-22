@@ -5,56 +5,8 @@ const {
   GOOGLE_REDIRECT_URI,
 } = require("../Config/index.config.js");
 const userModel = require("../Schema/users/user.model.js");
-
+const logger = require("../Config/logger.config.js");
 const scopes = ["email", "profile", "https://www.googleapis.com/auth/calendar"];
-
-class GoogleAuthServiceClass2 {
-  constructor() {
-    this.oAuth2Client = new google.auth.OAuth2(
-      GOOGLE_CLIENT_ID,
-      GOOGLE_CLIENT_SECRET,
-      GOOGLE_REDIRECT_URI
-    );
-    this.userID = null;
-  }
-
-  generateAuthUrl(userID) {
-    return this.oAuth2Client.generateAuthUrl({
-      access_type: "offline", // Ensures refresh_token is returned on first consent
-      prompt: "consent", // Always show the consent screen
-      scope: scopes,
-      state: userID, // Pass userID in state to retrieve it later
-    });
-  }
-
-  async getTokensFromCode(code) {
-    const { tokens } = await this.oAuth2Client.getToken(code);
-    this.oAuth2Client.setCredentials(tokens);
-    return tokens; // you can persist refresh_token if needed
-  }
-
-  setCredentials(tokens) {
-    this.oAuth2Client.setCredentials(tokens);
-  }
-
-  getAuthClient() {
-    return this.oAuth2Client;
-  }
-
-  async getUserInfo(accessToken) {
-    let details = await this.oAuth2Client.getTokenInfo(accessToken);
-    return details;
-  }
-
-  async getTokens() {
-    let tokens = await userModel.findById(this.userID).select("google").lean();
-    if (!tokens) {
-      throw new Error("No tokens found for this user.");
-    } else {
-      return tokens.google.tokens;
-    }
-  }
-}
 
 class GoogleAuthServiceClass {
   constructor(userID) {
@@ -76,6 +28,9 @@ class GoogleAuthServiceClass {
 
   // OAuth2 related methods
   generateAuthUrl() {
+    logger.info(
+      "Services - Google.auth.service - GoogleAuthServiceClass - generateAuthUrl "
+    );
     return this.oAuth2Client.generateAuthUrl({
       access_type: "offline", // Ensures refresh_token is returned on first consent
       prompt: "consent", // Always show the consent screen
@@ -85,16 +40,30 @@ class GoogleAuthServiceClass {
   }
 
   async getTokensFromCode(code) {
-    const { tokens } = await this.oAuth2Client.getToken(code);
-    this.oAuth2Client.setCredentials(tokens);
-    let userDetails = null;
+    try {
+      logger.info(
+        "Services - Google.auth.service - GoogleAuthServiceClass - getTokensFromCode - start"
+      );
+      const { tokens } = await this.oAuth2Client.getToken(code);
+      this.oAuth2Client.setCredentials(tokens);
+      let userDetails = null;
 
-    // Store tokens in database
-    if (this.userID) {
-      userDetails = await this.saveTokensToDatabase(tokens);
+      // Store tokens in database
+      if (this.userID) {
+        userDetails = await this.saveTokensToDatabase(tokens);
+      }
+
+      logger.info(
+        "Services - Google.auth.service - GoogleAuthServiceClass - getTokensFromCode - end"
+      );
+      return { tokens, userDetails };
+    } catch (error) {
+      logger.error(
+        "Services - Google.auth.service - GoogleAuthServiceClass - getTokensFromCode - error",
+        error
+      );
+      throw error;
     }
-
-    return { tokens, userDetails };
   }
 
   setCredentials(tokens) {
@@ -113,6 +82,9 @@ class GoogleAuthServiceClass {
   // for db related write
   async saveTokensToDatabase(tokens) {
     try {
+      logger.info(
+        "Services - Google.auth.service - GoogleAuthServiceClass - saveTokensToDatabase - start"
+      );
       let response = await userModel
         .findByIdAndUpdate(
           this.userID,
@@ -127,13 +99,19 @@ class GoogleAuthServiceClass {
 
       return response;
     } catch (error) {
-      console.error("Error saving tokens to database:", error);
-      throw new Error("Failed to save tokens to database");
+      logger.error(
+        "Services - Google.auth.service - GoogleAuthServiceClass - saveTokensToDatabase - error",
+        error
+      );
+      throw error;
     }
   }
 
   async getTokensFromDatabase() {
     try {
+      logger.info(
+        "Services - Google.auth.service - GoogleAuthServiceClass - getTokensFromDatabase - start"
+      );
       const user = await userModel
         .findById(this.userID)
         .select("google")
@@ -141,10 +119,17 @@ class GoogleAuthServiceClass {
       if (!user || !user.google || !user.google.tokens) {
         throw new Error("No tokens found for this user.");
       }
+
+      logger.info(
+        "Services - Google.auth.service - GoogleAuthServiceClass - getTokensFromDatabase - end"
+      );
       return user.google;
     } catch (error) {
-      console.error("Error retrieving tokens:", error);
-      throw new Error("Failed to retrieve tokens");
+      logger.error(
+        "Services - Google.auth.service - GoogleAuthServiceClass - getTokensFromDatabase - error",
+        error
+      );
+      throw error;
     }
   }
 

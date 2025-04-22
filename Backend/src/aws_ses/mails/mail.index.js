@@ -12,6 +12,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const JsonTemplatesCollection = require("./templateCollection.json");
+const logger = require("../../Config/logger.config");
 
 const getTemplateFromFile = async (fileName, placeholderData) => {
   const filePath = path.join(__dirname, "../", "templates", fileName);
@@ -55,47 +56,56 @@ class AwsMailServiceClass {
   }
 
   async sendEmail(to, templateName, subject, placeholderData) {
-    const template = await this.getTemplateData(
-      templateName,
-      subject,
-      placeholderData
-    );
-    const params = {
-      Destination: {
-        ToAddresses: Array.isArray(to) ? to : [to],
-      },
-      Message: template.Message,
-      Source: AWS_SES_SENDER,
-      ReplyToAddresses: [],
-    };
     try {
+      logger.info("AWS SES - mail service - sendEmail - Start");
+      const template = await this.getTemplateData(
+        templateName,
+        subject,
+        placeholderData
+      );
+      const params = {
+        Destination: {
+          ToAddresses: Array.isArray(to) ? to : [to],
+        },
+        Message: template.Message,
+        Source: AWS_SES_SENDER,
+        ReplyToAddresses: [],
+      };
       const sesClient = new SESClient(this.SESClientConfig);
       const commandToSendEmail = new SendEmailCommand(params);
       const response = await sesClient.send(commandToSendEmail);
+      logger.info("AWS SES - mail service - sendEmail - End");
       return response;
     } catch (error) {
+      logger.error("AWS SES - mail service - sendEmail - Error", error);
       throw error;
     }
   }
   // send templated email using AWS SES
   async sendTemplatedEmail(to, templateName, placeholderData) {
-    const params = {
-      Destination: {
-        ToAddresses: Array.isArray(to) ? to : [to],
-      },
-      Template: templateName,
-      TemplateData: JSON.stringify(placeholderData),
-      Source: AWS_SES_SENDER,
-    };
     try {
+      logger.info("AWS SES - mail service - sendTemplatedEmail - Start");
+      const params = {
+        Destination: {
+          ToAddresses: Array.isArray(to) ? to : [to],
+        },
+        Template: templateName,
+        TemplateData: JSON.stringify(placeholderData),
+        Source: AWS_SES_SENDER,
+      };
       const sesClient = new SESClient(this.SESClientConfig);
       const commandToSendEmail = new SendTemplatedEmailCommand(params);
       const response = await sesClient.send(commandToSendEmail);
+      logger.info("AWS SES - mail service - sendTemplatedEmail - End");
       return response;
     } catch (error) {
+      logger.error(
+        "AWS SES - mail service - sendTemplatedEmail - Error",
+        error
+      );
       throw error;
     }
   }
 }
-// const AwsMailService = new AwsMailServiceClass();
+
 module.exports = AwsMailServiceClass;
