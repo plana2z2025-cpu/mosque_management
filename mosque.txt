@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mosque Management Software</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+    }
+    h1 {
+      margin: 0;
+    }
+    nav {
+      margin: 20px 0;
+    }
+    nav button {
+      background: #16a085;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    nav button:hover {
+      background: #138d75;
+    }
+    section {
+      display: none;
+      padding: 20px;
+    }
+    .active {
+      display: block;
+    }
+    footer {
+      background: #2c3e50;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 80%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background: #16a085;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏛 Mosque Management Software</h1>
+    <p>Simple management system for mosque activities</p>
+  </header>
+
+  <nav>
+    <button onclick="showSection('members')">Members</button>
+    <button onclick="showSection('donations')">Donations</button>
+    <button onclick="showSection('events')">Events</button>
+    <button onclick="showSection('about')">About</button>
+  </nav>
+
+  <!-- Members Section -->
+  <section id="members" class="active">
+    <h2>👥 Mosque Members</h2>
+    <table>
+      <tr><th>Name</th><th>Role</th><th>Contact</th></tr>
+      <tr><td>Ahmed Khan</td><td>President</td><td>+91 98765 43210</td></tr>
+      <tr><td>Mohammed Ali</td><td>Secretary</td><td>+91 91234 56789</td></tr>
+      <tr><td>Yusuf Patel</td><td>Treasurer</td><td>+91 99876 54321</td></tr>
+    </table>
+  </section>
+
+  <!-- Donations Section -->
+  <section id="donations">
+    <h2>💰 Donations</h2>
+    <table>
+      <tr><th>Donor</th><th>Amount</th><th>Date</th></tr>
+      <tr><td>Fatima Sheikh</td><td>₹5,000</td><td>01-Sep-2025</td></tr>
+      <tr><td>Imran Khan</td><td>₹10,000</td><td>15-Aug-2025</td></tr>
+    </table>
+  </section>
+
+  <!-- Events Section -->
+  <section id="events">
+    <h2>📅 Upcoming Events</h2>
+    <table>
+      <tr><th>Event</th><th>Date</th><th>Details</th></tr>
+      <tr><td>Eid Milad</td><td>15-Sep-2025</td><td>Community gathering and prayer</td></tr>
+      <tr><td>Quran Recitation</td><td>25-Sep-2025</td><td>Competition for youth</td></tr>
+    </table>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <h2>ℹ️ About</h2>
+    <p>This Mosque Management Software helps track members, donations, and events.</p>
+    <p>Developed as a simple free tool using HTML, CSS, and JavaScript.</p>
+  </section>
+
+  <footer>
+    <p>© 2025 Mosque Management | Built for Community</p>
+  </footer>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+  </script>
+</body>
+</html>
+Express yourself with emojis
+💖 👍 😂 🎉
+Respond quickly and add fun and personality to your emails
